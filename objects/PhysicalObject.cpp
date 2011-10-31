@@ -7,17 +7,21 @@
 
 #include "PhysicalObject.h"
 
-PhysicalObject::PhysicalObject(Ogre::SceneNode* originNode, int id, Ogre::String name) :
+PhysicalObject::PhysicalObject(Ogre::SceneNode* node, Ogre::String name, int id, Ogre::String meshName, Ogre::String description) :
 	mId(id),
 	mName(name),
-	mNode(originNode->createChildSceneNode()),//"Object" + Ogre::StringConverter::toString(PhysicalObject::_instanceNumber)))),
+//	mMeshName(meshName),
+	mDescription(description),
+	mNode(node),//originNode->createChildSceneNode()),//"Object" + Ogre::StringConverter::toString(PhysicalObject::_instanceNumber)))),
+	mEntity(0),
 	mAcceleration(),
 	mSpeed(),
 	mSolidity(20),
 	mDensity(1),
 	mIntegrity(100)
 {
-//	setup();
+	mEntity = mNode->getCreator()->createEntity(mName, meshName);
+	mNode->attachObject(mEntity);
 }
 
 PhysicalObject::~PhysicalObject() {
@@ -26,6 +30,10 @@ PhysicalObject::~PhysicalObject() {
 
 
 void PhysicalObject::update(Ogre::Real deltaTime) {}
+
+//void PhysicalObject::setup() {
+//
+//}
 
 Ogre::Vector3 PhysicalObject::getAcceleration() const
 {
@@ -95,6 +103,31 @@ int PhysicalObject::getSolidity() const
 void PhysicalObject::setDensity(float mDensity)
 {
     this->mDensity = mDensity;
+}
+
+void PhysicalObject::setEntity(Ogre::Entity *mEntity)
+{
+    this->mEntity = mEntity;
+}
+
+Ogre::String PhysicalObject::getDescription() const
+{
+    return mDescription;
+}
+
+void PhysicalObject::setDescription(Ogre::String mDescription)
+{
+    this->mDescription = mDescription;
+}
+
+//void PhysicalObject::setNode(Ogre::SceneNode *mNode)
+//{
+//    this->mNode = mNode;
+//}
+
+Ogre::Entity *PhysicalObject::getEntity() const
+{
+    return mEntity;
 }
 
 void PhysicalObject::setSolidity(int mSolidity)

@@ -7,6 +7,8 @@
 
 #include "ObjectManager.h"
 
+unsigned long ObjectManager::_countObject = 0;
+
 ObjectManager::ObjectManager(Ogre::SceneManager* scnMgr) :
 	mSceneMgr(scnMgr),
 //	mRSQ(scnMgr->creater),
@@ -33,8 +35,27 @@ void ObjectManager::updateObjects(Ogre::Real deltaTime) {
 }
 
 Player* ObjectManager::createPlayer(Ogre::Camera* camera) {
-	Player* p = new Player(camera);
+	Player* p = new Player(Ogre::StringConverter::toString(++_countObject), camera);
 	mObjects.push_back(p);
 	mActiveObjects.push_back(p);
 	return p;
+}
+
+Cube* ObjectManager::createCube(Ogre::Vector3 position) {
+	Ogre::String name = Ogre::StringConverter::toString(++_countObject);
+	Cube* c = new Cube(mSceneMgr->getRootSceneNode()->createChildSceneNode(name, position), name, 2);
+	mObjects.push_back(c);
+	return c;
+}
+
+void ObjectManager::loadScene() {
+	for (int i=0; i<100; i++) {
+		for (int j=0; j<100; j++) {
+			for (int k=0; k<2; k++) {
+				if (rand() < (RAND_MAX/3)) {
+					createCube(Vector3(i,k,-j) * 2);
+				}
+			}
+		}
+	}
 }

@@ -18,9 +18,8 @@
 using namespace Ogre;
 
 class Player : public PhysicalObject {
+	friend class ObjectManager;
 public:
-	Player(Camera* cam);
-	virtual ~Player();
 	void update(Real deltaTime);
 	void injectKeyDown(const OIS::KeyEvent& evt);
 	void injectKeyUp(const OIS::KeyEvent& evt);
@@ -30,6 +29,10 @@ public:
 	 * Change the camera mode (First Person or Third Person)
 	 */
 	void toggleCameraMode();
+
+protected:
+	Player(Ogre::String name, Camera* cam);
+	virtual ~Player();
 
 private:
 	// all the animations our character has, and a null ID
@@ -59,7 +62,7 @@ private:
 	SceneNode* mCameraFPNode;
 	SceneNode* mCameraTPNode;
 //	Real mPivotPitch;
-	Entity* mBodyEnt;
+//	Entity* mBodyEnt;
 	Entity* mSword1;
 	Entity* mSword2;
 //	MOC::CollisionTools* mCollisionMgr;

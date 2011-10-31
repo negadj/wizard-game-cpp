@@ -11,7 +11,7 @@
 #include "Ogre.h"
 //#include "ObjectManager.h"
 
-// Pour éviter les inclusions circulaires
+// Pour éviter l'oeuf et la poule
 class ObjectManager;
 
 typedef unsigned char ObjectId_t;
@@ -23,8 +23,11 @@ private:
 	//TODO: Matériaux ?
 	ObjectId_t mId;
 	Ogre::String mName;
+//	Ogre::String mMeshName;
+	Ogre::String mDescription;
 	/* contient les informations de position, dimensions, rotation... */
 	Ogre::SceneNode* mNode;
+	Ogre::Entity* mEntity;
 	Ogre::Vector3 mAcceleration;
 	Ogre::Vector3 mSpeed;
 //	Ogre::Vector3 mDimensions;
@@ -32,15 +35,16 @@ private:
 	float mDensity;
 	int mIntegrity; //~= points de vie pour un objet
 
-	virtual void setup() = 0;
-
 protected:
-	PhysicalObject(Ogre::SceneNode* originNode, int id = 0, std::string name = "Objet");
+	PhysicalObject(Ogre::SceneNode* node, Ogre::String name, int id, Ogre::String meshName, std::string description = "Objet");
+	virtual ~PhysicalObject();
 	/* Met à jour tout ce qui concerne l'objet hormis les déplacements (qui sont gérés par l'ObjectManager)*/
 	virtual void update(Ogre::Real deltaTime);
+//	virtual void setup();
+	void setEntity(Ogre::Entity *mEntity);
+//    void setNode(Ogre::SceneNode *mNode);
 
 public:
-	virtual ~PhysicalObject();
 	Ogre::Vector3 getAcceleration() const;
     ObjectId_t getId() const;
     int getIntegrity() const;
@@ -57,6 +61,9 @@ public:
     int getSolidity() const;
     void setDensity(float mDensity);
     void setSolidity(int mSolidity);
+    Ogre::Entity *getEntity() const;
+    Ogre::String getDescription() const;
+    void setDescription(Ogre::String mDescription);
 
 };
 

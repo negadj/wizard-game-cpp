@@ -12,6 +12,7 @@
 #include "../CollisionTools.h"
 #include "PhysicalObject.h"
 #include "Player.h"
+#include "Cube.h"
 
 /**
  * Classe qui s'occupe de la gestion des objets matériels du jeu.
@@ -19,6 +20,7 @@
  */
 class ObjectManager {
 private:
+	static unsigned long _countObject;
 	Ogre::SceneManager* mSceneMgr;
 //	Ogre::RaySceneQuery* mRSQ;
 	MOC::CollisionTools mCollisionTools;
@@ -35,6 +37,11 @@ public:
 	 * Ajoute un joueur
 	 */
 	Player* createPlayer(Ogre::Camera* camera);
+	/*
+	 * Ajoute un cube
+	 */
+	Cube* createCube(Ogre::Vector3 position = Ogre::Vector3::ZERO);
+	void loadScene();
 
 };
 

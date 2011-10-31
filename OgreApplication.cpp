@@ -81,23 +81,8 @@ void OgreApplication::createScene() {
 	mSceneMgr->getRootSceneNode()->createChildSceneNode("nodeFloor")->attachObject(floor);
 
 	//Ajout de plein de cubes
+//	mObjectMgr->loadScene();
 
-	Entity* cube;
-	SceneNode* cubeNode;
-	String cubeName = "Cube";
-	for (int i=0; i<100; i++) {
-		for (int j=0; j<100; j++) {
-			for (int k=0; k<2; k++) {
-				if (rand() < (RAND_MAX/3)) {
-					cube = mSceneMgr->createEntity(cubeName + StringConverter::toString(i) + "," + StringConverter::toString(j) + "," + StringConverter::toString(k), "cube.mesh");
-					cube->setMaterialName("Wizard/Dirt");
-					cubeNode = mSceneMgr->getRootSceneNode()->createChildSceneNode(Vector3(i,k,-j) * 2);
-					cubeNode->scale(0.01*Vector3::UNIT_SCALE);
-					cubeNode->attachObject(cube);
-				}
-			}
-		}
-	}
 }
 
 void OgreApplication::loadResources() {

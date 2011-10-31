@@ -16,8 +16,8 @@
 //#define JUMP_ACCEL 30.0f       // character jump acceleration in upward units per squared second
 //#define GRAVITY 90.0f          // gravity in downward units per squared second
 
-Player::Player(Camera* cam) :
-	PhysicalObject(cam->getSceneManager()->getRootSceneNode(), 1, "Joueur"),
+Player::Player(Ogre::String name, Camera* cam) :
+	PhysicalObject(cam->getSceneManager()->getRootSceneNode()->createChildSceneNode(), name, 1, "Sinbad.mesh", "Joueur"),
 	mCamera(cam),
 //	mPlayerNode(0),
 	mBodyNode(0),
@@ -25,14 +25,15 @@ Player::Player(Camera* cam) :
 	mCameraGoal(0),
 	mCameraFPNode(0),
 	mCameraTPNode(0),
-	mBodyEnt(0),
+//	mBodyEnt(0),
 	mSword1(0),
 	mSword2(0),
 //	mCollisionMgr(0),
 	mDirection(),
 	mVelocity(5)
 	{
-	setup();
+	setupBody(cam->getSceneManager());
+	setupCamera();
 	}
 //	mCollisionMgr = new MOC::CollisionTools(mCamera->getSceneManager());
 //	setupBody(mCamera->getSceneManager());
@@ -44,10 +45,10 @@ Player::~Player() {
 //	delete mCollisionMgr;
 }
 
-void Player::setup() {
-	setupBody(mCamera->getSceneManager());
-	setupCamera();
-}
+//void Player::setup() {
+//	setupBody(mCamera->getSceneManager());
+//	setupCamera();
+//}
 
 void Player::update(Real deltaTime) {
 	/* Mise à jour de la vitesse du joueur en fonction des touches,
@@ -167,18 +168,22 @@ void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) 
 
 void Player::setupBody(SceneManager* sceneMgr) {
 	// Entités pour le corps
-	mBodyEnt = sceneMgr->createEntity("SinbadBody", "Sinbad.mesh");
+//	setEntity(sceneMgr->createEntity("SinbadBody", "Sinbad.mesh"));
 	mSword1 = sceneMgr->createEntity("SinbadSword1", "Sword.mesh");
 	mSword2 = sceneMgr->createEntity("SinbadSword2", "Sword.mesh");
-	mBodyEnt->attachObjectToBone("Sheath.L", mSword1);
-	mBodyEnt->attachObjectToBone("Sheath.R", mSword2);
+	getEntity()->attachObjectToBone("Sheath.L", mSword1);
+	getEntity()->attachObjectToBone("Sheath.R", mSword2);
 
 	// Création du corps du personnage
 	mBodyNode = getNode()->createChildSceneNode(Vector3::UNIT_Y * (CHAR_HEIGHT / 2));
 	mBodyNode->scale(Vector3::UNIT_SCALE * 0.2);
 	mBodyNode->yaw(Degree(180));
+	mBodyNode->setInitialState();
 
-	mBodyNode->attachObject(mBodyEnt);
+	/* Le constructeur de PhysicalObject attache mEntity à mNode,
+	   ce n'est pas ce que l'on souhaite ici */
+	getEntity()->detachFromParent();
+	mBodyNode->attachObject(getEntity());
 
 	// create a couple of ribbon trails for the swords, just for fun
 //	NameValuePairList params;
