@@ -9,8 +9,7 @@ Author: Gecko
 #include <OIS.h>
 //#include "SdkTrays.h"
 //#include "CollisionTools.h"
-#include "ObjectManager.h"
-#include "Player.h"
+#include "objects/ObjectManager.h"
 
 using namespace Ogre;
 

@@ -10,15 +10,16 @@
 //#define NUM_ANIMS 13           // number of animations the character has
 #define CHAR_HEIGHT 2          // hauteur du centre de gravité du personnage
 //#define CAM_HEIGHT 2           // height of camera above character's center of mass
-#define RUN_SPEED 17           // character running speed in units per second
+//#define RUN_SPEED 17           // character running speed in units per second
 //#define TURN_SPEED 500.0f      // character turning in degrees per second
 //#define ANIM_FADE_SPEED 7.5f   // animation crossfade speed in % of full weight per second
 //#define JUMP_ACCEL 30.0f       // character jump acceleration in upward units per squared second
 //#define GRAVITY 90.0f          // gravity in downward units per squared second
 
 Player::Player(Camera* cam) :
+	PhysicalObject(cam->getSceneManager()->getRootSceneNode(), 1, "Joueur"),
 	mCamera(cam),
-	mPlayerNode(0),
+//	mPlayerNode(0),
 	mBodyNode(0),
 	mCameraRootNode(0),
 	mCameraGoal(0),
@@ -27,24 +28,34 @@ Player::Player(Camera* cam) :
 	mBodyEnt(0),
 	mSword1(0),
 	mSword2(0),
-	mCollisionMgr(0),
-	mDirection()
+//	mCollisionMgr(0),
+	mDirection(),
+	mVelocity(5)
 	{
-	mCollisionMgr = new MOC::CollisionTools(mCamera->getSceneManager());
-	setupBody(mCamera->getSceneManager());
-	setupCamera();
+	setup();
+	}
+//	mCollisionMgr = new MOC::CollisionTools(mCamera->getSceneManager());
+//	setupBody(mCamera->getSceneManager());
+//	setupCamera();
 //	setupAnimations();
-}
+//}
 
 Player::~Player() {
-	delete mCollisionMgr;
+//	delete mCollisionMgr;
 }
 
-void Player::addTime(Real deltaTime) {
-	/* Déplacement du joueur */
-	Vector3 movement = mDirection.normalisedCopy()*(deltaTime * RUN_SPEED);
+void Player::setup() {
+	setupBody(mCamera->getSceneManager());
+	setupCamera();
+}
+
+void Player::update(Real deltaTime) {
+	/* Mise à jour de la vitesse du joueur en fonction des touches,
+	 dans le référentiel global. */
+	setSpeed(mVelocity * (getNode()->getOrientation() * mDirection).normalisedCopy());
+//	Vector3 movement = mDirection.normalisedCopy()*(deltaTime * RUN_SPEED);
 //	Vector3 oldPos = mPlayerNode->getPosition();
-	mPlayerNode->translate(movement, Node::TS_LOCAL);
+//	mPlayerNode->translate(movement, Node::TS_LOCAL);
 //	Vector3 newPos = mPlayerNode->getPosition();
 //	//On vérifie les collisions
 //	if (mCollisionMgr->collidesWithEntity(oldPos,newPos, 0))
@@ -135,7 +146,7 @@ void Player::injectKeyUp(const OIS::KeyEvent& evt) {
 
 void Player::injectMouseMove(const OIS::MouseEvent& evt) {
 	// On met à jour le point de visée
-	mPlayerNode->yaw(-0.2*Degree(evt.state.X.rel));
+	getNode()->yaw(-0.2*Degree(evt.state.X.rel));
 	Radian pitch = mCameraRootNode->_getDerivedOrientation().getPitch();
 	Radian deltaPitch = -0.2*Degree(evt.state.Y.rel);
 	if (pitch + deltaPitch < Degree(60) && pitch + deltaPitch > Degree(-60))
@@ -163,8 +174,7 @@ void Player::setupBody(SceneManager* sceneMgr) {
 	mBodyEnt->attachObjectToBone("Sheath.R", mSword2);
 
 	// Création du corps du personnage
-	mPlayerNode = sceneMgr->getRootSceneNode()->createChildSceneNode();//Vector3::UNIT_Y * 0.5);
-	mBodyNode = mPlayerNode->createChildSceneNode(Vector3::UNIT_Y * (CHAR_HEIGHT / 2));
+	mBodyNode = getNode()->createChildSceneNode(Vector3::UNIT_Y * (CHAR_HEIGHT / 2));
 	mBodyNode->scale(Vector3::UNIT_SCALE * 0.2);
 	mBodyNode->yaw(Degree(180));
 
@@ -194,7 +204,7 @@ void Player::setupBody(SceneManager* sceneMgr) {
 
 void Player::setupCamera() {
 	// On créer les noeuds pour les cameras
-	mCameraRootNode = mPlayerNode->createChildSceneNode(Vector3(0,CHAR_HEIGHT,-0.2));
+	mCameraRootNode = getNode()->createChildSceneNode(Vector3(0,CHAR_HEIGHT,-0.2));
 	mCameraFPNode = mCameraRootNode->createChildSceneNode();
 	mCameraTPNode = mCameraRootNode->createChildSceneNode(Vector3::UNIT_Z*8);
 	mCameraGoal = mCameraRootNode->createChildSceneNode(Vector3::NEGATIVE_UNIT_Z*10);

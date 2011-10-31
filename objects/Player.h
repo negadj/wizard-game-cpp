@@ -10,17 +10,18 @@
 
 #define NUM_ANIMS 13           // number of animations the character has
 
-#include "Ogre.h"
-#include "OIS.h"
-#include "CollisionTools.h"
+#include <Ogre.h>
+#include <OIS.h>
+#include "PhysicalObject.h"
+//#include "CollisionTools.h"
 
 using namespace Ogre;
 
-class Player {
+class Player : public PhysicalObject {
 public:
 	Player(Camera* cam);
 	virtual ~Player();
-	void addTime(Real deltaTime);
+	void update(Real deltaTime);
 	void injectKeyDown(const OIS::KeyEvent& evt);
 	void injectKeyUp(const OIS::KeyEvent& evt);
 	void injectMouseMove(const OIS::MouseEvent& evt);
@@ -51,7 +52,7 @@ private:
 //	};
 
 	Camera* mCamera;
-	SceneNode* mPlayerNode;
+//	SceneNode* mPlayerNode;
 	SceneNode* mBodyNode;
 	SceneNode* mCameraRootNode;
 	SceneNode* mCameraGoal;
@@ -61,7 +62,7 @@ private:
 	Entity* mBodyEnt;
 	Entity* mSword1;
 	Entity* mSword2;
-	MOC::CollisionTools* mCollisionMgr;
+//	MOC::CollisionTools* mCollisionMgr;
 //	RibbonTrail* mSwordTrail;
 //	AnimationState* mAnims[NUM_ANIMS]; // master animation list
 //	AnimID mBaseAnimID; // current base (full- or lower-body) animation
@@ -70,10 +71,12 @@ private:
 //	bool mFadingOut[NUM_ANIMS]; // which animations are fading out
 //	bool mSwordsDrawn;
 	Vector3 mDirection; // player's local intended direction based on WASD keys
-	Vector3 mGoalDirection; // actual intended direction in world-space
+//	Vector3 mGoalDirection; // actual intended direction in world-space
 	Real mVerticalVelocity; // for jumping
+	Real mVelocity;
 //	Real mTimer; // general timer to see how long animations have been playing
 
+	virtual void setup();
 	void setupBody(SceneManager* sceneMgr);
 //	void setupAnimations();
 	void setupCamera();

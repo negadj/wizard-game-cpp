@@ -21,7 +21,7 @@ OgreApplication::OgreApplication() :
 OgreApplication::~OgreApplication() {
 	WindowEventUtilities::removeWindowEventListener(mWindow, this);
 	windowClosed(mWindow);
-	delete mPlayer;
+//	delete mPlayer;
 	delete mObjectMgr;
 //	delete mTrayMgr;
 	delete mRoot;
@@ -50,7 +50,7 @@ bool OgreApplication::start() {
 	createScene();
 	createFrameListener();
 
-	mPlayer = new Player(mCamera);
+	mPlayer = mObjectMgr->createPlayer(mCamera);
 	mRoot->startRendering();
 
 	return true;
@@ -152,7 +152,8 @@ bool OgreApplication::frameRenderingQueued(const FrameEvent& evt) {
     mKeyboard->capture();
     mMouse->capture();
 
-    mPlayer->addTime(evt.timeSinceLastFrame);
+//    mPlayer->addTime(evt.timeSinceLastFrame);
+    mObjectMgr->updateObjects(evt.timeSinceLastFrame);
 
     return mContinue;
 }
