@@ -11,7 +11,6 @@ unsigned long ObjectManager::_countObject = 0;
 
 ObjectManager::ObjectManager(Ogre::SceneManager* scnMgr) :
 	mSceneMgr(scnMgr),
-//	mRSQ(scnMgr->creater),
 	mCollisionTools(scnMgr)
 {}
 

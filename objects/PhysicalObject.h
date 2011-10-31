@@ -9,7 +9,6 @@
 #define PHYSICALOBJECT_H_
 
 #include "Ogre.h"
-//#include "ObjectManager.h"
 
 // Pour éviter l'oeuf et la poule
 class ObjectManager;
@@ -19,18 +18,15 @@ typedef unsigned char ObjectId_t;
 class PhysicalObject {
 	friend class ObjectManager;
 private:
-	//	static unsigned int _instanceNumber = 0;
 	//TODO: Matériaux ?
 	ObjectId_t mId;
 	Ogre::String mName;
-//	Ogre::String mMeshName;
 	Ogre::String mDescription;
 	/* contient les informations de position, dimensions, rotation... */
 	Ogre::SceneNode* mNode;
 	Ogre::Entity* mEntity;
 	Ogre::Vector3 mAcceleration;
 	Ogre::Vector3 mSpeed;
-//	Ogre::Vector3 mDimensions;
 	int mSolidity;
 	float mDensity;
 	int mIntegrity; //~= points de vie pour un objet
@@ -40,9 +36,7 @@ protected:
 	virtual ~PhysicalObject();
 	/* Met à jour tout ce qui concerne l'objet hormis les déplacements (qui sont gérés par l'ObjectManager)*/
 	virtual void update(Ogre::Real deltaTime);
-//	virtual void setup();
 	void setEntity(Ogre::Entity *mEntity);
-//    void setNode(Ogre::SceneNode *mNode);
 
 public:
 	Ogre::Vector3 getAcceleration() const;
@@ -55,7 +49,6 @@ public:
     void setId(ObjectId_t mId);
     void setIntegrity(int mIntegrity);
     void setName(std::string mName);
-//    void setNode(Ogre::SceneNode* mNode);
     void setSpeed(Ogre::Vector3 mSpeed);
     float getDensity() const;
     int getSolidity() const;

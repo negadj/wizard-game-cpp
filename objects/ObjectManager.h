@@ -22,7 +22,6 @@ class ObjectManager {
 private:
 	static unsigned long _countObject;
 	Ogre::SceneManager* mSceneMgr;
-//	Ogre::RaySceneQuery* mRSQ;
 	MOC::CollisionTools mCollisionTools;
 	std::vector<PhysicalObject*> mObjects;
 	std::vector<PhysicalObject*> mActiveObjects;

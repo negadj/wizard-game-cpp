@@ -9,7 +9,6 @@ OgreApplication::OgreApplication() :
 	mSceneMgr(0),
 	mCamera(0),
 	mViewPort(0),
-//	mTrayMgr(0),
 	mObjectMgr(0),
 	mInputManager(0),
 	mMouse(0),
@@ -21,14 +20,11 @@ OgreApplication::OgreApplication() :
 OgreApplication::~OgreApplication() {
 	WindowEventUtilities::removeWindowEventListener(mWindow, this);
 	windowClosed(mWindow);
-//	delete mPlayer;
 	delete mObjectMgr;
-//	delete mTrayMgr;
 	delete mRoot;
 }
 
 bool OgreApplication::start() {
-//	mRoot = Root();
 	mRoot = new Root("config/plugins.cfg", "config/ogre.cfg", "log/Wizard.log");
 
 	loadResources();
@@ -42,11 +38,9 @@ bool OgreApplication::start() {
 
 	mSceneMgr = mRoot->createSceneManager("DefaultSceneManager", "Wizard Scene Manager");
 	mObjectMgr = new ObjectManager(mSceneMgr);
-//	mCollisionsMgr = new MOC::CollisionTools(mSceneMgr);
 
 	createCamera();
 	createViewPort();
-//	createTrayManager();
 	createScene();
 	createFrameListener();
 
@@ -66,7 +60,7 @@ void OgreApplication::createScene() {
 	// set shadow properties
 	mSceneMgr->setShadowTechnique(SHADOWTYPE_NONE);//TEXTURE_ADDITIVE);
 
-//	// add a bright light above the scene
+	// add a bright light above the scene
 	Light* light = mSceneMgr->createLight("sun");
 	light->setType(Light::LT_DIRECTIONAL);
 	light->setDirection(Vector3(10, -40, -20));
@@ -81,7 +75,7 @@ void OgreApplication::createScene() {
 	mSceneMgr->getRootSceneNode()->createChildSceneNode("nodeFloor")->attachObject(floor);
 
 	//Ajout de plein de cubes
-//	mObjectMgr->loadScene();
+	mObjectMgr->loadScene();
 
 }
 
@@ -109,10 +103,6 @@ void OgreApplication::loadResources() {
 void OgreApplication::createCamera() {
     // Create the camera
     mCamera = mSceneMgr->createCamera("PlayerCam");
-//    mCamera->setPosition(Vector3(0,0,20));
-//    mCamera->lookAt(Vector3(0,0,0));
-//    mCamera->setNearClipDistance(0.1);
-//    mCamera->setFarClipDistance(20);
 }
 
 void OgreApplication::createViewPort() {
@@ -120,10 +110,6 @@ void OgreApplication::createViewPort() {
     mViewPort->setBackgroundColour(ColourValue(0,0,0));
     mCamera->setAspectRatio(Real(mViewPort->getActualWidth()) / Real(mViewPort->getActualHeight()));
 }
-
-//void OgreApplication::createTrayManager() {
-//	mTrayMgr = new OgreBites::SdkTrayManager("WizardTrayManager", mWindow, mMouse);
-//}
 
 void OgreApplication::createFrameListener() {
 	startOIS();
@@ -137,7 +123,6 @@ bool OgreApplication::frameRenderingQueued(const FrameEvent& evt) {
     mKeyboard->capture();
     mMouse->capture();
 
-//    mPlayer->addTime(evt.timeSinceLastFrame);
     mObjectMgr->updateObjects(evt.timeSinceLastFrame);
 
     return mContinue;

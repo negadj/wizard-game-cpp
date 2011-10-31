@@ -10,7 +10,6 @@
 PhysicalObject::PhysicalObject(Ogre::SceneNode* node, Ogre::String name, int id, Ogre::String meshName, Ogre::String description) :
 	mId(id),
 	mName(name),
-//	mMeshName(meshName),
 	mDescription(description),
 	mNode(node),//originNode->createChildSceneNode()),//"Object" + Ogre::StringConverter::toString(PhysicalObject::_instanceNumber)))),
 	mEntity(0),
@@ -24,16 +23,9 @@ PhysicalObject::PhysicalObject(Ogre::SceneNode* node, Ogre::String name, int id,
 	mNode->attachObject(mEntity);
 }
 
-PhysicalObject::~PhysicalObject() {
-//	PhysicalObject::_instanceNumber -=1;
-}
-
+PhysicalObject::~PhysicalObject() {}
 
 void PhysicalObject::update(Ogre::Real deltaTime) {}
-
-//void PhysicalObject::setup() {
-//
-//}
 
 Ogre::Vector3 PhysicalObject::getAcceleration() const
 {
@@ -70,11 +62,6 @@ void PhysicalObject::setAcceleration(Ogre::Vector3 mAcceleration)
     this->mAcceleration = mAcceleration;
 }
 
-//void PhysicalObject::setId(ObjectId_t mId)
-//{
-//    this->mId = mId;
-//}
-
 void PhysicalObject::setIntegrity(int mIntegrity)
 {
     this->mIntegrity = mIntegrity;
@@ -84,11 +71,6 @@ void PhysicalObject::setName(std::string mName)
 {
     this->mName = mName;
 }
-
-//void PhysicalObject::setNode(Ogre::SceneNode* mNode)
-//{
-//    this->mNode = mNode;
-//}
 
 float PhysicalObject::getDensity() const
 {
@@ -119,11 +101,6 @@ void PhysicalObject::setDescription(Ogre::String mDescription)
 {
     this->mDescription = mDescription;
 }
-
-//void PhysicalObject::setNode(Ogre::SceneNode *mNode)
-//{
-//    this->mNode = mNode;
-//}
 
 Ogre::Entity *PhysicalObject::getEntity() const
 {
