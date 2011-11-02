@@ -40,11 +40,11 @@ Player* ObjectManager::createPlayer(Ogre::Camera* camera) {
 	return p;
 }
 
-Cube* ObjectManager::createCube(Ogre::Vector3 position) {
+Block* ObjectManager::createBlock(Ogre::Vector3 position) {
 	Ogre::String name = Ogre::StringConverter::toString(++_countObject);
-	Cube* c = new Cube(mSceneMgr->getRootSceneNode()->createChildSceneNode(name, position), name, 2);
-	mObjects.push_back(c);
-	return c;
+	Block* b = new Block(mSceneMgr->getRootSceneNode()->createChildSceneNode(name, position), name, 2);
+	mObjects.push_back(b);
+	return b;
 }
 
 void ObjectManager::loadScene() {
@@ -52,7 +52,7 @@ void ObjectManager::loadScene() {
 		for (int j=0; j<100; j++) {
 			for (int k=0; k<2; k++) {
 				if (rand() < (RAND_MAX/3)) {
-					createCube(Vector3(i,k,-j) * 2);
+					createBlock(Vector3(i,k,-j) * 2);
 				}
 			}
 		}

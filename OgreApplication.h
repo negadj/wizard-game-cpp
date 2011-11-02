@@ -5,10 +5,7 @@ Author: Gecko
 #define __OGREAPPLICATION_H_
 
 #include <Ogre.h>
-//#include <SdkSample.h>
 #include <OIS.h>
-//#include "SdkTrays.h"
-//#include "CollisionTools.h"
 #include "objects/ObjectManager.h"
 
 using namespace Ogre;

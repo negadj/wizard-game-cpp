@@ -37,6 +37,7 @@ protected:
 	/* Met à jour tout ce qui concerne l'objet hormis les déplacements (qui sont gérés par l'ObjectManager)*/
 	virtual void update(Ogre::Real deltaTime);
 	void setEntity(Ogre::Entity *mEntity);
+    void setName(std::string mName);
 
 public:
 	Ogre::Vector3 getAcceleration() const;
@@ -48,7 +49,6 @@ public:
     void setAcceleration(Ogre::Vector3 mAcceleration);
     void setId(ObjectId_t mId);
     void setIntegrity(int mIntegrity);
-    void setName(std::string mName);
     void setSpeed(Ogre::Vector3 mSpeed);
     float getDensity() const;
     int getSolidity() const;

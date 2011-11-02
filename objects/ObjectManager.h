@@ -12,7 +12,7 @@
 #include "../CollisionTools.h"
 #include "PhysicalObject.h"
 #include "Player.h"
-#include "Cube.h"
+#include "Block.h"
 
 /**
  * Classe qui s'occupe de la gestion des objets matériels du jeu.
@@ -37,9 +37,9 @@ public:
 	 */
 	Player* createPlayer(Ogre::Camera* camera);
 	/*
-	 * Ajoute un cube
+	 * Ajoute un Block
 	 */
-	Cube* createCube(Ogre::Vector3 position = Ogre::Vector3::ZERO);
+	Block* createBlock(Ogre::Vector3 position = Ogre::Vector3::ZERO);
 	void loadScene();
 
 };

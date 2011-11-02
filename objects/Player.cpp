@@ -7,7 +7,7 @@
 
 #include "Player.h"
 
-#define CHAR_HEIGHT 2          // hauteur du centre de gravité du personnage
+#define CHAR_HEIGHT 2 // hauteur du personnage
 
 Player::Player(Ogre::String name, Camera* cam) :
 	PhysicalObject(cam->getSceneManager()->getRootSceneNode()->createChildSceneNode(), name, 1, "Sinbad.mesh", "Joueur"),
