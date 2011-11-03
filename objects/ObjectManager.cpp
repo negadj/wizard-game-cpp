@@ -30,12 +30,19 @@ void ObjectManager::moveWithCollisions(PhysicalObject* &obj, const Ogre::Real de
         float dist = 0.0f;
         Ogre::Vector3 destination = Ogre::Vector3::ZERO;
         Ogre::MovableObject *target;
-        if(mCollisionTools.raycastFromPoint(obj->getNode()->getPosition(), obj->getSpeed(), destination, target, dist)
+        Ogre::Vector3 polygon_normal;
+        if(mCollisionTools.raycastFromPoint(obj->getNode()->getPosition(), obj->getSpeed(), destination, target, dist, polygon_normal)
         	&& dist < (obj->getSpeed() * deltaTime).length())
             /* TODO: il s'avère que ce code donne un effet "ralenti" à l'approche
 					 * des obstacles. C'est rigolo mais c'est pas forcément ce qu'on veut.
 					 */
-            obj->getNode()->translate(obj->getSpeed().normalisedCopy() * dist); //destination);
+        {
+        	if(obj->getSpeed().dotProduct(polygon_normal) < 0)
+        		polygon_normal = -polygon_normal;
+        	obj->getNode()->translate(obj->getSpeed()* deltaTime - polygon_normal.dotProduct(obj->getSpeed()* deltaTime - obj->getSpeed().normalisedCopy() * dist) * polygon_normal); //destination);
+        	//obj->getNode()->translate( obj->getSpeed().normalizedCopy() * dist);
+        }
+
         else
         	obj->getNode()->translate(obj->getSpeed() * deltaTime); //TODO: TS_WORLD ?
     }
@@ -46,7 +53,8 @@ bool ObjectManager::objectReached(const Ogre::Vector3 &from, const Ogre::Vector3
 	float dist = 0.0f;
 	Ogre::Vector3 pos;
 	Ogre::Entity* entity;
-	if (mCollisionTools.raycastFromPoint(from, normal, pos, entity, dist)
+	Ogre::Vector3 polygon_normal;
+	if (mCollisionTools.raycastFromPoint(from, normal, pos, entity, dist,polygon_normal)
 		&& dist < reachRadius) {
 		target = mObjects[entity->getParentSceneNode()->getName()];
 		return (target != NULL);
@@ -91,7 +99,7 @@ void ObjectManager::loadScene() {
 		for (int j=0; j<100; j++) {
 			for (int k=0; k<2; k++) {
 				if (rand() < (RAND_MAX/3)) {
-					createBlock(Vector3(i,k,-j) * 2);
+					createBlock(Vector3(i,k+0.25,-j) * 2);
 				}
 			}
 		}
