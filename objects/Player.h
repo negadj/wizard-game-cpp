@@ -13,6 +13,7 @@
 #include <Ogre.h>
 #include <OIS.h>
 #include "PhysicalObject.h"
+#include "../CollisionTools.h"
 
 using namespace Ogre;
 
@@ -45,6 +46,7 @@ private:
 	Vector3 mDirection; // direction du joueur donnée par les touches du clavier
 	Real mVelocity;
 	Real mVerticalVelocity; // for jumping
+	MOC::CollisionTools mCollisionTools;
 
 	void setupBody(SceneManager* sceneMgr);
 	void setupCamera();

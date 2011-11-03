@@ -7,8 +7,8 @@
 
 #include "Block.h"
 
-Block::Block(Ogre::SceneNode* node, Ogre::String name, int id) :
-	PhysicalObject(node, name, id, "cube.mesh", "Bloc")
+Block::Block(Ogre::SceneNode* originNode, Ogre::String name, int id) :
+	PhysicalObject(originNode, name, id, "cube.mesh", "Bloc")
 {
 	getEntity()->setMaterialName("Wizard/Dirt");
 	getNode()->scale(0.01*Ogre::Vector3::UNIT_SCALE);

@@ -32,6 +32,9 @@ private:
 	int mIntegrity; //~= points de vie pour un objet
 
 protected:
+	/*
+	 * Attention : name doit être unique.
+	 */
 	PhysicalObject(Ogre::SceneNode* node, Ogre::String name, int id, Ogre::String meshName, std::string description = "Objet");
 	virtual ~PhysicalObject();
 	/* Met à jour tout ce qui concerne l'objet hormis les déplacements (qui sont gérés par l'ObjectManager)*/

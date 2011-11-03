@@ -7,11 +7,11 @@
 
 #include "PhysicalObject.h"
 
-PhysicalObject::PhysicalObject(Ogre::SceneNode* node, Ogre::String name, int id, Ogre::String meshName, Ogre::String description) :
+PhysicalObject::PhysicalObject(Ogre::SceneNode* originNode, Ogre::String name, int id, Ogre::String meshName, Ogre::String description) :
 	mId(id),
 	mName(name),
 	mDescription(description),
-	mNode(node),//originNode->createChildSceneNode()),//"Object" + Ogre::StringConverter::toString(PhysicalObject::_instanceNumber)))),
+	mNode(originNode->createChildSceneNode(name)),
 	mEntity(0),
 	mAcceleration(),
 	mSpeed(),

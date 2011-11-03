@@ -23,8 +23,10 @@ private:
 	static unsigned long _countObject;
 	Ogre::SceneManager* mSceneMgr;
 	MOC::CollisionTools mCollisionTools;
-	std::vector<PhysicalObject*> mObjects;
+	std::map<std::string,PhysicalObject*> mObjects;
 	std::vector<PhysicalObject*> mActiveObjects;
+
+	void moveWithCollisions(PhysicalObject* &obj, const Ogre::Real deltaTime);
 public:
 	ObjectManager(Ogre::SceneManager* scnMgr);
 	~ObjectManager();
@@ -39,7 +41,15 @@ public:
 	/*
 	 * Ajoute un Block
 	 */
-	Block* createBlock(Ogre::Vector3 position = Ogre::Vector3::ZERO);
+	Block* createBlock(const Ogre::Vector3 position = Ogre::Vector3::ZERO);
+	/*
+	 * Renvoie si un objet est atteint, et si oui lequel
+	 */
+	bool objectReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, PhysicalObject* target);
+	/*
+	 * Charge la scène où le joueur évolue.
+	 * TODO: clarifier son rôle vis-à-vis de OgreApplication::createScene()
+	 */
 	void loadScene();
 
 };

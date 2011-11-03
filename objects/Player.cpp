@@ -10,7 +10,7 @@
 #define CHAR_HEIGHT 2 // hauteur du personnage
 
 Player::Player(Ogre::String name, Camera* cam) :
-	PhysicalObject(cam->getSceneManager()->getRootSceneNode()->createChildSceneNode(), name, 1, "Sinbad.mesh", "Joueur"),
+	PhysicalObject(cam->getSceneManager()->getRootSceneNode(), name, 1, "Sinbad.mesh", "Joueur"),
 	mCamera(cam),
 	mBodyNode(0),
 	mCameraRootNode(0),
@@ -21,7 +21,8 @@ Player::Player(Ogre::String name, Camera* cam) :
 	mSword2(0),
 	mDirection(Ogre::Vector3::ZERO),
 	mVelocity(5),
-	mVerticalVelocity(0)
+	mVerticalVelocity(0),
+	mCollisionTools(cam->getSceneManager())
 	{
 	setupBody(cam->getSceneManager());
 	setupCamera();
@@ -71,7 +72,7 @@ void Player::injectKeyUp(const OIS::KeyEvent& evt) {
 }
 
 void Player::injectMouseMove(const OIS::MouseEvent& evt) {
-	// On met à jour le point de visée
+	// On met à jour le point visé
 	getNode()->yaw(-0.2*Degree(evt.state.X.rel));
 	Radian pitch = mCameraRootNode->_getDerivedOrientation().getPitch();
 	Radian deltaPitch = -0.2*Degree(evt.state.Y.rel);
@@ -79,7 +80,13 @@ void Player::injectMouseMove(const OIS::MouseEvent& evt) {
 		mCameraRootNode->pitch(deltaPitch);
 }
 
-void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) {}
+void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) {
+//	PhysicalObject* target = NULL;
+//	if (mObjectManager->objectReached(mCameraFPNode->getPosition(),
+//			mCameraGoal->getPosition() - mCameraFPNode->getPosition(),
+//			0.5, target))
+//		target->getEntity()->setVisible(false);
+}
 
 void Player::setupBody(SceneManager* sceneMgr) {
 	// Entités pour le corps
