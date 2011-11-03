@@ -1,5 +1,5 @@
 /*
- * PhysicManager.h
+ * ObjectManager.h
  *
  *  Created on: 30 oct. 2011
  *      Author: gecko

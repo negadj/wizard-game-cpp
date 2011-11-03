@@ -9,8 +9,8 @@
 
 #define CHAR_HEIGHT 2 // hauteur du personnage
 
-Player::Player(Ogre::String name, Camera* cam) :
-	PhysicalObject(cam->getSceneManager()->getRootSceneNode(), name, 1, "Sinbad.mesh", "Joueur"),
+Player::Player(const ObjectManager* objectManager, Ogre::String name, Camera* cam) :
+	PhysicalObject(objectManager, cam->getSceneManager()->getRootSceneNode(), name, 1, "Sinbad.mesh", "Joueur"),
 	mCamera(cam),
 	mBodyNode(0),
 	mCameraRootNode(0),

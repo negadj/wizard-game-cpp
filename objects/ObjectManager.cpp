@@ -1,5 +1,5 @@
 /*
- * PhysicManager.cpp
+ * ObjectManager.cpp
  *
  *  Created on: 30 oct. 2011
  *      Author: gecko
@@ -26,17 +26,16 @@ void ObjectManager::moveWithCollisions(PhysicalObject* &obj, const Ogre::Real de
 {
     // Calcul des nouvelles positions des objets.
     // On gère les éventuelles collisions
-    if(obj->getSpeed() != Vector3::ZERO){
+    if(obj->getSpeed() != Ogre::Vector3::ZERO){
         float dist = 0.0f;
-        Vector3 destination = Vector3::ZERO;
-        MovableObject *target;
+        Ogre::Vector3 destination = Ogre::Vector3::ZERO;
+        Ogre::MovableObject *target;
         if(mCollisionTools.raycastFromPoint(obj->getNode()->getPosition(), obj->getSpeed(), destination, target, dist)
         	&& dist < (obj->getSpeed() * deltaTime).length())
             /* TODO: il s'avère que ce code donne un effet "ralenti" à l'approche
 					 * des obstacles. C'est rigolo mais c'est pas forcément ce qu'on veut.
 					 */
             obj->getNode()->translate(obj->getSpeed().normalisedCopy() * dist); //destination);
-//        }
         else
         	obj->getNode()->translate(obj->getSpeed() * deltaTime); //TODO: TS_WORLD ?
     }
@@ -45,7 +44,7 @@ void ObjectManager::moveWithCollisions(PhysicalObject* &obj, const Ogre::Real de
 bool ObjectManager::objectReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, PhysicalObject* target) {
 	target = NULL;
 	float dist = 0.0f;
-	Vector3 pos;
+	Ogre::Vector3 pos;
 	Ogre::Entity* entity;
 	if (mCollisionTools.raycastFromPoint(from, normal, pos, entity, dist)
 		&& dist < reachRadius) {
@@ -72,7 +71,7 @@ void ObjectManager::updateObjects(Ogre::Real deltaTime) {
 
 Player* ObjectManager::createPlayer(Ogre::Camera* camera) {
 	Ogre::String name = Ogre::StringConverter::toString(++_countObject);
-	Player* p = new Player(name, camera);
+	Player* p = new Player(this, name, camera);
 	mObjects[name] = p;
 	mActiveObjects.push_back(p);
 	return p;
@@ -80,7 +79,7 @@ Player* ObjectManager::createPlayer(Ogre::Camera* camera) {
 
 Block* ObjectManager::createBlock(const Ogre::Vector3 position) {
 	Ogre::String name = Ogre::StringConverter::toString(++_countObject);
-	Block* b = new Block(mSceneMgr->getRootSceneNode(), name, 2);
+	Block* b = new Block(this, mSceneMgr->getRootSceneNode(), name, 2);
 	b->getNode()->setPosition(position);
 	//TODO: setInitialState ?
 	mObjects[name] = b;

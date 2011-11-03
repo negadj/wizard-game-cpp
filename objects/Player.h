@@ -31,7 +31,7 @@ public:
 	void toggleCameraMode();
 
 protected:
-	Player(Ogre::String name, Camera* cam);
+	Player(const ObjectManager* objectManager, Ogre::String name, Camera* cam);
 	virtual ~Player();
 
 private:

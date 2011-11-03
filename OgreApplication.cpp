@@ -2,6 +2,7 @@
 Author: Gecko
 */
 #include "OgreApplication.h"
+#include "objects/Player.h"
 
 OgreApplication::OgreApplication() :
 	mRoot(0),

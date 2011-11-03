@@ -10,7 +10,7 @@
 
 #include "Ogre.h"
 
-// Pour éviter l'oeuf et la poule
+// forward declaration
 class ObjectManager;
 
 typedef unsigned char ObjectId_t;
@@ -19,8 +19,9 @@ class PhysicalObject {
 	friend class ObjectManager;
 private:
 	//TODO: Matériaux ?
+	const ObjectManager* mObjectManager;
 	ObjectId_t mId;
-	Ogre::String mName;
+	const Ogre::String mName;
 	Ogre::String mDescription;
 	/* contient les informations de position, dimensions, rotation... */
 	Ogre::SceneNode* mNode;
@@ -35,12 +36,11 @@ protected:
 	/*
 	 * Attention : name doit être unique.
 	 */
-	PhysicalObject(Ogre::SceneNode* node, Ogre::String name, int id, Ogre::String meshName, std::string description = "Objet");
+	PhysicalObject(const ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, int id, Ogre::String meshName, std::string description = "Objet");
 	virtual ~PhysicalObject();
 	/* Met à jour tout ce qui concerne l'objet hormis les déplacements (qui sont gérés par l'ObjectManager)*/
 	virtual void update(Ogre::Real deltaTime);
 	void setEntity(Ogre::Entity *mEntity);
-    void setName(std::string mName);
 
 public:
 	Ogre::Vector3 getAcceleration() const;
@@ -60,6 +60,7 @@ public:
     Ogre::Entity *getEntity() const;
     Ogre::String getDescription() const;
     void setDescription(Ogre::String mDescription);
+    const ObjectManager* getObjectManager() const;
 
 };
 

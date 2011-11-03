@@ -7,7 +7,8 @@
 
 #include "PhysicalObject.h"
 
-PhysicalObject::PhysicalObject(Ogre::SceneNode* originNode, Ogre::String name, int id, Ogre::String meshName, Ogre::String description) :
+PhysicalObject::PhysicalObject(const ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name, int id, Ogre::String meshName, Ogre::String description) :
+	mObjectManager(objectManager),
 	mId(id),
 	mName(name),
 	mDescription(description),
@@ -67,10 +68,10 @@ void PhysicalObject::setIntegrity(int mIntegrity)
     this->mIntegrity = mIntegrity;
 }
 
-void PhysicalObject::setName(std::string mName)
-{
-    this->mName = mName;
-}
+//void PhysicalObject::setName(std::string mName)
+//{
+//    this->mName = mName;
+//}
 
 float PhysicalObject::getDensity() const
 {
@@ -95,6 +96,11 @@ void PhysicalObject::setEntity(Ogre::Entity *mEntity)
 Ogre::String PhysicalObject::getDescription() const
 {
     return mDescription;
+}
+
+const ObjectManager* PhysicalObject::getObjectManager() const
+{
+    return mObjectManager;
 }
 
 void PhysicalObject::setDescription(Ogre::String mDescription)

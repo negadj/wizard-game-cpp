@@ -16,7 +16,7 @@
 class Block: public PhysicalObject {
 	friend class ObjectManager;
 protected:
-	Block(Ogre::SceneNode* originNode, Ogre::String name, int id);
+	Block(const ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name, int id);
 
 protected:
 	virtual ~Block();
