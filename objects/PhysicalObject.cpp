@@ -7,7 +7,7 @@
 
 #include "PhysicalObject.h"
 
-PhysicalObject::PhysicalObject(const ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name, int id, Ogre::String meshName, Ogre::String description) :
+PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name, int id, Ogre::String meshName, Ogre::String description) :
 	mObjectManager(objectManager),
 	mId(id),
 	mName(name),
@@ -98,7 +98,7 @@ Ogre::String PhysicalObject::getDescription() const
     return mDescription;
 }
 
-const ObjectManager* PhysicalObject::getObjectManager() const
+ObjectManager* PhysicalObject::getObjectManager() const
 {
     return mObjectManager;
 }

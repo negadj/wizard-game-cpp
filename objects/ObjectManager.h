@@ -45,7 +45,7 @@ public:
 	/*
 	 * Renvoie si un objet est atteint, et si oui lequel
 	 */
-	bool objectReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, PhysicalObject* target);
+	bool objectReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, PhysicalObject* &target);
 	/*
 	 * Charge la scène où le joueur évolue.
 	 * TODO: clarifier son rôle vis-à-vis de OgreApplication::createScene()
