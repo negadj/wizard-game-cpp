@@ -41,15 +41,19 @@ void ObjectManager::moveWithCollisions(PhysicalObject* &obj, const Ogre::Real de
     }
 }
 
-bool ObjectManager::objectReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, PhysicalObject* target) {
+bool ObjectManager::objectReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, PhysicalObject* &target) {
 	target = NULL;
-	float dist = 0.0f;
+	Ogre::Real dist = 0;
 	Ogre::Vector3 pos;
 	Ogre::Entity* entity;
 	if (mCollisionTools.raycastFromPoint(from, normal, pos, entity, dist)
 		&& dist < reachRadius) {
-		target = mObjects[entity->getParentSceneNode()->getName()];
-		return (target != NULL);
+		std::map<std::string, PhysicalObject*>::iterator it = mObjects.find(entity->getParentSceneNode()->getName());
+		if (it != mObjects.end()) {
+			target = it->second;
+			std::cout << target->getName() << " " << entity->getParentSceneNode()->getName() << std::endl;
+			return true;
+		}
 	}
 	return false;
 }

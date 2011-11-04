@@ -19,7 +19,7 @@ class PhysicalObject {
 	friend class ObjectManager;
 private:
 	//TODO: Matériaux ?
-	const ObjectManager* mObjectManager;
+	ObjectManager* mObjectManager;
 	ObjectId_t mId;
 	const Ogre::String mName;
 	Ogre::String mDescription;
@@ -36,7 +36,7 @@ protected:
 	/*
 	 * Attention : name doit être unique.
 	 */
-	PhysicalObject(const ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, int id, Ogre::String meshName, std::string description = "Objet");
+	PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, int id, Ogre::String meshName, std::string description = "Objet");
 	virtual ~PhysicalObject();
 	/* Met à jour tout ce qui concerne l'objet hormis les déplacements (qui sont gérés par l'ObjectManager)*/
 	virtual void update(Ogre::Real deltaTime);
@@ -60,7 +60,7 @@ public:
     Ogre::Entity *getEntity() const;
     Ogre::String getDescription() const;
     void setDescription(Ogre::String mDescription);
-    const ObjectManager* getObjectManager() const;
+    ObjectManager* getObjectManager() const;
 
 };
 

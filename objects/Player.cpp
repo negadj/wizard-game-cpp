@@ -6,10 +6,11 @@
  */
 
 #include "Player.h"
+#include "ObjectManager.h"
 
 #define CHAR_HEIGHT 2 // hauteur du personnage
 
-Player::Player(const ObjectManager* objectManager, Ogre::String name, Camera* cam) :
+Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 	PhysicalObject(objectManager, cam->getSceneManager()->getRootSceneNode(), name, 1, "Sinbad.mesh", "Joueur"),
 	mCamera(cam),
 	mBodyNode(0),
@@ -81,11 +82,11 @@ void Player::injectMouseMove(const OIS::MouseEvent& evt) {
 }
 
 void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) {
-//	PhysicalObject* target = NULL;
-//	if (mObjectManager->objectReached(mCameraFPNode->getPosition(),
-//			mCameraGoal->getPosition() - mCameraFPNode->getPosition(),
-//			0.5, target))
-//		target->getEntity()->setVisible(false);
+	PhysicalObject* target = NULL;
+	if (getObjectManager()->objectReached(mCamera->getDerivedPosition(), mCamera->getDerivedDirection(), 5, target)) {
+		target->getEntity()->setVisible(false);
+		std::cout << target->getName() << std::endl;
+	}
 }
 
 void Player::setupBody(SceneManager* sceneMgr) {

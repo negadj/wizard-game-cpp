@@ -7,7 +7,7 @@
 
 #include "Block.h"
 
-Block::Block(const ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name, int id) :
+Block::Block(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name, int id) :
 	PhysicalObject(objectManager, originNode, name, id, "cube.mesh", "Bloc")
 {
 	getEntity()->setMaterialName("Wizard/Dirt");
