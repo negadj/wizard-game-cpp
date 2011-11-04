@@ -6,7 +6,6 @@
  */
 
 #include "Player.h"
-#include "ObjectManager.h"
 
 #define CHAR_HEIGHT 2 // hauteur du personnage
 
@@ -25,6 +24,8 @@ Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 	mVerticalVelocity(0),
 	mCollisionTools(cam->getSceneManager())
 	{
+	getNode()->translate(0,-0.5,0);
+	getNode()->setInitialState();
 	setupBody(cam->getSceneManager());
 	setupCamera();
 	}
@@ -34,7 +35,7 @@ Player::~Player() {}
 void Player::update(Real deltaTime) {
 	/* Mise à jour de la vitesse du joueur en fonction des touches,
 	 dans le référentiel global. */
-	setSpeed(mVelocity * (getNode()->getOrientation() * mDirection).normalisedCopy());
+	setSpeed((1-3*deltaTime)*getSpeed() + deltaTime*(Ogre::Vector3::NEGATIVE_UNIT_Y*5 + 5*mVelocity * (getNode()->getOrientation() * mDirection.normalisedCopy())));
 }
 
 void Player::injectKeyDown(const OIS::KeyEvent& evt) {
@@ -54,6 +55,9 @@ void Player::injectKeyDown(const OIS::KeyEvent& evt) {
 		break;
 	case OIS::KC_D:
 		mDirection.x = 1;
+		break;
+	case OIS::KC_SPACE:
+		addSpeed(Ogre::Vector3::UNIT_Y * 10);
 		break;
 	default:
 		break;
@@ -110,14 +114,13 @@ void Player::setupBody(SceneManager* sceneMgr) {
 
 void Player::setupCamera() {
 	// On créer les noeuds pour les cameras
-	mCameraRootNode = getNode()->createChildSceneNode(Vector3(0,CHAR_HEIGHT,-0.2));
+	mCameraRootNode = getNode()->createChildSceneNode(Vector3(0,CHAR_HEIGHT-0.5,-0.2));
 	mCameraFPNode = mCameraRootNode->createChildSceneNode();
 	mCameraTPNode = mCameraRootNode->createChildSceneNode(Vector3::UNIT_Z*8);
 	mCameraGoal = mCameraRootNode->createChildSceneNode(Vector3::NEGATIVE_UNIT_Z*10);
 	mCamera->setAutoTracking(true,mCameraGoal);
 	mCamera->setNearClipDistance(0.1);
 	mCamera->setFarClipDistance(50);
-
 	// On attache la caméra en FPS par défaut
 	mCameraFPNode->attachObject(mCamera);
 }

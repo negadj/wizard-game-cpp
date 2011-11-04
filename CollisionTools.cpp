@@ -73,23 +73,24 @@ CollisionTools::~CollisionTools()
 		delete mTSMRaySceneQuery;
 }
 
-bool CollisionTools::raycastFromCamera(Ogre::RenderWindow* rw, Ogre::Camera* camera, const Ogre::Vector2 &mousecoords, Ogre::Vector3 &result, Ogre::Entity* &target,float &closest_distance, const Ogre::uint32 queryMask)
+bool CollisionTools::raycastFromCamera(Ogre::RenderWindow* rw, Ogre::Camera* camera, const Ogre::Vector2 &mousecoords, Ogre::Vector3 &result, Ogre::Entity* &target,float &closest_distance, Ogre::Vector3 &polygon_normal, const Ogre::uint32 queryMask)
 {
-	return raycastFromCamera(rw, camera, mousecoords, result, (Ogre::MovableObject*&) target, closest_distance, queryMask);
+	return raycastFromCamera(rw, camera, mousecoords, result, (Ogre::MovableObject*&) target, closest_distance, polygon_normal, queryMask);
 }
 
-bool CollisionTools::raycastFromCamera(Ogre::RenderWindow* rw, Ogre::Camera* camera, const Ogre::Vector2 &mousecoords, Ogre::Vector3 &result, Ogre::MovableObject* &target,float &closest_distance, const Ogre::uint32 queryMask)
+bool CollisionTools::raycastFromCamera(Ogre::RenderWindow* rw, Ogre::Camera* camera, const Ogre::Vector2 &mousecoords, Ogre::Vector3 &result, Ogre::MovableObject* &target,float &closest_distance, Ogre::Vector3 &polygon_normal, const Ogre::uint32 queryMask)
 {
 	// Create the ray to test
 	Ogre::Real tx = mousecoords.x / (Ogre::Real) rw->getWidth();
 	Ogre::Real ty = mousecoords.y / (Ogre::Real) rw->getHeight();
 	Ogre::Ray ray = camera->getCameraToViewportRay(tx, ty);
 
-	return raycast(ray, result, target, closest_distance, queryMask);
+	return raycast(ray, result, target, closest_distance, polygon_normal, queryMask);
 }
 
 bool CollisionTools::collidesWithEntity(const Ogre::Vector3& fromPoint, const Ogre::Vector3& toPoint, const float collisionRadius, const float rayHeightLevel, const Ogre::uint32 queryMask)
 {
+	Ogre::Vector3 polygon_normal;
 	Ogre::Vector3 fromPointAdj(fromPoint.x, fromPoint.y + rayHeightLevel, fromPoint.z);
 	Ogre::Vector3 toPointAdj(toPoint.x, toPoint.y + rayHeightLevel, toPoint.z);
 	Ogre::Vector3 normal = toPointAdj - fromPointAdj;
@@ -99,7 +100,7 @@ bool CollisionTools::collidesWithEntity(const Ogre::Vector3& fromPoint, const Og
 	Ogre::MovableObject* myObject = NULL;
 	float distToColl = 0.0f;
 
-	if (raycastFromPoint(fromPointAdj, normal, myResult, myObject, distToColl, queryMask))
+	if (raycastFromPoint(fromPointAdj, normal, myResult, myObject, distToColl, polygon_normal, queryMask))
 	{
 		distToColl -= collisionRadius;
 		return (distToColl <= distToDest);
@@ -131,6 +132,7 @@ float CollisionTools::getTSMHeightAt(const float x, const float z) {
 
 void CollisionTools::calculateY(Ogre::SceneNode *n, const bool doTerrainCheck, const bool doGridCheck, const float gridWidth, const Ogre::uint32 queryMask)
 {
+	Ogre::Vector3 polygon_normal;
 	Ogre::Vector3 pos = n->getPosition();
 
 	float x = pos.x;
@@ -143,7 +145,7 @@ void CollisionTools::calculateY(Ogre::SceneNode *n, const bool doTerrainCheck, c
 
 	float terrY = 0, colY = 0, colY2 = 0;
 
-	if( raycastFromPoint(Ogre::Vector3(x,y,z),Ogre::Vector3::NEGATIVE_UNIT_Y,myResult,myObject, distToColl, queryMask)){
+	if( raycastFromPoint(Ogre::Vector3(x,y,z),Ogre::Vector3::NEGATIVE_UNIT_Y,myResult,myObject, distToColl,polygon_normal, queryMask)){
 		if (myObject != NULL) {
 			colY = myResult.y;
 		} else {
@@ -153,7 +155,7 @@ void CollisionTools::calculateY(Ogre::SceneNode *n, const bool doTerrainCheck, c
 
 	//if doGridCheck is on, repeat not to fall through small holes for example when crossing a hangbridge
 	if (doGridCheck) {
-		if( raycastFromPoint(Ogre::Vector3(x,y,z)+(n->getOrientation()*Ogre::Vector3(0,0,gridWidth)),Ogre::Vector3::NEGATIVE_UNIT_Y,myResult, myObject, distToColl, queryMask)){
+		if( raycastFromPoint(Ogre::Vector3(x,y,z)+(n->getOrientation()*Ogre::Vector3(0,0,gridWidth)),Ogre::Vector3::NEGATIVE_UNIT_Y,myResult, myObject, distToColl,polygon_normal, queryMask)){
 			if (myObject != NULL) {
 				colY = myResult.y;
 			} else {
@@ -192,15 +194,17 @@ bool CollisionTools::raycastFromPoint(const Ogre::Vector3 &point,
                                         const Ogre::Vector3 &normal,
 										Ogre::Vector3 &result,Ogre::Entity* &target,
 										float &closest_distance,
+										Ogre::Vector3 &polygon_normal,
 										const Ogre::uint32 queryMask) 
 {
-	return raycastFromPoint(point, normal, result,(Ogre::MovableObject*&) target, closest_distance, queryMask);
+	return raycastFromPoint(point, normal, result,(Ogre::MovableObject*&) target, closest_distance, polygon_normal, queryMask);
 }		
 							
 bool CollisionTools::raycastFromPoint(const Ogre::Vector3 &point,
                                         const Ogre::Vector3 &normal,
 										Ogre::Vector3 &result,Ogre::MovableObject* &target,
 										float &closest_distance,
+										Ogre::Vector3 &polygon_normal,
 										const Ogre::uint32 queryMask)
 {
     // create the ray to test
@@ -208,15 +212,15 @@ bool CollisionTools::raycastFromPoint(const Ogre::Vector3 &point,
 	ray.setOrigin(point);
 	ray.setDirection(normal);
 
-	return raycast(ray, result, target, closest_distance, queryMask);
+	return raycast(ray, result, target, closest_distance, polygon_normal, queryMask);
 }
 
-bool CollisionTools::raycast(const Ogre::Ray &ray, Ogre::Vector3 &result,Ogre::Entity* &target,float &closest_distance, const Ogre::uint32 queryMask) 
+bool CollisionTools::raycast(const Ogre::Ray &ray, Ogre::Vector3 &result,Ogre::Entity* &target,float &closest_distance, Ogre::Vector3 &polygon_normal, const Ogre::uint32 queryMask)
 {
-	return raycast(ray, result, (Ogre::MovableObject*&)target, closest_distance, queryMask);
+	return raycast(ray, result, (Ogre::MovableObject*&)target, closest_distance, polygon_normal, queryMask);
 }
 
-bool CollisionTools::raycast(const Ogre::Ray &ray, Ogre::Vector3 &result,Ogre::MovableObject* &target,float &closest_distance, const Ogre::uint32 queryMask)
+bool CollisionTools::raycast(const Ogre::Ray &ray, Ogre::Vector3 &result,Ogre::MovableObject* &target,float &closest_distance, Ogre::Vector3 &polygon_normal, const Ogre::uint32 queryMask)
 {
 	target = NULL;
 
@@ -292,6 +296,7 @@ bool CollisionTools::raycast(const Ogre::Ray &ray, Ogre::Vector3 &result,Ogre::M
                     if ((closest_distance < 0.0f) ||
                         (hit.second < closest_distance))
                     {
+                    	polygon_normal = Ogre::Math::calculateBasicFaceNormal(vertices[indices[i]],vertices[indices[i+1]],vertices[indices[i+2]]);
                         // this is the closest so far, save it off
                         closest_distance = hit.second;
                         new_closest_found = true;

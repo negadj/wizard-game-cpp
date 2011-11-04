@@ -73,7 +73,7 @@ void OgreApplication::createScene() {
 	Entity* floor = mSceneMgr->createEntity("Floor", "floor");
 	floor->setMaterialName("Wizard/GrassFloor");
 	floor->setCastShadows(false);
-	mSceneMgr->getRootSceneNode()->createChildSceneNode("nodeFloor")->attachObject(floor);
+	mSceneMgr->getRootSceneNode()->createChildSceneNode("nodeFloor",Ogre::Vector3::NEGATIVE_UNIT_Y*0.5)->attachObject(floor);
 
 	//Ajout de plein de cubes
 	mObjectMgr->loadScene();
