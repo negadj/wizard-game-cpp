@@ -37,10 +37,11 @@ void ObjectManager::moveWithCollisions(PhysicalObject* &obj, const Ogre::Real de
 					 * des obstacles. C'est rigolo mais c'est pas forcément ce qu'on veut.
 					 */
         {
+        	std::cout << target->getName() << std::endl;
         	if(obj->getSpeed().dotProduct(polygon_normal) < 0)
         		polygon_normal = -polygon_normal;
         	obj->getNode()->translate(obj->getSpeed()* deltaTime - polygon_normal.dotProduct(obj->getSpeed()* deltaTime - obj->getSpeed().normalisedCopy() * dist) * polygon_normal); //destination);
-        	//obj->getNode()->translate( obj->getSpeed().normalizedCopy() * dist);
+
         }
 
         else
@@ -99,7 +100,7 @@ void ObjectManager::loadScene() {
 		for (int j=0; j<100; j++) {
 			for (int k=0; k<2; k++) {
 				if (rand() < (RAND_MAX/3)) {
-					createBlock(Vector3(i,k+0.25,-j) * 2);
+					createBlock(Vector3(i,k,-j) * 2);
 				}
 			}
 		}
