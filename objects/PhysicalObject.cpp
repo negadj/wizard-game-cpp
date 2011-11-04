@@ -123,5 +123,11 @@ void PhysicalObject::setSpeed(Ogre::Vector3 mSpeed)
     this->mSpeed = mSpeed;
 }
 
+void PhysicalObject::addSpeed(Ogre::Vector3 mSpeed)
+{
+    this->mSpeed += mSpeed;
+}
+
+
 
 

@@ -53,6 +53,7 @@ public:
     void setId(ObjectId_t mId);
     void setIntegrity(int mIntegrity);
     void setSpeed(Ogre::Vector3 mSpeed);
+    void addSpeed(Ogre::Vector3 speed);
     float getDensity() const;
     int getSolidity() const;
     void setDensity(float mDensity);
