@@ -27,25 +27,28 @@ void ObjectManager::moveWithCollisions(PhysicalObject* &obj, const Ogre::Real de
     // Calcul des nouvelles positions des objets.
     // On gère les éventuelles collisions
     if(obj->getSpeed() != Ogre::Vector3::ZERO){
+    	int counter =0;
         float dist = 0.0f;
         Ogre::Vector3 destination = Ogre::Vector3::ZERO;
         Ogre::MovableObject *target;
         Ogre::Vector3 polygon_normal;
-        if(mCollisionTools.raycastFromPoint(obj->getNode()->getPosition(), obj->getSpeed(), destination, target, dist, polygon_normal)
-        	&& dist < (obj->getSpeed() * deltaTime).length())
-            /* TODO: il s'avère que ce code donne un effet "ralenti" à l'approche
-					 * des obstacles. C'est rigolo mais c'est pas forcément ce qu'on veut.
-					 */
+        Ogre::Vector3 distance = obj->getSpeed() * deltaTime;
+        while(mCollisionTools.raycastFromPoint(obj->getNode()->getPosition(), distance.normalisedCopy(), destination, target, dist, polygon_normal)
+        	&& dist < distance.length())
         {
-        	std::cout << target->getName() << std::endl;
-        	if(obj->getSpeed().dotProduct(polygon_normal) < 0)
+        	// TODO: Des fois, la boucle se lock. Un compteur permet d'éviter un freeze complet
+        	if (counter > 10)
+        		break;
+        	//std::cout << target->getName() << std::endl;
+        	if(distance.dotProduct(polygon_normal) < 0)
         		polygon_normal = -polygon_normal;
-        	obj->getNode()->translate(obj->getSpeed()* deltaTime - polygon_normal.dotProduct(obj->getSpeed()* deltaTime - obj->getSpeed().normalisedCopy() * dist) * polygon_normal); //destination);
-
+        	distance -= polygon_normal.dotProduct(distance - distance.normalisedCopy() * dist) * polygon_normal; //destination);
+        	counter+=1;
         }
 
-        else
-        	obj->getNode()->translate(obj->getSpeed() * deltaTime); //TODO: TS_WORLD ?
+
+        obj->getNode()->translate(distance); //TODO: TS_WORLD ?
+        obj->setSpeed(distance/deltaTime);
     }
 }
 

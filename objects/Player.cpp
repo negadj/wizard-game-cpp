@@ -6,6 +6,7 @@
  */
 
 #include "Player.h"
+#include "ObjectManager.h"
 
 #define CHAR_HEIGHT 2 // hauteur du personnage
 
@@ -87,7 +88,7 @@ void Player::injectMouseMove(const OIS::MouseEvent& evt) {
 
 void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) {
 	PhysicalObject* target = NULL;
-	if (getObjectManager()->objectReached(mCamera->getDerivedPosition(), mCamera->getDerivedDirection(), 5, target)) {
+	if (getObjectManager()->objectReached(mCamera->getDerivedPosition(), mCamera->getDerivedDirection(), 10, target)) {
 		target->getEntity()->setVisible(false);
 		std::cout << target->getName() << std::endl;
 	}
