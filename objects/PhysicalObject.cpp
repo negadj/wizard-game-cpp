@@ -6,6 +6,7 @@
  */
 
 #include "PhysicalObject.h"
+#include "ObjectManager.h"
 
 PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name, int id, Ogre::String meshName, Ogre::String description) :
 	mObjectManager(objectManager),
