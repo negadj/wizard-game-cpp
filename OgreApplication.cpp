@@ -14,6 +14,7 @@ OgreApplication::OgreApplication() :
 	mInputManager(0),
 	mMouse(0),
 	mKeyboard(0),
+	mDebugOverlay(0),
 	mPlayer(0),
 	mContinue(true)
 {}
@@ -39,6 +40,7 @@ bool OgreApplication::start() {
 
 	mSceneMgr = mRoot->createSceneManager("DefaultSceneManager", "Wizard Scene Manager");
 	mObjectMgr = new ObjectManager(mSceneMgr);
+	mDebugOverlay = OverlayManager::getSingleton().getByName("Wizard/DebugOverlay");
 
 	createCamera();
 	createViewPort();
@@ -124,6 +126,12 @@ bool OgreApplication::frameRenderingQueued(const FrameEvent& evt) {
     mKeyboard->capture();
     mMouse->capture();
 
+    // On met à jour les informations de debug si besoin
+    if (mDebugOverlay->isVisible()) {
+    	updateDebugInfo(evt.timeSinceLastFrame);
+    	}
+
+    // Calcul des modifications sur les objets de la scène
     mObjectMgr->updateObjects(evt.timeSinceLastFrame);
 
     return mContinue;
@@ -194,8 +202,13 @@ bool OgreApplication::keyPressed(const OIS::KeyEvent &e) {
 		break;
 	case OIS::KC_F8: //Toggle bounding boxes
 		mSceneMgr->showBoundingBoxes(!mSceneMgr->getShowBoundingBoxes());
+		break;
+	case OIS::KC_F3: //Toggle debug overlay
+		toggleDebugOverlay();
+		break;
 	default:
 		mPlayer->injectKeyDown(e);
+		break;
 	}
 
 	return true;
@@ -205,4 +218,31 @@ bool OgreApplication::keyReleased(const OIS::KeyEvent &e) {
 	mPlayer->injectKeyUp(e);
 
 	return true;
+}
+
+void OgreApplication::toggleDebugOverlay() {
+	if (mDebugOverlay->isVisible())
+		mDebugOverlay->hide();
+	else
+		mDebugOverlay->show();
+}
+
+void OgreApplication::updateDebugInfo(Real deltaTime) {
+	OverlayContainer* debugPanel = mDebugOverlay->getChild("Wizard/DebugPanel");
+
+	// Mise à jour des FPS
+	debugPanel->getChild("Wizard/DebugPanel/Fps")->setCaption(
+			"FPS : " + StringConverter::toString(int((double)1.0/(double)deltaTime)));
+
+
+	// Mise à jour de la position
+	Real x = mPlayer->getNode()->getPosition().x,
+			y = mPlayer->getNode()->getPosition().y,
+			z = mPlayer->getNode()->getPosition().z;
+	debugPanel->getChild("Wizard/DebugPanel/Xposition")->setCaption(
+			"X : " + StringConverter::toString(x));
+	debugPanel->getChild("Wizard/DebugPanel/Yposition")->setCaption(
+				"Y : " + StringConverter::toString(y));
+	debugPanel->getChild("Wizard/DebugPanel/Zposition")->setCaption(
+				"Z : " + StringConverter::toString(z));
 }

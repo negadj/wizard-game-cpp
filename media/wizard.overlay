@@ -1,0 +1,118 @@
+Wizard/DebugOverlay
+{
+	zorder 500
+	// Stats block
+	container BorderPanel(Wizard/DebugPanel)
+	{
+		metrics_mode pixels
+		vert_align top
+		left 10 
+		top 200
+		width 300
+		height 300
+//		material Core/StatsBlockCenter
+//       	border_size 1 1 1 1
+//        	border_material Core/StatsBlockBorder
+//        	border_topleft_uv     0.0000 1.0000 0.0039 0.9961
+//	    	border_top_uv         0.0039 1.0000 0.9961 0.9961
+//	    	border_topright_uv    0.9961 1.0000 1.0000 0.9961
+//	    	border_left_uv        0.0000 0.9961 0.0039 0.0039
+//	    	border_right_uv       0.9961 0.9961 1.0000 0.0039
+//	    	border_bottomleft_uv  0.0000 0.0039 0.0039 0.0000
+//       	border_bottom_uv      0.0039 0.0039 0.9961 0.0000
+//	    	border_bottomright_uv 0.9961 0.0039 1.0000 0.0000
+
+//		container Panel(Wizard/DebugPanel/BreakPanel)
+//		{
+//			metrics_mode pixels
+//			left 5 
+//			top 22
+//			width 210
+//			height 1
+//			material Core/StatsBreak
+//		}
+		    
+//		element TextArea(Wizard/DebugPanel/FpsLabel)
+//		{
+//			metrics_mode pixels
+//			left 5
+//			top 5
+//			width 90
+//			height 30
+//			font_name BlueHighway
+//			char_height 20
+//			caption "FPS :"
+//			colour_top 1 1 0.7
+//			colour_bottom 1 1 0.7
+//		}
+		
+		element TextArea(Wizard/DebugPanel/Fps)
+		{
+			metrics_mode pixels
+			left 0
+			top 150
+			width 90
+			height 30
+			font_name BlueHighway
+			char_height 20
+			caption FPS:
+			colour_top 1 1 1
+			colour_bottom 1 1 1
+		}
+		
+		element TextArea(Wizard/DebugPanel/Xposition)
+		{
+			metrics_mode pixels
+			left 0
+			top 0
+			width 90
+			height 30
+			font_name BlueHighway
+			char_height 20
+			caption FPS:
+			colour_top 1 1 1
+			colour_bottom 1 1 1
+		}
+		
+		element TextArea(Wizard/DebugPanel/Yposition)
+		{
+			metrics_mode pixels
+			left 0
+			top 40
+			width 90
+			height 30
+			font_name BlueHighway
+			char_height 20
+			caption FPS:
+			colour_top 1 1 1
+			colour_bottom 1 1 1
+		}
+		
+		element TextArea(Wizard/DebugPanel/Zposition)
+		{
+			metrics_mode pixels
+			left 0
+			top 80
+			width 90
+			height 30
+			font_name BlueHighway
+			char_height 20
+			caption FPS:
+			colour_top 1 1 1
+			colour_bottom 1 1 1
+		}
+		
+//		element TextArea(Wizard/DebugPanel/DebugText)
+//		{
+//			metrics_mode pixels
+//			left 230
+//			top 70
+//			width 200
+//			height 30
+//			font_name BlueHighway
+//			char_height 16
+//			colour_top 0.5 0.7 0.5
+//			colour_bottom 0.3 0.5 0.3
+//		}		
+	}
+}

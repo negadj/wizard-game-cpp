@@ -36,6 +36,9 @@ private:
 	bool keyPressed(const OIS::KeyEvent &e);
 	bool keyReleased(const OIS::KeyEvent &e);
 
+	void toggleDebugOverlay();
+	void updateDebugInfo(Real deltaTime);
+
 	Root* mRoot;
 	RenderWindow* mWindow;
 	SceneManager* mSceneMgr;
@@ -43,11 +46,11 @@ private:
 	Viewport* mViewPort;
 	ObjectManager* mObjectMgr;
 
-//	MOC::CollisionTools* mCollisionsMgr;
-
 	OIS::InputManager*  mInputManager;
 	OIS::Mouse*         mMouse;
 	OIS::Keyboard*      mKeyboard;
+
+	Overlay* mDebugOverlay;
 
 	Player* mPlayer;
 	bool mContinue;
