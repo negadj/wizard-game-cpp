@@ -7,6 +7,8 @@ Author: Gecko
 #include <Ogre.h>
 #include <OIS.h>
 #include "objects/ObjectManager.h"
+#include "CEGUI/CEGUI.h"
+#include "CEGUI/RendererModules/Ogre/CEGUIOgreRenderer.h"
 
 using namespace Ogre;
 
@@ -24,6 +26,7 @@ private:
 	void createViewPort();
 	void createTrayManager();
 	void createFrameListener();
+	void setupGUI();
 
 	bool frameRenderingQueued(const Ogre::FrameEvent& evt);
 	void startOIS();
@@ -38,6 +41,8 @@ private:
 
 	void toggleDebugOverlay();
 	void updateDebugInfo(Real deltaTime);
+	void toggleMenu();
+	bool quit(const CEGUI::EventArgs &e);
 
 	Root* mRoot;
 	RenderWindow* mWindow;
@@ -51,9 +56,12 @@ private:
 	OIS::Keyboard*      mKeyboard;
 
 	Overlay* mDebugOverlay;
+	CEGUI::OgreRenderer* mCeguiRenderer;
+	CEGUI::Window* mMenuSheet;
 
 	Player* mPlayer;
 	bool mContinue;
+	bool mLocked;
 };
 
 #endif
