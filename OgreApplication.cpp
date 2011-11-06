@@ -4,24 +4,6 @@ Author: Gecko
 #include "OgreApplication.h"
 #include "objects/Player.h"
 
-// Méthode statique pour convertir les évènements de souris de OIS à CEGUI
-CEGUI::MouseButton convertButton(OIS::MouseButtonID buttonID) {
-    switch (buttonID)
-    {
-    case OIS::MB_Left:
-        return CEGUI::LeftButton;
-
-    case OIS::MB_Right:
-        return CEGUI::RightButton;
-
-    case OIS::MB_Middle:
-        return CEGUI::MiddleButton;
-
-    default:
-        return CEGUI::LeftButton;
-    }
-}
-
 OgreApplication::OgreApplication() :
 	mRoot(NULL),
 	mWindow(NULL),
@@ -32,9 +14,8 @@ OgreApplication::OgreApplication() :
 	mInputManager(NULL),
 	mMouse(NULL),
 	mKeyboard(NULL),
+	mMenuMgr(this),
 	mDebugOverlay(NULL),
-	mCeguiRenderer(NULL),
-	mMenuSheet(NULL),
 	mPlayer(NULL),
 	mContinue(true),
 	mLocked(false)
@@ -65,8 +46,8 @@ bool OgreApplication::start() {
 
 	createCamera();
 	createViewPort();
+	mMenuMgr.setup();
 	createScene();
-	setupGUI();
 	createFrameListener();
 
 	mPlayer = mObjectMgr->createPlayer(mCamera);
@@ -204,12 +185,7 @@ void OgreApplication::windowClosed(RenderWindow* rw) {
 }
 
 bool OgreApplication::mouseMoved(const OIS::MouseEvent &e) {
-	CEGUI::System &sys = CEGUI::System::getSingleton();
-	sys.injectMouseMove(e.state.X.rel, e.state.Y.rel);
-	// Scroll wheel.
-	if (e.state.Z.rel)
-	    sys.injectMouseWheelChange(e.state.Z.rel / 120.0f); //120 = nombre magique à ne pas changer.
-
+	mMenuMgr.mouseMoved(e);
 	if (!mLocked)
 		mPlayer->injectMouseMove(e);
 
@@ -217,7 +193,7 @@ bool OgreApplication::mouseMoved(const OIS::MouseEvent &e) {
 }
 
 bool OgreApplication::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id) {
-	CEGUI::System::getSingleton().injectMouseButtonDown(convertButton(id));
+	mMenuMgr.mouseButtonDown(id);
 	if (!mLocked)
 		mPlayer->injectMouseDown(e, id);
 
@@ -225,21 +201,16 @@ bool OgreApplication::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID 
 }
 
 bool OgreApplication::mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id) {
-	CEGUI::System::getSingleton().injectMouseButtonUp(convertButton(id));
+	mMenuMgr.mouseButtonUp(id);
 	return true;
 }
 
 bool OgreApplication::keyPressed(const OIS::KeyEvent &e) {
-	CEGUI::System &sys = CEGUI::System::getSingleton();
-	sys.injectKeyDown(e.key);
-	sys.injectChar(e.text);
+	mMenuMgr.keyPressed(e);
 
 	switch (e.key) {
 	case OIS::KC_ESCAPE:
-		toggleMenu();
-		break;
-	case OIS::KC_F4:
-		mContinue = false;
+		mMenuMgr.toggleMenu();
 		break;
 	case OIS::KC_F8: //Toggle bounding boxes
 		mSceneMgr->showBoundingBoxes(!mSceneMgr->getShowBoundingBoxes());
@@ -257,7 +228,7 @@ bool OgreApplication::keyPressed(const OIS::KeyEvent &e) {
 }
 
 bool OgreApplication::keyReleased(const OIS::KeyEvent &e) {
-	CEGUI::System::getSingleton().injectKeyUp(e.key);
+	mMenuMgr.keyReleased(e);
 
 	if (!mLocked)
 		mPlayer->injectKeyUp(e);
@@ -290,42 +261,4 @@ void OgreApplication::updateDebugInfo(Real deltaTime) {
 				"Y : " + StringConverter::toString(y));
 	debugPanel->getChild("Wizard/DebugPanel/Zposition")->setCaption(
 				"Z : " + StringConverter::toString(z));
-}
-
-void OgreApplication::setupGUI() {
-	mCeguiRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
-	CEGUI::Imageset::setDefaultResourceGroup("Imagesets");
-	CEGUI::Font::setDefaultResourceGroup("Fonts");
-	CEGUI::Scheme::setDefaultResourceGroup("Schemes");
-	CEGUI::WidgetLookManager::setDefaultResourceGroup("LookNFeel");
-	CEGUI::WindowManager::setDefaultResourceGroup("Layouts");
-
-	CEGUI::SchemeManager::getSingleton().create("TaharezLook.scheme");
-	CEGUI::System::getSingleton().setDefaultMouseCursor("TaharezLook", "MouseArrow");
-
-	//Test
-	CEGUI::WindowManager &wmgr = CEGUI::WindowManager::getSingleton();
-	mMenuSheet = wmgr.createWindow("DefaultWindow", "WizardMenu/Sheet");
-	CEGUI::Window *quit = wmgr.createWindow("TaharezLook/Button", "WizardMenu/QuitButton");
-	quit->setText("Quit");
-	quit->setSize(CEGUI::UVector2(CEGUI::UDim(0.2, 0), CEGUI::UDim(0.08, 0)));
-	quit->setPosition(CEGUI::UVector2(CEGUI::UDim(0.4, 0), CEGUI::UDim(0.4, 0)));
-	mMenuSheet->addChildWindow(quit);
-	quit->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&OgreApplication::quit, this));
-}
-
-void OgreApplication::toggleMenu() {
-	if (CEGUI::System::getSingleton().getGUISheet() == mMenuSheet) {
-//		CEGUI::System::getSingleton().setGUISheet(NULL);
-		mLocked = false;
-	}
-	else {
-		mLocked = true;
-		CEGUI::System::getSingleton().setGUISheet(mMenuSheet);
-	}
-}
-
-bool OgreApplication::quit(const CEGUI::EventArgs &e) {
-	mContinue = false;
-	return true;
 }

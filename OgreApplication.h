@@ -7,13 +7,14 @@ Author: Gecko
 #include <Ogre.h>
 #include <OIS.h>
 #include "objects/ObjectManager.h"
-#include "CEGUI/CEGUI.h"
-#include "CEGUI/RendererModules/Ogre/CEGUIOgreRenderer.h"
+#include "MenuManager.h"
 
 using namespace Ogre;
 
 class OgreApplication : public FrameListener, public WindowEventListener,
 public OIS::MouseListener, public OIS::KeyListener {
+friend class MenuManager;
+
 public:
 	OgreApplication();
 	virtual ~OgreApplication();
@@ -41,8 +42,6 @@ private:
 
 	void toggleDebugOverlay();
 	void updateDebugInfo(Real deltaTime);
-	void toggleMenu();
-	bool quit(const CEGUI::EventArgs &e);
 
 	Root* mRoot;
 	RenderWindow* mWindow;
@@ -55,9 +54,8 @@ private:
 	OIS::Mouse*         mMouse;
 	OIS::Keyboard*      mKeyboard;
 
+	MenuManager mMenuMgr;
 	Overlay* mDebugOverlay;
-	CEGUI::OgreRenderer* mCeguiRenderer;
-	CEGUI::Window* mMenuSheet;
 
 	Player* mPlayer;
 	bool mContinue;
