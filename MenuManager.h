@@ -33,16 +33,34 @@ public:
 	bool mouseButtonUp(OIS::MouseButtonID id);
 	bool keyPressed(const OIS::KeyEvent &e);
 	bool keyReleased(const OIS::KeyEvent &e);
-	void toggleMenu();
+	void togglePauseMenu();
 
 private:
+	/**
+	 * Quitte le jeu.
+	 */
 	bool quit(const CEGUI::EventArgs &e);
+	/**
+	 * Retour au menu précédent.
+	 */
+	bool back(const CEGUI::EventArgs &e);
+	/**
+	 * Affiche le menu des options
+	 */
+	bool displaySettings(const CEGUI::EventArgs &e);
+	/**
+	 * Change le réglage des ombres
+	 */
+	bool configureShadows(const CEGUI::EventArgs &e);
 
 	OgreApplication* mApp;
 	CEGUI::System* mSys;
 	CEGUI::OgreRenderer* mCeguiRenderer;
 	CEGUI::Window* mPauseSheet;
 	CEGUI::Window* mBlankSheet;
+	CEGUI::Window* mSettingsSheet;
+	CEGUI::Window* mLastSheet;
+
 };
 
 #endif /* MENUMANAGER_H_ */

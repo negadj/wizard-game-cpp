@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<GUILayout >
+        <Window Type="DefaultGUISheet" Name="Settings" >
+            <Window Type="TaharezLook/Button" Name="Settings/Shadows" >
+                <Property Name="Text" Value="Ombres"/>
+                <Property Name="UnifiedSize" Value="{{0.2,0},{0.08,0}}" />
+                <Property Name="UnifiedPosition" Value="{{0.4,0},{0.3,0}}" />
+            </Window>
+            <Window Type="TaharezLook/Button" Name="Settings/Back" >
+                <Property Name="Text" Value="Retour"/>
+                <Property Name="UnifiedSize" Value="{{0.2,0},{0.08,0}}" />
+                <Property Name="UnifiedPosition" Value="{{0.4,0},{0.6,0}}" />
+            </Window>
+        </Window>
+</GUILayout>

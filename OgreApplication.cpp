@@ -210,7 +210,7 @@ bool OgreApplication::keyPressed(const OIS::KeyEvent &e) {
 
 	switch (e.key) {
 	case OIS::KC_ESCAPE:
-		mMenuMgr.toggleMenu();
+		mMenuMgr.togglePauseMenu();
 		break;
 	case OIS::KC_F8: //Toggle bounding boxes
 		mSceneMgr->showBoundingBoxes(!mSceneMgr->getShowBoundingBoxes());

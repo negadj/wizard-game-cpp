@@ -2,10 +2,20 @@
 
 <GUILayout >
         <Window Type="DefaultGUISheet" Name="Pause" >
+            <Window Type="TaharezLook/Button" Name="Pause/Back" >
+                <Property Name="Text" Value="Reprendre"/>
+                <Property Name="UnifiedSize" Value="{{0.2,0},{0.08,0}}" />
+                <Property Name="UnifiedPosition" Value="{{0.4,0},{0.2,0}}" />
+            </Window>
+            <Window Type="TaharezLook/Button" Name="Pause/Settings" >
+                <Property Name="Text" Value="Options"/>
+                <Property Name="UnifiedSize" Value="{{0.2,0},{0.08,0}}" />
+                <Property Name="UnifiedPosition" Value="{{0.4,0},{0.4,0}}" />
+            </Window>
             <Window Type="TaharezLook/Button" Name="Pause/Quit" >
                 <Property Name="Text" Value="Quitter"/>
                 <Property Name="UnifiedSize" Value="{{0.2,0},{0.08,0}}" />
-                <Property Name="UnifiedPosition" Value="{{0.4,0},{0.4,0}}" />
+                <Property Name="UnifiedPosition" Value="{{0.4,0},{0.6,0}}" />
             </Window>
         </Window>
 </GUILayout>
