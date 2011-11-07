@@ -33,7 +33,8 @@ MenuManager::MenuManager(OgreApplication* app) :
 	mPauseSheet(NULL),
 	mBlankSheet(NULL),
 	mSettingsSheet(NULL),
-	mLastSheet(NULL)
+	mLastSheet(NULL),
+	mDarkOverlay(NULL)
 {}
 
 MenuManager::~MenuManager() {}
@@ -68,6 +69,8 @@ bool MenuManager::keyReleased(const OIS::KeyEvent &e) {
 }
 
 void MenuManager::setup() {
+	mDarkOverlay = Ogre::OverlayManager::getSingleton().getByName("Wizard/DarkOverlay");
+
 	mCeguiRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
 	mSys = CEGUI::System::getSingletonPtr();
 	CEGUI::Imageset::setDefaultResourceGroup("GUI");
@@ -105,11 +108,13 @@ void MenuManager::togglePauseMenu() {
 	if (mSys->getGUISheet() == mPauseSheet) {
 		mApp->mLocked = false;
 		mSys->setGUISheet(mBlankSheet);
+		mDarkOverlay->hide();
 		CEGUI::MouseCursor::getSingleton().hide();
 	}
 	else {
 		mApp->mLocked = true;
 		mSys->setGUISheet(mPauseSheet);
+		mDarkOverlay->show();
 		CEGUI::MouseCursor::getSingleton().show();
 	}
 }
@@ -143,7 +148,7 @@ bool MenuManager::configureShadows(const CEGUI::EventArgs &e) {
 		mApp->mSceneMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE);
 		break;
 	case SHADOWTYPE_TEXTURE_ADDITIVE:
-		button->setText("Ombres : Précises");
+		button->setText((CEGUI::utf8*)"Ombres : Précises");
 		mApp->mSceneMgr->setShadowTechnique(SHADOWTYPE_STENCIL_ADDITIVE);
 		break;
 	default:

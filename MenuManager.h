@@ -8,9 +8,10 @@
 #ifndef MENUMANAGER_H_
 #define MENUMANAGER_H_
 
-#include "CEGUI.h"
-#include "CEGUI/RendererModules/Ogre/CEGUIOgreRenderer.h"
+#include <CEGUI.h>
+#include <CEGUI/RendererModules/Ogre/CEGUIOgreRenderer.h>
 #include <OIS.h>
+#include <Ogre.h>
 
 //forward declaration
 class OgreApplication;
@@ -60,6 +61,7 @@ private:
 	CEGUI::Window* mBlankSheet;
 	CEGUI::Window* mSettingsSheet;
 	CEGUI::Window* mLastSheet;
+	Ogre::Overlay* mDarkOverlay; // Utilisé pour griser l'écran lorsqu'un menu s'affiche
 
 };
 
