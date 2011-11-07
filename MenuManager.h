@@ -39,8 +39,10 @@ private:
 	bool quit(const CEGUI::EventArgs &e);
 
 	OgreApplication* mApp;
+	CEGUI::System* mSys;
 	CEGUI::OgreRenderer* mCeguiRenderer;
 	CEGUI::Window* mPauseSheet;
+	CEGUI::Window* mBlankSheet;
 };
 
 #endif /* MENUMANAGER_H_ */

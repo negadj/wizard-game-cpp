@@ -28,35 +28,35 @@ CEGUI::MouseButton convertButton(OIS::MouseButtonID buttonID) {
 
 MenuManager::MenuManager(OgreApplication* app) :
 	mApp(app),
+	mSys(NULL),
 	mCeguiRenderer(NULL),
-	mPauseSheet(NULL)
+	mPauseSheet(NULL),
+	mBlankSheet(NULL)
 {}
 
 MenuManager::~MenuManager() {}
 
 bool MenuManager::mouseMoved(const OIS::MouseEvent &e) {
-	CEGUI::System& sys = CEGUI::System::getSingleton();
-	sys.injectMouseMove(e.state.X.rel, e.state.Y.rel);
+	mSys->injectMouseMove(e.state.X.rel, e.state.Y.rel);
 	// Scroll wheel.
 	if (e.state.Z.rel)
-		sys.injectMouseWheelChange(e.state.Z.rel / 120.0f); //120 = nombre magique à ne pas changer.
+		mSys->injectMouseWheelChange(e.state.Z.rel / 120.0f); //120 = nombre magique à ne pas changer.
 	return true;
 }
 
 bool MenuManager::mouseButtonDown(OIS::MouseButtonID id) {
-	CEGUI::System::getSingleton().injectMouseButtonDown(convertButton(id));
+	mSys->injectMouseButtonDown(convertButton(id));
 	return true;
 }
 
 bool MenuManager::mouseButtonUp(OIS::MouseButtonID id) {
-	CEGUI::System::getSingleton().injectMouseButtonUp(convertButton(id));
+	mSys->injectMouseButtonUp(convertButton(id));
 	return true;
 }
 
 bool MenuManager::keyPressed(const OIS::KeyEvent &e) {
-	CEGUI::System& sys = CEGUI::System::getSingleton();
-	sys.injectKeyDown(e.key);
-	sys.injectChar(e.text);
+	mSys->injectKeyDown(e.key);
+	mSys->injectChar(e.text);
 	return true;
 }
 
@@ -67,33 +67,35 @@ bool MenuManager::keyReleased(const OIS::KeyEvent &e) {
 
 void MenuManager::setup() {
 	mCeguiRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
+	mSys = CEGUI::System::getSingletonPtr();
 	CEGUI::Imageset::setDefaultResourceGroup("Imagesets");
 	CEGUI::Font::setDefaultResourceGroup("Fonts");
 	CEGUI::Scheme::setDefaultResourceGroup("Schemes");
 	CEGUI::WidgetLookManager::setDefaultResourceGroup("LookNFeel");
 	CEGUI::WindowManager::setDefaultResourceGroup("Layouts");
-
 	CEGUI::SchemeManager::getSingleton().create("TaharezLook.scheme");
-	CEGUI::System::getSingleton().setDefaultMouseCursor("TaharezLook", "MouseArrow");
+	mSys->setDefaultMouseCursor("TaharezLook", "MouseArrow");
 
-	//Test
 	CEGUI::WindowManager &wmgr = CEGUI::WindowManager::getSingleton();
-	mPauseSheet = wmgr.createWindow("DefaultWindow", "WizardMenu/Sheet");
-	CEGUI::Window *quit = wmgr.createWindow("TaharezLook/Button", "WizardMenu/QuitButton");
-	quit->setText("Quit");
-	quit->setSize(CEGUI::UVector2(CEGUI::UDim(0.2, 0), CEGUI::UDim(0.08, 0)));
-	quit->setPosition(CEGUI::UVector2(CEGUI::UDim(0.4, 0), CEGUI::UDim(0.4, 0)));
-	mPauseSheet->addChildWindow(quit);
-	quit->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&MenuManager::quit, this));
+
+	//Configuration d'une GUI vierge
+	mBlankSheet = wmgr.loadWindowLayout("GUI/Blank.layout");
+
+	// Configuration du menu Pause
+	mPauseSheet = wmgr.loadWindowLayout("GUI/Pause.layout");
+	mPauseSheet->getChild("Pause/Quit")->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&MenuManager::quit, this));
 }
 
 void MenuManager::toggleMenu() {
-	if (CEGUI::System::getSingleton().getGUISheet() == mPauseSheet) {
+	if (mSys->getGUISheet() == mPauseSheet) {
 		mApp->mLocked = false;
+		mSys->setGUISheet(mBlankSheet);
+		CEGUI::MouseCursor::getSingleton().hide();
 	}
 	else {
 		mApp->mLocked = true;
-		CEGUI::System::getSingleton().setGUISheet(mPauseSheet);
+		mSys->setGUISheet(mPauseSheet);
+		CEGUI::MouseCursor::getSingleton().show();
 	}
 }
 
