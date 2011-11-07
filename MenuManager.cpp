@@ -70,11 +70,11 @@ bool MenuManager::keyReleased(const OIS::KeyEvent &e) {
 void MenuManager::setup() {
 	mCeguiRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
 	mSys = CEGUI::System::getSingletonPtr();
-	CEGUI::Imageset::setDefaultResourceGroup("Imagesets");
-	CEGUI::Font::setDefaultResourceGroup("Fonts");
-	CEGUI::Scheme::setDefaultResourceGroup("Schemes");
-	CEGUI::WidgetLookManager::setDefaultResourceGroup("LookNFeel");
-	CEGUI::WindowManager::setDefaultResourceGroup("Layouts");
+	CEGUI::Imageset::setDefaultResourceGroup("GUI");
+	CEGUI::Font::setDefaultResourceGroup("GUI");
+	CEGUI::Scheme::setDefaultResourceGroup("GUI");
+	CEGUI::WidgetLookManager::setDefaultResourceGroup("GUI");
+	CEGUI::WindowManager::setDefaultResourceGroup("GUI");
 	CEGUI::SchemeManager::getSingleton().create("TaharezLook.scheme");
 	mSys->setDefaultMouseCursor("TaharezLook", "MouseArrow");
 
