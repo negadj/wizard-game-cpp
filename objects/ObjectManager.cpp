@@ -26,26 +26,34 @@ void ObjectManager::moveWithCollisions(PhysicalObject* &obj, const Ogre::Real de
 {
     // Calcul des nouvelles positions des objets.
     // On gère les éventuelles collisions
-    if(obj->getSpeed() != Ogre::Vector3::ZERO){
-    	int counter =0;
-        float dist = 0.0f;
-        Ogre::Vector3 destination = Ogre::Vector3::ZERO;
-        Ogre::MovableObject *target;
-        Ogre::Vector3 polygon_normal;
-        Ogre::Vector3 distance = obj->getSpeed() * deltaTime;
-        while(mCollisionTools.raycastFromPoint(obj->getNode()->getPosition(), distance.normalisedCopy(), destination, target, dist, polygon_normal)
-        	&& dist < distance.length())
-        {
-        	// TODO: Des fois, la boucle se lock. Un compteur permet d'éviter un freeze complet
-        	if (counter > 10)
-        		break;
-        	//std::cout << target->getName() << std::endl;
-        	if(distance.dotProduct(polygon_normal) < 0)
-        		polygon_normal = -polygon_normal;
-        	distance -= polygon_normal.dotProduct(distance - distance.normalisedCopy() * dist) * polygon_normal; //destination);
-        	counter+=1;
-        }
+    if(obj->getSpeed() != Ogre::Vector3::ZERO && deltaTime != 0){
+    	Ogre::Vector3 distance = obj->getSpeed() * deltaTime;
 
+    	const std::vector<std::pair<Ogre::Vector3,Ogre::Vector3> > skeleton = obj->getSkeleton();
+
+        for(std::vector<std::pair<Ogre::Vector3,Ogre::Vector3> >::const_iterator it = skeleton.begin(); it != skeleton.end(); ++it)
+        {
+        	if(it->second.x*distance.x <= 0 && it->second.y*distance.y <= 0 && it->second.z*distance.z <= 0 )
+        		continue;
+        	Ogre::Vector3 point = obj->getNode()->getPosition() + it->first;
+        	int counter =0;
+            float dist = 0.0f;
+            Ogre::Vector3 destination = Ogre::Vector3::ZERO;
+            Ogre::MovableObject *target;
+            Ogre::Vector3 polygon_normal;
+        	while(mCollisionTools.raycastFromPoint( point, distance.normalisedCopy(), destination, target, dist, polygon_normal, obj->getEntity(), 0xFFFFFFFF)
+        			&& dist < distance.length())
+        	{
+        		std::cout <<target->getName() << " " << it->first << " " << counter << std::endl;
+        	// TODO: Parfois, la boucle se lock. Un compteur permet d'éviter un freeze complet
+        		if (counter > 10)
+        			distance = Ogre::Vector3::ZERO;
+        		if(distance.dotProduct(polygon_normal) < 0)
+        			polygon_normal = -polygon_normal;
+        		distance -= polygon_normal.dotProduct(distance - distance.normalisedCopy() * dist) * polygon_normal; //destination);
+        		counter+=1;
+        	}
+        }
 
         obj->getNode()->translate(distance); //TODO: TS_WORLD ?
         obj->setSpeed(distance/deltaTime);
@@ -103,8 +111,8 @@ Block* ObjectManager::createBlock(const Ogre::Vector3 position) {
 }
 
 void ObjectManager::loadScene() {
-	for (int i=0; i<100; i++) {
-		for (int j=0; j<100; j++) {
+	for (int i=0; i<50; i++) {
+		for (int j=0; j<50; j++) {
 			for (int k=0; k<2; k++) {
 				if (rand() < (RAND_MAX/3)) {
 					createBlock(Vector3(i,k,-j) * 2);
@@ -112,4 +120,5 @@ void ObjectManager::loadScene() {
 			}
 		}
 	}
+	return;
 }

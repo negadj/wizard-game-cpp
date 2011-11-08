@@ -29,6 +29,7 @@ Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 	getNode()->setInitialState();
 	setupBody(cam->getSceneManager());
 	setupCamera();
+	setupSkeleton(Ogre::Vector3(-0.45,0,-0.45),Ogre::Vector3(0.45,1.8,0.45),0.45);
 	}
 
 Player::~Player() {}
@@ -36,7 +37,7 @@ Player::~Player() {}
 void Player::update(Real deltaTime) {
 	/* Mise à jour de la vitesse du joueur en fonction des touches,
 	 dans le référentiel global. */
-	setSpeed((1-3*deltaTime)*getSpeed() + deltaTime*(Ogre::Vector3::NEGATIVE_UNIT_Y*5 + 5*mVelocity * (getNode()->getOrientation() * mDirection.normalisedCopy())));
+	setSpeed((1-10*deltaTime)*getSpeed() + deltaTime*(Ogre::Vector3::NEGATIVE_UNIT_Y*20+ 10*mVelocity * (getNode()->getOrientation() * mDirection.normalisedCopy())));
 }
 
 void Player::injectKeyDown(const OIS::KeyEvent& evt) {
@@ -58,7 +59,7 @@ void Player::injectKeyDown(const OIS::KeyEvent& evt) {
 		mDirection.x = 1;
 		break;
 	case OIS::KC_SPACE:
-		addSpeed(Ogre::Vector3::UNIT_Y * 10);
+		addSpeed(Ogre::Vector3::UNIT_Y * 50);
 		break;
 	default:
 		break;
@@ -82,8 +83,11 @@ void Player::injectMouseMove(const OIS::MouseEvent& evt) {
 	getNode()->yaw(-0.2*Degree(evt.state.X.rel));
 	Radian pitch = mCameraRootNode->_getDerivedOrientation().getPitch();
 	Radian deltaPitch = -0.2*Degree(evt.state.Y.rel);
-	if (pitch + deltaPitch < Degree(60) && pitch + deltaPitch > Degree(-60))
-		mCameraRootNode->pitch(deltaPitch);
+	if(pitch + deltaPitch > Degree(60))
+		deltaPitch =  Degree(60) - pitch;
+	else if (pitch + deltaPitch < Degree(-60))
+		deltaPitch = Degree(-60) - pitch;
+	mCameraRootNode->pitch(deltaPitch);
 }
 
 void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) {

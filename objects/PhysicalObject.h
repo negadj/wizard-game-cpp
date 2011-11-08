@@ -31,6 +31,7 @@ private:
 	int mSolidity;
 	float mDensity;
 	int mIntegrity; //~= points de vie pour un objet
+	std::vector<std::pair<Ogre::Vector3,Ogre::Vector3> > mSkeleton; // ensemble de points servant à la détection de collisions
 
 protected:
 	/*
@@ -41,6 +42,7 @@ protected:
 	/* Met à jour tout ce qui concerne l'objet hormis les déplacements (qui sont gérés par l'ObjectManager)*/
 	virtual void update(Ogre::Real deltaTime);
 	void setEntity(Ogre::Entity *mEntity);
+	void setupSkeleton(Ogre::Vector3 cornerMin, Ogre::Vector3 cornerMax, Ogre::Real step);
 
 public:
 	Ogre::Vector3 getAcceleration() const;
@@ -62,6 +64,7 @@ public:
     Ogre::String getDescription() const;
     void setDescription(Ogre::String mDescription);
     ObjectManager* getObjectManager() const;
+    const std::vector<std::pair<Ogre::Vector3,Ogre::Vector3> >& getSkeleton();
 
 };
 
