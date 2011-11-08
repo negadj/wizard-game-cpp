@@ -73,19 +73,19 @@ CollisionTools::~CollisionTools()
 		delete mTSMRaySceneQuery;
 }
 
-bool CollisionTools::raycastFromCamera(Ogre::RenderWindow* rw, Ogre::Camera* camera, const Ogre::Vector2 &mousecoords, Ogre::Vector3 &result, Ogre::Entity* &target,float &closest_distance, Ogre::Vector3 &polygon_normal, const Ogre::uint32 queryMask)
+bool CollisionTools::raycastFromCamera(Ogre::RenderWindow* rw, Ogre::Camera* camera, const Ogre::Vector2 &mousecoords, Ogre::Vector3 &result, Ogre::Entity* &target,float &closest_distance, Ogre::Vector3 &polygon_normal, const Ogre::Entity* source, const Ogre::uint32 queryMask)
 {
-	return raycastFromCamera(rw, camera, mousecoords, result, (Ogre::MovableObject*&) target, closest_distance, polygon_normal, queryMask);
+	return raycastFromCamera(rw, camera, mousecoords, result, (Ogre::MovableObject*&) target, closest_distance, polygon_normal,source, queryMask) ;
 }
 
-bool CollisionTools::raycastFromCamera(Ogre::RenderWindow* rw, Ogre::Camera* camera, const Ogre::Vector2 &mousecoords, Ogre::Vector3 &result, Ogre::MovableObject* &target,float &closest_distance, Ogre::Vector3 &polygon_normal, const Ogre::uint32 queryMask)
+bool CollisionTools::raycastFromCamera(Ogre::RenderWindow* rw, Ogre::Camera* camera, const Ogre::Vector2 &mousecoords, Ogre::Vector3 &result, Ogre::MovableObject* &target,float &closest_distance, Ogre::Vector3 &polygon_normal, const Ogre::Entity* source, const Ogre::uint32 queryMask)
 {
 	// Create the ray to test
 	Ogre::Real tx = mousecoords.x / (Ogre::Real) rw->getWidth();
 	Ogre::Real ty = mousecoords.y / (Ogre::Real) rw->getHeight();
 	Ogre::Ray ray = camera->getCameraToViewportRay(tx, ty);
 
-	return raycast(ray, result, target, closest_distance, polygon_normal, queryMask);
+	return raycast(ray, result, target, closest_distance, polygon_normal,source, queryMask);
 }
 
 bool CollisionTools::collidesWithEntity(const Ogre::Vector3& fromPoint, const Ogre::Vector3& toPoint, const float collisionRadius, const float rayHeightLevel, const Ogre::uint32 queryMask)
@@ -100,7 +100,7 @@ bool CollisionTools::collidesWithEntity(const Ogre::Vector3& fromPoint, const Og
 	Ogre::MovableObject* myObject = NULL;
 	float distToColl = 0.0f;
 
-	if (raycastFromPoint(fromPointAdj, normal, myResult, myObject, distToColl, polygon_normal, queryMask))
+	if (raycastFromPoint(fromPointAdj, normal, myResult, myObject, distToColl, polygon_normal,NULL, queryMask))
 	{
 		distToColl -= collisionRadius;
 		return (distToColl <= distToDest);
@@ -145,7 +145,7 @@ void CollisionTools::calculateY(Ogre::SceneNode *n, const bool doTerrainCheck, c
 
 	float terrY = 0, colY = 0, colY2 = 0;
 
-	if( raycastFromPoint(Ogre::Vector3(x,y,z),Ogre::Vector3::NEGATIVE_UNIT_Y,myResult,myObject, distToColl,polygon_normal, queryMask)){
+	if( raycastFromPoint(Ogre::Vector3(x,y,z),Ogre::Vector3::NEGATIVE_UNIT_Y,myResult,myObject, distToColl,polygon_normal,NULL, queryMask)){
 		if (myObject != NULL) {
 			colY = myResult.y;
 		} else {
@@ -155,7 +155,7 @@ void CollisionTools::calculateY(Ogre::SceneNode *n, const bool doTerrainCheck, c
 
 	//if doGridCheck is on, repeat not to fall through small holes for example when crossing a hangbridge
 	if (doGridCheck) {
-		if( raycastFromPoint(Ogre::Vector3(x,y,z)+(n->getOrientation()*Ogre::Vector3(0,0,gridWidth)),Ogre::Vector3::NEGATIVE_UNIT_Y,myResult, myObject, distToColl,polygon_normal, queryMask)){
+		if( raycastFromPoint(Ogre::Vector3(x,y,z)+(n->getOrientation()*Ogre::Vector3(0,0,gridWidth)),Ogre::Vector3::NEGATIVE_UNIT_Y,myResult, myObject, distToColl,polygon_normal,NULL, queryMask)){
 			if (myObject != NULL) {
 				colY = myResult.y;
 			} else {
@@ -195,9 +195,10 @@ bool CollisionTools::raycastFromPoint(const Ogre::Vector3 &point,
 										Ogre::Vector3 &result,Ogre::Entity* &target,
 										float &closest_distance,
 										Ogre::Vector3 &polygon_normal,
+										const Ogre::Entity* source,
 										const Ogre::uint32 queryMask) 
 {
-	return raycastFromPoint(point, normal, result,(Ogre::MovableObject*&) target, closest_distance, polygon_normal, queryMask);
+	return raycastFromPoint(point, normal, result,(Ogre::MovableObject*&) target, closest_distance, polygon_normal, source, queryMask);
 }		
 							
 bool CollisionTools::raycastFromPoint(const Ogre::Vector3 &point,
@@ -205,6 +206,7 @@ bool CollisionTools::raycastFromPoint(const Ogre::Vector3 &point,
 										Ogre::Vector3 &result,Ogre::MovableObject* &target,
 										float &closest_distance,
 										Ogre::Vector3 &polygon_normal,
+										const Ogre::Entity* source,
 										const Ogre::uint32 queryMask)
 {
     // create the ray to test
@@ -212,15 +214,15 @@ bool CollisionTools::raycastFromPoint(const Ogre::Vector3 &point,
 	ray.setOrigin(point);
 	ray.setDirection(normal);
 
-	return raycast(ray, result, target, closest_distance, polygon_normal, queryMask);
+	return raycast(ray, result, target, closest_distance, polygon_normal, source, queryMask);
 }
 
-bool CollisionTools::raycast(const Ogre::Ray &ray, Ogre::Vector3 &result,Ogre::Entity* &target,float &closest_distance, Ogre::Vector3 &polygon_normal, const Ogre::uint32 queryMask)
+bool CollisionTools::raycast(const Ogre::Ray &ray, Ogre::Vector3 &result,Ogre::Entity* &target,float &closest_distance, Ogre::Vector3 &polygon_normal,const Ogre::Entity* source, const Ogre::uint32 queryMask)
 {
-	return raycast(ray, result, (Ogre::MovableObject*&)target, closest_distance, polygon_normal, queryMask);
+	return raycast(ray, result, (Ogre::MovableObject*&)target, closest_distance, polygon_normal, source, queryMask);
 }
 
-bool CollisionTools::raycast(const Ogre::Ray &ray, Ogre::Vector3 &result,Ogre::MovableObject* &target,float &closest_distance, Ogre::Vector3 &polygon_normal, const Ogre::uint32 queryMask)
+bool CollisionTools::raycast(const Ogre::Ray &ray, Ogre::Vector3 &result,Ogre::MovableObject* &target,float &closest_distance, Ogre::Vector3 &polygon_normal, const Ogre::Entity* source, const Ogre::uint32 queryMask)
 {
 	target = NULL;
 
@@ -270,6 +272,9 @@ bool CollisionTools::raycast(const Ogre::Ray &ray, Ogre::Vector3 &result,Ogre::M
             // get the entity to check
 			Ogre::MovableObject *pentity = static_cast<Ogre::MovableObject*>(query_result[qr_idx].movable);
 
+			// If we get the source entity, we continue
+			if(source != NULL && pentity->getName() == source->getName())
+				continue;
             // mesh data to retrieve
             size_t vertex_count;
             size_t index_count;
