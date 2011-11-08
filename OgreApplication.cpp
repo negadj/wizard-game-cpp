@@ -5,17 +5,21 @@ Author: Gecko
 #include "objects/Player.h"
 
 OgreApplication::OgreApplication() :
-	mRoot(0),
-	mWindow(0),
-	mSceneMgr(0),
-	mCamera(0),
-	mViewPort(0),
-	mObjectMgr(0),
-	mInputManager(0),
-	mMouse(0),
-	mKeyboard(0),
-	mPlayer(0),
-	mContinue(true)
+	mRoot(NULL),
+	mWindow(NULL),
+	mSceneMgr(NULL),
+	mCamera(NULL),
+	mViewPort(NULL),
+	mObjectMgr(NULL),
+	mInputManager(NULL),
+	mMouse(NULL),
+	mKeyboard(NULL),
+	mMenuMgr(this),
+	mDebugOverlay(NULL),
+	mPlayer(NULL),
+	mContinue(true),
+	mStarted(false),
+	mLocked(true)
 {}
 
 OgreApplication::~OgreApplication() {
@@ -38,17 +42,32 @@ bool OgreApplication::start() {
 	ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
 	mSceneMgr = mRoot->createSceneManager("DefaultSceneManager", "Wizard Scene Manager");
+	mDebugOverlay = OverlayManager::getSingleton().getByName("Wizard/DebugOverlay");
 	mObjectMgr = new ObjectManager(mSceneMgr);
-
 	createCamera();
 	createViewPort();
-	createScene();
+	mMenuMgr.setup();
 	createFrameListener();
 
-	mPlayer = mObjectMgr->createPlayer(mCamera);
+	mMenuMgr.showMainMenu();
 	mRoot->startRendering();
 
 	return true;
+}
+
+void OgreApplication::startGame() {
+	createScene();
+	mPlayer = mObjectMgr->createPlayer(mCamera);
+	mStarted = true;
+}
+
+void OgreApplication::exitGame() {
+	mStarted = false;
+	mDebugOverlay->hide();
+	mCamera->setAutoTracking(false); //Supprime une référence sur un noeud qui va disparaître
+	mObjectMgr->clear();
+	mSceneMgr->clearScene();
+	mPlayer = NULL;
 }
 
 void OgreApplication::createScene() {
@@ -73,7 +92,7 @@ void OgreApplication::createScene() {
 	Entity* floor = mSceneMgr->createEntity("Floor", "floor");
 	floor->setMaterialName("Wizard/GrassFloor");
 	floor->setCastShadows(false);
-	mSceneMgr->getRootSceneNode()->createChildSceneNode("nodeFloor",Ogre::Vector3::NEGATIVE_UNIT_Y*0.5)->attachObject(floor);
+	mSceneMgr->getRootSceneNode()->createChildSceneNode("nodeFloor")->attachObject(floor);
 
 	//Ajout de plein de cubes
 	mObjectMgr->loadScene();
@@ -103,7 +122,7 @@ void OgreApplication::loadResources() {
 
 void OgreApplication::createCamera() {
     // Create the camera
-    mCamera = mSceneMgr->createCamera("PlayerCam");
+    mCamera = mSceneMgr->createCamera("MainCamera");
 }
 
 void OgreApplication::createViewPort() {
@@ -118,13 +137,21 @@ void OgreApplication::createFrameListener() {
 }
 
 bool OgreApplication::frameRenderingQueued(const FrameEvent& evt) {
-    if(mWindow->isClosed())
+	if(mWindow->isClosed())
         return false;
 
     mKeyboard->capture();
     mMouse->capture();
 
-    mObjectMgr->updateObjects(evt.timeSinceLastFrame);
+    if (mStarted) {
+    	// On met à jour les informations de debug si besoin
+    	if (mDebugOverlay->isVisible()) {
+    		updateDebugInfo(evt.timeSinceLastFrame);
+    	}
+
+    	// Calcul des modifications sur les objets de la scène
+    	mObjectMgr->updateObjects(evt.timeSinceLastFrame);
+    }
 
     return mContinue;
 }
@@ -174,35 +201,82 @@ void OgreApplication::windowClosed(RenderWindow* rw) {
 }
 
 bool OgreApplication::mouseMoved(const OIS::MouseEvent &e) {
-	mPlayer->injectMouseMove(e);
+	mMenuMgr.mouseMoved(e);
+	if (mStarted && !mLocked)
+		mPlayer->injectMouseMove(e);
+
 	return true;
 }
 
 bool OgreApplication::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id) {
-	mPlayer->injectMouseDown(e, id);
+	mMenuMgr.mouseButtonDown(id);
+	if (mStarted && !mLocked)
+		mPlayer->injectMouseDown(e, id);
+
 	return true;
 }
 
 bool OgreApplication::mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id) {
+	mMenuMgr.mouseButtonUp(id);
 	return true;
 }
 
 bool OgreApplication::keyPressed(const OIS::KeyEvent &e) {
-	switch (e.key) {
-	case OIS::KC_ESCAPE:
-		mContinue = false;
-		break;
-	case OIS::KC_F8: //Toggle bounding boxes
-		mSceneMgr->showBoundingBoxes(!mSceneMgr->getShowBoundingBoxes());
-	default:
-		mPlayer->injectKeyDown(e);
+	mMenuMgr.keyPressed(e);
+	// Si une partie est en cours
+	if (mStarted) {
+		switch (e.key) {
+		case OIS::KC_ESCAPE:
+			mMenuMgr.togglePauseMenu();
+			break;
+		case OIS::KC_F8: //Toggle bounding boxes
+			mSceneMgr->showBoundingBoxes(!mSceneMgr->getShowBoundingBoxes());
+			break;
+		case OIS::KC_F3: //Toggle debug overlay
+			toggleDebugOverlay();
+			break;
+		default:
+			if (!mLocked)
+				mPlayer->injectKeyDown(e);
+			break;
+		}
 	}
 
 	return true;
 }
 
 bool OgreApplication::keyReleased(const OIS::KeyEvent &e) {
-	mPlayer->injectKeyUp(e);
+	mMenuMgr.keyReleased(e);
+
+	if (mStarted && !mLocked)
+		mPlayer->injectKeyUp(e);
 
 	return true;
+}
+
+void OgreApplication::toggleDebugOverlay() {
+	if (mDebugOverlay->isVisible())
+		mDebugOverlay->hide();
+	else
+		mDebugOverlay->show();
+}
+
+void OgreApplication::updateDebugInfo(Real deltaTime) {
+	OverlayContainer* debugPanel = mDebugOverlay->getChild("Wizard/DebugPanel");
+
+	// Mise à jour des FPS
+	debugPanel->getChild("Wizard/DebugPanel/Fps")->setCaption(
+			"FPS : " + StringConverter::toString(int((double)1.0/(double)deltaTime)));
+
+
+	// Mise à jour de la position
+	Real x = mPlayer->getNode()->getPosition().x,
+			y = mPlayer->getNode()->getPosition().y,
+			z = mPlayer->getNode()->getPosition().z;
+	debugPanel->getChild("Wizard/DebugPanel/Xposition")->setCaption(
+			"X : " + StringConverter::toString(x));
+	debugPanel->getChild("Wizard/DebugPanel/Yposition")->setCaption(
+				"Y : " + StringConverter::toString(y));
+	debugPanel->getChild("Wizard/DebugPanel/Zposition")->setCaption(
+				"Z : " + StringConverter::toString(z));
 }

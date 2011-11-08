@@ -7,11 +7,14 @@ Author: Gecko
 #include <Ogre.h>
 #include <OIS.h>
 #include "objects/ObjectManager.h"
+#include "MenuManager.h"
 
 using namespace Ogre;
 
 class OgreApplication : public FrameListener, public WindowEventListener,
 public OIS::MouseListener, public OIS::KeyListener {
+friend class MenuManager;
+
 public:
 	OgreApplication();
 	virtual ~OgreApplication();
@@ -24,6 +27,15 @@ private:
 	void createViewPort();
 	void createTrayManager();
 	void createFrameListener();
+	void setupGUI();
+	/**
+	 * Initialise les ressources pour une partie
+	 */
+	void startGame();
+	/**
+	 * Libère les ressources de la partie
+	 */
+	void exitGame();
 
 	bool frameRenderingQueued(const Ogre::FrameEvent& evt);
 	void startOIS();
@@ -36,6 +48,9 @@ private:
 	bool keyPressed(const OIS::KeyEvent &e);
 	bool keyReleased(const OIS::KeyEvent &e);
 
+	void toggleDebugOverlay();
+	void updateDebugInfo(Real deltaTime);
+
 	Root* mRoot;
 	RenderWindow* mWindow;
 	SceneManager* mSceneMgr;
@@ -43,14 +58,17 @@ private:
 	Viewport* mViewPort;
 	ObjectManager* mObjectMgr;
 
-//	MOC::CollisionTools* mCollisionsMgr;
-
 	OIS::InputManager*  mInputManager;
 	OIS::Mouse*         mMouse;
 	OIS::Keyboard*      mKeyboard;
 
+	MenuManager mMenuMgr;
+	Overlay* mDebugOverlay;
+
 	Player* mPlayer;
-	bool mContinue;
+	bool mContinue; // le programme tourne tant que mContinue est vrai
+	bool mStarted; // indique si une partie est en cours
+	bool mLocked; // indique si les commandes du joueur sont bloquées (pour les menus par ex.)
 };
 
 #endif
