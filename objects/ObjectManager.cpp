@@ -15,11 +15,17 @@ ObjectManager::ObjectManager(Ogre::SceneManager* scnMgr) :
 {}
 
 ObjectManager::~ObjectManager() {
+	clear();
+}
+
+void ObjectManager::clear() {
 	// On détruit tout les objets référencés
 	for(std::map<std::string,PhysicalObject*>::iterator it = mObjects.begin();
 			it != mObjects.end(); ++it) {
 		delete (it->second);
 	}
+	mObjects.clear();
+	mActiveObjects.clear();
 }
 
 void ObjectManager::moveWithCollisions(PhysicalObject* &obj, const Ogre::Real deltaTime)
@@ -111,8 +117,8 @@ Block* ObjectManager::createBlock(const Ogre::Vector3 position) {
 }
 
 void ObjectManager::loadScene() {
-	for (int i=0; i<50; i++) {
-		for (int j=0; j<50; j++) {
+	for (int i=0; i<100; i++) {
+		for (int j=0; j<100; j++) {
 			for (int k=0; k<2; k++) {
 				if (rand() < (RAND_MAX/3)) {
 					createBlock(Vector3(i,k,-j) * 2);
