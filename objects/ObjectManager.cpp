@@ -32,18 +32,37 @@ void ObjectManager::moveWithCollisions(PhysicalObject* &obj, const Ogre::Real de
 {
     // Calcul des nouvelles positions des objets.
     // On gère les éventuelles collisions
-    if(obj->getSpeed() != Ogre::Vector3::ZERO){
-        float dist = 0.0f;
-        Ogre::Vector3 destination = Ogre::Vector3::ZERO;
-        Ogre::MovableObject *target;
-        if(mCollisionTools.raycastFromPoint(obj->getNode()->getPosition(), obj->getSpeed(), destination, target, dist)
-        	&& dist < (obj->getSpeed() * deltaTime).length())
-            /* TODO: il s'avère que ce code donne un effet "ralenti" à l'approche
-					 * des obstacles. C'est rigolo mais c'est pas forcément ce qu'on veut.
-					 */
-            obj->getNode()->translate(obj->getSpeed().normalisedCopy() * dist); //destination);
-        else
-        	obj->getNode()->translate(obj->getSpeed() * deltaTime); //TODO: TS_WORLD ?
+    if(obj->getSpeed() != Ogre::Vector3::ZERO && deltaTime != 0){
+    	Ogre::Vector3 distance = obj->getSpeed() * deltaTime;
+
+    	const std::vector<std::pair<Ogre::Vector3,Ogre::Vector3> > skeleton = obj->getSkeleton();
+
+        for(std::vector<std::pair<Ogre::Vector3,Ogre::Vector3> >::const_iterator it = skeleton.begin(); it != skeleton.end(); ++it)
+        {
+        	if(it->second.x*distance.x <= 0 && it->second.y*distance.y <= 0 && it->second.z*distance.z <= 0 )
+        		continue;
+        	Ogre::Vector3 point = obj->getNode()->getPosition() + it->first;
+        	int counter =0;
+            float dist = 0.0f;
+            Ogre::Vector3 destination = Ogre::Vector3::ZERO;
+            Ogre::MovableObject *target;
+            Ogre::Vector3 polygon_normal;
+        	while(mCollisionTools.raycastFromPoint( point, distance.normalisedCopy(), destination, target, dist, polygon_normal, obj->getEntity(), 0xFFFFFFFF)
+        			&& dist < distance.length())
+        	{
+        		std::cout <<target->getName() << " " << it->first << " " << counter << std::endl;
+        	// TODO: Parfois, la boucle se lock. Un compteur permet d'éviter un freeze complet
+        		if (counter > 10)
+        			distance = Ogre::Vector3::ZERO;
+        		if(distance.dotProduct(polygon_normal) < 0)
+        			polygon_normal = -polygon_normal;
+        		distance -= polygon_normal.dotProduct(distance - distance.normalisedCopy() * dist) * polygon_normal; //destination);
+        		counter+=1;
+        	}
+        }
+
+        obj->getNode()->translate(distance); //TODO: TS_WORLD ?
+        obj->setSpeed(distance/deltaTime);
     }
 }
 
@@ -52,7 +71,8 @@ bool ObjectManager::objectReached(const Ogre::Vector3 &from, const Ogre::Vector3
 	Ogre::Real dist = 0;
 	Ogre::Vector3 pos;
 	Ogre::Entity* entity;
-	if (mCollisionTools.raycastFromPoint(from, normal, pos, entity, dist)
+	Ogre::Vector3 polygon_normal;
+	if (mCollisionTools.raycastFromPoint(from, normal, pos, entity, dist,polygon_normal)
 		&& dist < reachRadius) {
 		std::map<std::string, PhysicalObject*>::iterator it = mObjects.find(entity->getParentSceneNode()->getName());
 		if (it != mObjects.end()) {
@@ -106,4 +126,5 @@ void ObjectManager::loadScene() {
 			}
 		}
 	}
+	return;
 }

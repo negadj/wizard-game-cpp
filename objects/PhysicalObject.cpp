@@ -6,6 +6,7 @@
  */
 
 #include "PhysicalObject.h"
+#include "ObjectManager.h"
 
 PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name, int id, Ogre::String meshName, Ogre::String description) :
 	mObjectManager(objectManager),
@@ -18,7 +19,8 @@ PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* or
 	mSpeed(),
 	mSolidity(20),
 	mDensity(1),
-	mIntegrity(100)
+	mIntegrity(100),
+	mSkeleton(std::vector<std::pair<Ogre::Vector3,Ogre::Vector3> >())
 {
 	mEntity = mNode->getCreator()->createEntity(mName, meshName);
 	mNode->attachObject(mEntity);
@@ -121,6 +123,40 @@ void PhysicalObject::setSolidity(int mSolidity)
 void PhysicalObject::setSpeed(Ogre::Vector3 mSpeed)
 {
     this->mSpeed = mSpeed;
+}
+
+void PhysicalObject::addSpeed(Ogre::Vector3 mSpeed)
+{
+    this->mSpeed += mSpeed;
+}
+
+void PhysicalObject::setupSkeleton(Ogre::Vector3 cornerMin, Ogre::Vector3 cornerMax, Ogre::Real step)
+{
+	for(Ogre::Real i = cornerMin.x; i <= cornerMax.x; i+=step)
+		for(Ogre::Real j = cornerMin.y; j <= cornerMax.y; j+=step)
+			for(Ogre::Real k = cornerMin.z; k <= cornerMax.z; k+=step)
+			{
+				std::pair<Ogre::Vector3,Ogre::Vector3> tmp(Ogre::Vector3(i,j,k),Ogre::Vector3::ZERO);
+				if(i == cornerMax.x)
+					tmp.second += Ogre::Vector3::UNIT_X;
+				if(i == cornerMin.x)
+					tmp.second += Ogre::Vector3::NEGATIVE_UNIT_X;
+				if(j == cornerMax.y)
+					tmp.second += Ogre::Vector3::UNIT_Y;
+				if(j == cornerMin.y)
+					tmp.second += Ogre::Vector3::NEGATIVE_UNIT_Y;
+				if(k == cornerMax.z)
+					tmp.second += Ogre::Vector3::UNIT_Z;
+				if(k == cornerMin.z)
+					tmp.second += Ogre::Vector3::NEGATIVE_UNIT_Z;
+				if(tmp.second != Ogre::Vector3::ZERO)
+					mSkeleton.push_back(tmp);
+			}
+}
+
+const std::vector<std::pair<Ogre::Vector3,Ogre::Vector3> >&  PhysicalObject::getSkeleton()
+{
+	return mSkeleton;
 }
 
 
