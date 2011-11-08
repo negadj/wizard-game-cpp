@@ -18,7 +18,8 @@ OgreApplication::OgreApplication() :
 	mDebugOverlay(NULL),
 	mPlayer(NULL),
 	mContinue(true),
-	mLocked(false)
+	mStarted(false),
+	mLocked(true)
 {}
 
 OgreApplication::~OgreApplication() {
@@ -41,19 +42,32 @@ bool OgreApplication::start() {
 	ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
 	mSceneMgr = mRoot->createSceneManager("DefaultSceneManager", "Wizard Scene Manager");
-	mObjectMgr = new ObjectManager(mSceneMgr);
 	mDebugOverlay = OverlayManager::getSingleton().getByName("Wizard/DebugOverlay");
-
+	mObjectMgr = new ObjectManager(mSceneMgr);
 	createCamera();
 	createViewPort();
 	mMenuMgr.setup();
-	createScene();
 	createFrameListener();
 
-	mPlayer = mObjectMgr->createPlayer(mCamera);
+	mMenuMgr.showMainMenu();
 	mRoot->startRendering();
 
 	return true;
+}
+
+void OgreApplication::startGame() {
+	createScene();
+	mPlayer = mObjectMgr->createPlayer(mCamera);
+	mStarted = true;
+}
+
+void OgreApplication::exitGame() {
+	mStarted = false;
+	mDebugOverlay->hide();
+	mCamera->setAutoTracking(false); //Supprime une référence sur un noeud qui va disparaître
+	mObjectMgr->clear();
+	mSceneMgr->clearScene();
+	mPlayer = NULL;
 }
 
 void OgreApplication::createScene() {
@@ -108,7 +122,7 @@ void OgreApplication::loadResources() {
 
 void OgreApplication::createCamera() {
     // Create the camera
-    mCamera = mSceneMgr->createCamera("PlayerCam");
+    mCamera = mSceneMgr->createCamera("MainCamera");
 }
 
 void OgreApplication::createViewPort() {
@@ -123,19 +137,21 @@ void OgreApplication::createFrameListener() {
 }
 
 bool OgreApplication::frameRenderingQueued(const FrameEvent& evt) {
-    if(mWindow->isClosed())
+	if(mWindow->isClosed())
         return false;
 
     mKeyboard->capture();
     mMouse->capture();
 
-    // On met à jour les informations de debug si besoin
-    if (mDebugOverlay->isVisible()) {
-    	updateDebugInfo(evt.timeSinceLastFrame);
+    if (mStarted) {
+    	// On met à jour les informations de debug si besoin
+    	if (mDebugOverlay->isVisible()) {
+    		updateDebugInfo(evt.timeSinceLastFrame);
     	}
 
-    // Calcul des modifications sur les objets de la scène
-    mObjectMgr->updateObjects(evt.timeSinceLastFrame);
+    	// Calcul des modifications sur les objets de la scène
+    	mObjectMgr->updateObjects(evt.timeSinceLastFrame);
+    }
 
     return mContinue;
 }
@@ -186,7 +202,7 @@ void OgreApplication::windowClosed(RenderWindow* rw) {
 
 bool OgreApplication::mouseMoved(const OIS::MouseEvent &e) {
 	mMenuMgr.mouseMoved(e);
-	if (!mLocked)
+	if (mStarted && !mLocked)
 		mPlayer->injectMouseMove(e);
 
 	return true;
@@ -194,7 +210,7 @@ bool OgreApplication::mouseMoved(const OIS::MouseEvent &e) {
 
 bool OgreApplication::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id) {
 	mMenuMgr.mouseButtonDown(id);
-	if (!mLocked)
+	if (mStarted && !mLocked)
 		mPlayer->injectMouseDown(e, id);
 
 	return true;
@@ -207,21 +223,23 @@ bool OgreApplication::mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID
 
 bool OgreApplication::keyPressed(const OIS::KeyEvent &e) {
 	mMenuMgr.keyPressed(e);
-
-	switch (e.key) {
-	case OIS::KC_ESCAPE:
-		mMenuMgr.togglePauseMenu();
-		break;
-	case OIS::KC_F8: //Toggle bounding boxes
-		mSceneMgr->showBoundingBoxes(!mSceneMgr->getShowBoundingBoxes());
-		break;
-	case OIS::KC_F3: //Toggle debug overlay
-		toggleDebugOverlay();
-		break;
-	default:
-		if (!mLocked)
-			mPlayer->injectKeyDown(e);
-		break;
+	// Si une partie est en cours
+	if (mStarted) {
+		switch (e.key) {
+		case OIS::KC_ESCAPE:
+			mMenuMgr.togglePauseMenu();
+			break;
+		case OIS::KC_F8: //Toggle bounding boxes
+			mSceneMgr->showBoundingBoxes(!mSceneMgr->getShowBoundingBoxes());
+			break;
+		case OIS::KC_F3: //Toggle debug overlay
+			toggleDebugOverlay();
+			break;
+		default:
+			if (!mLocked)
+				mPlayer->injectKeyDown(e);
+			break;
+		}
 	}
 
 	return true;
@@ -230,7 +248,7 @@ bool OgreApplication::keyPressed(const OIS::KeyEvent &e) {
 bool OgreApplication::keyReleased(const OIS::KeyEvent &e) {
 	mMenuMgr.keyReleased(e);
 
-	if (!mLocked)
+	if (mStarted && !mLocked)
 		mPlayer->injectKeyUp(e);
 
 	return true;

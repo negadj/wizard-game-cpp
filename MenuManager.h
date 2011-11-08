@@ -21,6 +21,7 @@ class OgreApplication;
  * Elle sert à gérer séparément ce qui concerne les menus.
  */
 class MenuManager {
+
 public:
 	MenuManager(OgreApplication* app);
 	virtual ~MenuManager();
@@ -29,6 +30,10 @@ public:
 	 * A n'appeler qu'une fois que Ogre est initialisé, sinon CEGUIOgreRenderer plante.
 	 */
 	void setup();
+	/**
+	 * A appeler pour afficher le menu principal
+	 */
+	void showMainMenu();
 	bool mouseMoved(const OIS::MouseEvent &e);
 	bool mouseButtonDown(OIS::MouseButtonID id);
 	bool mouseButtonUp(OIS::MouseButtonID id);
@@ -46,8 +51,17 @@ private:
 	 */
 	bool back(const CEGUI::EventArgs &e);
 	/**
+	 * Lance une partie.
+	 */
+	bool startGame(const CEGUI::EventArgs &e);
+	/**
+	 * Retourne au menu principal
+	 */
+	bool exitGame(const CEGUI::EventArgs &e);
+	/**
 	 * Affiche le menu des options
 	 */
+	void hideMenus();
 	bool displaySettings(const CEGUI::EventArgs &e);
 	/**
 	 * Change le réglage des ombres
@@ -57,6 +71,7 @@ private:
 	OgreApplication* mApp;
 	CEGUI::System* mSys;
 	CEGUI::OgreRenderer* mCeguiRenderer;
+	CEGUI::Window* mMainSheet;
 	CEGUI::Window* mPauseSheet;
 	CEGUI::Window* mBlankSheet;
 	CEGUI::Window* mSettingsSheet;

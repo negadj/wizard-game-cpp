@@ -15,11 +15,17 @@ ObjectManager::ObjectManager(Ogre::SceneManager* scnMgr) :
 {}
 
 ObjectManager::~ObjectManager() {
+	clear();
+}
+
+void ObjectManager::clear() {
 	// On détruit tout les objets référencés
 	for(std::map<std::string,PhysicalObject*>::iterator it = mObjects.begin();
 			it != mObjects.end(); ++it) {
 		delete (it->second);
 	}
+	mObjects.clear();
+	mActiveObjects.clear();
 }
 
 void ObjectManager::moveWithCollisions(PhysicalObject* &obj, const Ogre::Real deltaTime)

@@ -30,6 +30,7 @@ MenuManager::MenuManager(OgreApplication* app) :
 	mApp(app),
 	mSys(NULL),
 	mCeguiRenderer(NULL),
+	mMainSheet(NULL),
 	mPauseSheet(NULL),
 	mBlankSheet(NULL),
 	mSettingsSheet(NULL),
@@ -83,8 +84,15 @@ void MenuManager::setup() {
 
 	CEGUI::WindowManager &wmgr = CEGUI::WindowManager::getSingleton();
 
-	//Configuration d'une GUI vierge
+	//Configuration d'une GUI vierge (utilisée pendant le jeu)
 	mBlankSheet = wmgr.loadWindowLayout("GUI/Blank.layout");
+
+	// Configuration du menu principal
+	mMainSheet = wmgr.loadWindowLayout("GUI/Main.layout");
+	mMainSheet->getChild("Main/Play")->subscribeEvent(CEGUI::PushButton::EventClicked,
+			CEGUI::Event::Subscriber(&MenuManager::startGame, this));
+	mMainSheet->getChild("Main/Quit")->subscribeEvent(CEGUI::PushButton::EventClicked,
+		CEGUI::Event::Subscriber(&MenuManager::quit, this));
 
 	// Configuration du menu Pause
 	mPauseSheet = wmgr.loadWindowLayout("GUI/Pause.layout");
@@ -93,7 +101,7 @@ void MenuManager::setup() {
 	mPauseSheet->getChild("Pause/Settings")->subscribeEvent(CEGUI::PushButton::EventClicked,
 			CEGUI::Event::Subscriber(&MenuManager::displaySettings, this));
 	mPauseSheet->getChild("Pause/Quit")->subscribeEvent(CEGUI::PushButton::EventClicked,
-				CEGUI::Event::Subscriber(&MenuManager::quit, this));
+				CEGUI::Event::Subscriber(&MenuManager::exitGame, this));
 
 	// Configuration du menu Options
 	mSettingsSheet = wmgr.loadWindowLayout("GUI/Settings.layout");
@@ -105,18 +113,27 @@ void MenuManager::setup() {
 }
 
 void MenuManager::togglePauseMenu() {
-	if (mSys->getGUISheet() == mPauseSheet) {
-		mApp->mLocked = false;
-		mSys->setGUISheet(mBlankSheet);
-		mDarkOverlay->hide();
-		CEGUI::MouseCursor::getSingleton().hide();
-	}
+	if (mSys->getGUISheet() == mPauseSheet)
+		hideMenus();
 	else {
 		mApp->mLocked = true;
 		mSys->setGUISheet(mPauseSheet);
 		mDarkOverlay->show();
 		CEGUI::MouseCursor::getSingleton().show();
 	}
+}
+
+void MenuManager::showMainMenu() {
+	mApp->mLocked = true;
+	mSys->setGUISheet(mMainSheet);
+	CEGUI::MouseCursor::getSingleton().show();
+}
+
+void MenuManager::hideMenus() {
+	mApp->mLocked = false;
+	mSys->setGUISheet(mBlankSheet);
+	mDarkOverlay->hide();
+	CEGUI::MouseCursor::getSingleton().hide();
 }
 
 bool MenuManager::quit(const CEGUI::EventArgs &e) {
@@ -134,11 +151,25 @@ bool MenuManager::back(const CEGUI::EventArgs &e) {
 		togglePauseMenu();
 	return true;
 }
+
+bool MenuManager::startGame(const CEGUI::EventArgs &e) {
+	mApp->startGame();
+	hideMenus();
+	return true;
+}
+
+bool MenuManager::exitGame(const CEGUI::EventArgs &e) {
+	mApp->exitGame();
+	showMainMenu();
+	return true;
+}
+
 bool MenuManager::displaySettings(const CEGUI::EventArgs &e) {
 	mLastSheet = mPauseSheet;
 	mSys->setGUISheet(mSettingsSheet);
 	return true;
 }
+
 bool MenuManager::configureShadows(const CEGUI::EventArgs &e) {
 	CEGUI::Window* button = mSettingsSheet->getChild("Settings/Shadows");
 

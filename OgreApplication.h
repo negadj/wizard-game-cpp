@@ -28,6 +28,14 @@ private:
 	void createTrayManager();
 	void createFrameListener();
 	void setupGUI();
+	/**
+	 * Initialise les ressources pour une partie
+	 */
+	void startGame();
+	/**
+	 * Libère les ressources de la partie
+	 */
+	void exitGame();
 
 	bool frameRenderingQueued(const Ogre::FrameEvent& evt);
 	void startOIS();
@@ -58,8 +66,9 @@ private:
 	Overlay* mDebugOverlay;
 
 	Player* mPlayer;
-	bool mContinue;
-	bool mLocked;
+	bool mContinue; // le programme tourne tant que mContinue est vrai
+	bool mStarted; // indique si une partie est en cours
+	bool mLocked; // indique si les commandes du joueur sont bloquées (pour les menus par ex.)
 };
 
 #endif

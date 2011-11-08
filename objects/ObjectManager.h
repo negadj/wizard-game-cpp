@@ -51,7 +51,10 @@ public:
 	 * TODO: clarifier son rôle vis-à-vis de OgreApplication::createScene()
 	 */
 	void loadScene();
-
+	/**
+	 * détruit tous les objets de la scène
+	 */
+	void clear();
 };
 
 #endif /* OBJECTMANAGER_H_ */
