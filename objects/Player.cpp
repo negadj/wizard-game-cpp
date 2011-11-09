@@ -11,7 +11,7 @@
 #define CHAR_HEIGHT 2 // hauteur du personnage
 
 Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
-	PhysicalObject(objectManager, cam->getSceneManager()->getRootSceneNode(), name, 1, "Sinbad.mesh", "Joueur"),
+	PhysicalObject(objectManager, cam->getSceneManager()->getRootSceneNode(), name, 1, "Sinbad.mesh", Ogre::Vector3(1,2,1),"Joueur"),
 	mCamera(cam),
 	mBodyNode(0),
 	mCameraRootNode(0),
@@ -24,20 +24,19 @@ Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 	mVelocity(5),
 	mVerticalVelocity(0),
 	mCollisionTools(cam->getSceneManager())
-	{
+{
 	getNode()->translate(0,-0.5,0);
 	getNode()->setInitialState();
 	setupBody(cam->getSceneManager());
 	setupCamera();
-	setupSkeleton(Ogre::Vector3(-0.45,0,-0.45),Ogre::Vector3(0.45,1.8,0.45),0.45);
-	}
+}
 
 Player::~Player() {}
 
 void Player::update(Real deltaTime) {
 	/* Mise à jour de la vitesse du joueur en fonction des touches,
 	 dans le référentiel global. */
-	setSpeed((1-10*deltaTime)*getSpeed() + deltaTime*(Ogre::Vector3::NEGATIVE_UNIT_Y*20+ 10*mVelocity * (getNode()->getOrientation() * mDirection.normalisedCopy())));
+	setSpeed(/*(1-10*deltaTime)*getSpeed() + deltaTime*(Ogre::Vector3::NEGATIVE_UNIT_Y*20*/+ mVelocity * (getNode()->getOrientation() * mDirection.normalisedCopy()));
 }
 
 void Player::injectKeyDown(const OIS::KeyEvent& evt) {
@@ -119,7 +118,7 @@ void Player::setupBody(SceneManager* sceneMgr) {
 
 void Player::setupCamera() {
 	// On créer les noeuds pour les cameras
-	mCameraRootNode = getNode()->createChildSceneNode(Vector3(0,CHAR_HEIGHT-0.5,-0.2));
+	mCameraRootNode = getNode()->createChildSceneNode(Vector3(0,CHAR_HEIGHT-0.3,-0.2));
 	mCameraFPNode = mCameraRootNode->createChildSceneNode();
 	mCameraTPNode = mCameraRootNode->createChildSceneNode(Vector3::UNIT_Z*8);
 	mCameraGoal = mCameraRootNode->createChildSceneNode(Vector3::NEGATIVE_UNIT_Z*10);
