@@ -13,6 +13,7 @@
 #include "PhysicalObject.h"
 #include "Player.h"
 #include "Block.h"
+#include "Triplet.h"
 
 /**
  * Classe qui s'occupe de la gestion des objets matériels du jeu.
@@ -25,6 +26,7 @@ private:
 	MOC::CollisionTools mCollisionTools;
 	std::map<std::string,PhysicalObject*> mObjects;
 	std::vector<PhysicalObject*> mActiveObjects;
+	std::map<Triplet,Ogre::String> mTerrain;
 
 	void moveWithCollisions(PhysicalObject* &obj, const Ogre::Real deltaTime);
 public:
@@ -55,6 +57,8 @@ public:
 	 * détruit tous les objets de la scène
 	 */
 	void clear();
+
+	void handleCollision(const PhysicalObject* obj, Vector3 &deplacement);
 };
 
 #endif /* OBJECTMANAGER_H_ */
