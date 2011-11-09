@@ -86,13 +86,13 @@ void OgreApplication::createScene() {
 	light->setDirection(Vector3(10, -40, -20));
 	light->setCastShadows(true);
 
-	// Ajoute un sol
-	MeshManager::getSingleton().createPlane("floor", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-			Plane(Vector3::UNIT_Y, 0), 1000, 1000, 100, 100, true, 1, 100, 100, Vector3::UNIT_Z);
-	Entity* floor = mSceneMgr->createEntity("Floor", "floor");
-	floor->setMaterialName("Wizard/GrassFloor");
-	floor->setCastShadows(false);
-	mSceneMgr->getRootSceneNode()->createChildSceneNode("nodeFloor",Ogre::Vector3(0,-0.5,0))->attachObject(floor);
+//	// Ajoute un sol
+//	MeshManager::getSingleton().createPlane("floor", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+//			Plane(Vector3::UNIT_Y, 0), 1000, 1000, 100, 100, true, 1, 100, 100, Vector3::UNIT_Z);
+//	Entity* floor = mSceneMgr->createEntity("Floor", "floor");
+//	floor->setMaterialName("Wizard/GrassFloor");
+//	floor->setCastShadows(false);
+//	mSceneMgr->getRootSceneNode()->createChildSceneNode("nodeFloor",Ogre::Vector3(0,-0.5,0))->attachObject(floor);
 
 	//Ajout de plein de cubes
 	mObjectMgr->loadScene();

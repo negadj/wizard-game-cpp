@@ -25,8 +25,8 @@ Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 	mVerticalVelocity(0),
 	mCollisionTools(cam->getSceneManager())
 {
-	getNode()->translate(0,-0.5,0);
-	getNode()->setInitialState();
+//	getNode()->translate(0,-0.5,0);
+//	getNode()->setInitialState();
 	setupBody(cam->getSceneManager());
 	setupCamera();
 }
@@ -36,7 +36,7 @@ Player::~Player() {}
 void Player::update(Real deltaTime) {
 	/* Mise à jour de la vitesse du joueur en fonction des touches,
 	 dans le référentiel global. */
-	setSpeed(/*(1-10*deltaTime)*getSpeed() + deltaTime*(Ogre::Vector3::NEGATIVE_UNIT_Y*20*/+ mVelocity * (getNode()->getOrientation() * mDirection.normalisedCopy()));
+	setSpeed((1-10*deltaTime)*getSpeed() + deltaTime*(Ogre::Vector3::NEGATIVE_UNIT_Y*20+ 10 * mVelocity * (getNode()->getOrientation() * mDirection.normalisedCopy())));
 }
 
 void Player::injectKeyDown(const OIS::KeyEvent& evt) {
@@ -105,7 +105,7 @@ void Player::setupBody(SceneManager* sceneMgr) {
 	getEntity()->attachObjectToBone("Sheath.R", mSword2);
 
 	// Création du corps du personnage
-	mBodyNode = getNode()->createChildSceneNode(Vector3::UNIT_Y * (CHAR_HEIGHT / 2));
+	mBodyNode = getNode()->createChildSceneNode(Vector3::UNIT_Y * ((CHAR_HEIGHT / 2)-0.5));
 	mBodyNode->scale(Vector3::UNIT_SCALE * 0.2);
 	mBodyNode->yaw(Degree(180));
 	mBodyNode->setInitialState();
