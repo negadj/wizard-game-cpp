@@ -66,6 +66,7 @@ public:
     void setDescription(Ogre::String mDescription);
     ObjectManager* getObjectManager() const;
     const Ogre::Vector3 getVolume() const;
+    std::vector<Ogre::Vector3> getContactSurface(const Ogre::Vector3 normal) const;
 
 };
 

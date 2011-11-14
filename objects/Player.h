@@ -44,7 +44,7 @@ private:
 	Entity* mSword1;
 	Entity* mSword2;
 	Vector3 mDirection; // direction du joueur donnée par les touches du clavier
-	Real mVelocity;
+	Real mPropulsion;
 	Real mVerticalVelocity; // for jumping
 	MOC::CollisionTools mCollisionTools;
 

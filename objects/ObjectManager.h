@@ -59,6 +59,12 @@ public:
 	void clear();
 
 	void handleCollision(const PhysicalObject* obj, Vector3 &deplacement);
+
+	Vector3 getGravity(Vector3 position) const;
+
+	double getStrench(Vector3 position) const;
+
+	bool isOnGround(Vector3 position) const;
 };
 
 #endif /* OBJECTMANAGER_H_ */

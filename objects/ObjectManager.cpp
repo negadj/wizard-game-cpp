@@ -65,76 +65,13 @@ bool ObjectManager::objectReached(const Ogre::Vector3 &from, const Ogre::Vector3
 		std::map<std::string, PhysicalObject*>::iterator it = mObjects.find(entity->getParentSceneNode()->getName());
 		if (it != mObjects.end()) {
 			target = it->second;
-			std::cout << target->getName() << " " << entity->getParentSceneNode()->getName() << std::endl;
 			return true;
 		}
 	}
 	return false;
 }
 
-std::vector<Ogre::Vector3> getContactSurface(const Ogre::Vector3 position, const Ogre::Vector3 volume, const Ogre::Vector3 normal)
-{
-	std::vector<Ogre::Vector3> result;
-	if(normal == Vector3::UNIT_X || normal == Vector3::NEGATIVE_UNIT_X)
-	{
-		int i, jmax, kmax;
-		if(normal == Vector3::UNIT_X)
-			i = volume.x - 1;
-		else
-			i = 0;
-		if(round(position.y) == position.y)
-			jmax = volume.y;
-		else
-			jmax = volume.y + 1;
-		if(round(position.z) == position.z)
-			kmax = volume.z;
-		else
-			kmax = volume.z + 1;
-		for(int j = 0; j < jmax; ++j)
-			for(int k = 0; k < kmax; k++)
-				result.push_back(Vector3(i,j,k));
-	}
-	else if(normal == Vector3::UNIT_Y|| normal == Vector3::NEGATIVE_UNIT_Y)
-	{
-		int imax, j, kmax;
-		if(normal == Vector3::UNIT_Y)
-			j = volume.y - 1;
-		else
-			j = 0;
-		if(round(position.x) == position.x)
-			imax = volume.x;
-		else
-			imax = volume.x + 1;
-		if(round(position.z) == position.z)
-			kmax = volume.z;
-		else
-			kmax = volume.z + 1;
-		for(int i = 0; i < imax; ++i)
-			for(int k = 0; k < kmax; k++)
-				result.push_back(Vector3(i,j,k));
-	}
-	else if(normal == Vector3::UNIT_Z|| normal == Vector3::NEGATIVE_UNIT_Z)
-	{
-		int imax, jmax, k;
-		if(normal == Vector3::UNIT_Z)
-			k = volume.z - 1;
-		else
-			k = 0;
-		if(round(position.x) == position.x)
-			imax = volume.x;
-		else
-			imax = volume.x + 1;
-		if(round(position.y) == position.y)
-			jmax = volume.z;
-		else
-			jmax = volume.z + 1;
-		for(int i = 0; i < imax; ++i)
-			for(int j = 0; j < jmax; j++)
-				result.push_back(Vector3(i,j,k));
-	}
-	return result;
 
-}
 
 void ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 &deplacement)
 {
@@ -144,11 +81,10 @@ void ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 &deplacem
 	double dx =  deplacement.dotProduct(Vector3::UNIT_X);
 	if (dx > 0)
 	{
-		grid = getContactSurface(obj->getNode()->getPosition(),obj->getVolume(),Vector3::UNIT_X);
+		grid = obj->getContactSurface(Vector3::UNIT_X);
 		for(std::vector<Vector3>::const_iterator it = grid.begin(); it != grid.end(); ++it)
 		{
 			double x1 = (obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_X);
-			std::cout << *it << " ";
 			for(int i = floor(x1) ; i <= floor(x1 + dx); ++i )
 			{
 				if(mTerrain.find(Triplet(i+1,floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Y)),floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Z)))) != mTerrain.end())
@@ -159,11 +95,10 @@ void ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 &deplacem
 			}
 
 		}
-		std::cout << std::endl;
 	}
 	else if(dx < 0)
 	{
-		grid = getContactSurface(obj->getNode()->getPosition(),obj->getVolume(),Vector3::NEGATIVE_UNIT_X);
+		grid = obj->getContactSurface(Vector3::NEGATIVE_UNIT_X);
 		for(std::vector<Vector3>::const_iterator it = grid.begin(); it != grid.end(); ++it)
 		{
 			double x1 = (obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_X);
@@ -185,11 +120,10 @@ void ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 &deplacem
 	double dy =  deplacement.dotProduct(Vector3::UNIT_Y);
 	if (dy > 0)
 	{
-		grid = getContactSurface(obj->getNode()->getPosition(),obj->getVolume(),Vector3::UNIT_Y);
+		grid = obj->getContactSurface(Vector3::UNIT_Y);
 		for(std::vector<Vector3>::const_iterator it = grid.begin(); it != grid.end(); ++it)
 		{
 			double y1 = (obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Y);
-			std::cout << *it << " ";
 			for(int j = floor(y1) ; j <= floor(y1 + dy); ++j )
 			{
 				if(mTerrain.find(Triplet(floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_X)),j+1,floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Z)))) != mTerrain.end())
@@ -200,11 +134,10 @@ void ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 &deplacem
 			}
 
 		}
-		std::cout << std::endl;
 	}
 	else if(dy < 0)
 	{
-		grid = getContactSurface(obj->getNode()->getPosition(),obj->getVolume(),Vector3::NEGATIVE_UNIT_Y);
+		grid = obj->getContactSurface(Vector3::NEGATIVE_UNIT_Y);
 		for(std::vector<Vector3>::const_iterator it = grid.begin(); it != grid.end(); ++it)
 		{
 			double y1 = (obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Y);
@@ -226,11 +159,10 @@ void ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 &deplacem
 		double dz =  deplacement.dotProduct(Vector3::UNIT_Z);
 		if (dz > 0)
 		{
-			grid = getContactSurface(obj->getNode()->getPosition(),obj->getVolume(),Vector3::UNIT_Z);
+			grid = obj->getContactSurface(Vector3::UNIT_Z);
 			for(std::vector<Vector3>::const_iterator it = grid.begin(); it != grid.end(); ++it)
 			{
 				double z1 = (obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Z);
-				std::cout << *it << " ";
 				for(int k = floor(z1) ; k <= floor(z1 + dz); ++k )
 				{
 					if(mTerrain.find(Triplet(floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_X)),floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Y)),k+1)) != mTerrain.end())
@@ -241,11 +173,10 @@ void ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 &deplacem
 				}
 
 			}
-			std::cout << std::endl;
 		}
 		else if(dz < 0)
 		{
-			grid = getContactSurface(obj->getNode()->getPosition(),obj->getVolume(),Vector3::NEGATIVE_UNIT_Z);
+			grid = obj->getContactSurface(Vector3::NEGATIVE_UNIT_Z);
 			for(std::vector<Vector3>::const_iterator it = grid.begin(); it != grid.end(); ++it)
 			{
 				double z1 = (obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Z);
@@ -298,10 +229,15 @@ Block* ObjectManager::createBlock(const Ogre::Vector3 position) {
 }
 
 void ObjectManager::loadScene() {
-	for (int i=0; i<5; i++) {
-		for (int j=0; j<5; j++) {
+	for (int i=0; i<100; i++) {
+		for (int j=0; j<100; j++) {
+
+			createBlock(Vector3(2*i,-1,-2*j));
+			createBlock(Vector3(2*i,-1,-2*j-1));
+			createBlock(Vector3(2*i+1,-1,-2*j));
+			createBlock(Vector3(2*i+1,-1,-2*j-1));
 			for (int k=0; k<2; k++) {
-				if (rand()%3 == 0) {
+				if (rand()%2 == 0) {
 					createBlock(Vector3(i,k,-j)*2);
 				}
 			}
@@ -310,5 +246,20 @@ void ObjectManager::loadScene() {
 	return;
 }
 
+Vector3 ObjectManager::getGravity(Vector3 position) const
+{
+	return Vector3::NEGATIVE_UNIT_Y * 9.8;
+}
 
+double ObjectManager::getStrench(Vector3 position) const
+{
+	if(isOnGround(position))
+		return 10;
+	else
+		return 0.1;
+}
 
+bool ObjectManager::isOnGround(Vector3 position) const
+{
+	return mTerrain.find(Triplet(round(position.x),position.y-1,round(position.z))) != mTerrain.end();
+}
