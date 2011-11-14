@@ -23,7 +23,8 @@ Vector3 floor(const Vector3 vector)
 ObjectManager::ObjectManager(Ogre::SceneManager* scnMgr) :
 	mSceneMgr(scnMgr),
 	mCollisionTools(scnMgr),
-	mTerrain(std::map<Triplet,String>())
+	mTerrain(std::map<Triplet,String>()),
+	mPhysicalClock(Clock(0.02))
 {}
 
 ObjectManager::~ObjectManager()
@@ -200,13 +201,16 @@ void ObjectManager::updateObjects(Ogre::Real deltaTime) {
 	for(std::vector<PhysicalObject*>::iterator it = mActiveObjects.begin();
 			it != mActiveObjects.end(); ++it) {
 		obj = *it;
+		while(mPhysicalClock.ticked(deltaTime)){
+
 
 		// On lance d'abord les update personalisés de chaque objet
 		// (pour les animations, modifications de vitesse, etc...).
-		obj->update(deltaTime);
+			obj->update(mPhysicalClock.getStep());
 
 		// Calcul des nouvelles positions des objets.
-		moveWithCollisions(obj, deltaTime);
+			moveWithCollisions(obj, mPhysicalClock.getStep());
+		}
 	}
 }
 
