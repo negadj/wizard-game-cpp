@@ -7,10 +7,11 @@
 
 #include "Triplet.h"
 
-Triplet::Triplet() {
-	// TODO Auto-generated constructor stub
-
-}
+Triplet::Triplet() :
+	x(0),
+	y(0),
+	z(0)
+{}
 
 Triplet::Triplet(double x, double y, double z)
 {
@@ -26,11 +27,11 @@ Triplet::Triplet(double x, double y, double z)
 		this->z = 0;
 }
 
-Triplet::Triplet(Ogre::Vector3 vector)
+Triplet::Triplet(const Ogre::Vector3& vector)
 {
-	this->x = vector.x;
-	this->y = vector.y;
-	this->z = vector.z;
+	this->x = Ogre::Math::IFloor(vector.x);
+	this->y = Ogre::Math::IFloor(vector.y);
+	this->z = Ogre::Math::IFloor(vector.z);
 }
 
 Triplet::~Triplet() {

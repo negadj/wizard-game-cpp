@@ -17,7 +17,7 @@ public:
 	double z;
 	Triplet();
 	Triplet(double x,double y,double z);
-	Triplet(Ogre::Vector3 vector);
+	Triplet(const Ogre::Vector3& vector);
 	virtual ~Triplet();
 };
 

@@ -71,11 +71,6 @@ void PhysicalObject::setIntegrity(int mIntegrity)
     this->mIntegrity = mIntegrity;
 }
 
-//void PhysicalObject::setName(std::string mName)
-//{
-//    this->mName = mName;
-//}
-
 float PhysicalObject::getDensity() const
 {
     return mDensity;

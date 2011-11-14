@@ -23,7 +23,7 @@ Vector3 floor(const Vector3 vector)
 ObjectManager::ObjectManager(Ogre::SceneManager* scnMgr) :
 	mSceneMgr(scnMgr),
 	mCollisionTools(scnMgr),
-	mTerrain(std::map<Triplet,String>()),
+	mTerrain(this, scnMgr->createStaticGeometry("staticObjects")),
 	mPhysicalClock(Clock(0.02)),
 	mMapManager(10)
 {}
@@ -45,6 +45,12 @@ void ObjectManager::clear()
 	mTerrain.clear();
 }
 
+PhysicalObject* ObjectManager::getObject(const Ogre::String& name) const {
+	if (mObjects.find(name) == mObjects.end())
+		return NULL;
+	return mObjects.at(name);
+}
+
 void ObjectManager::moveWithCollisions(PhysicalObject* &obj, const Ogre::Real deltaTime)
 {
     // Calcul des nouvelles positions des objets.
@@ -64,6 +70,8 @@ bool ObjectManager::objectReached(const Ogre::Vector3 &from, const Ogre::Vector3
 	Ogre::Vector3 pos;
 	Ogre::Entity* entity;
 	Ogre::Vector3 polygon_normal;
+
+	// On cherche si un objet actif est atteint
 	if (mCollisionTools.raycastFromPoint(from, normal, pos, entity, dist,polygon_normal)
 		&& dist < reachRadius) {
 		std::map<std::string, PhysicalObject*>::iterator it = mObjects.find(entity->getParentSceneNode()->getName());
@@ -72,6 +80,31 @@ bool ObjectManager::objectReached(const Ogre::Vector3 &from, const Ogre::Vector3
 			return true;
 		}
 	}
+
+	return false;
+}
+
+bool ObjectManager::blockReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, Block* &target) {
+	target = NULL;
+Ogre::LogManager::getSingleton().logMessage("entering blockReached");
+	// On trouve le premier bloc libre sur la trajectoire
+	// en regardant régulièrement le long de la direction visée.
+	// TODO: trouver un meilleur algo
+	Ogre::Vector3 currentPos;
+	int i = from.x, j = from.y, k = from.z;
+	for (int step = 0; step < int(reachRadius*10); step++) {
+		currentPos = from + (double(step) / 10) * normal;
+		if (i != int(currentPos.x) || j != int(currentPos.y) || k != int(currentPos.z)) {
+			i = int(currentPos.x);
+			j = int(currentPos.y);
+			k = int(currentPos.z);
+			if (!mTerrain.isFree(Triplet(i,j,k))) {
+				target = mTerrain.getBlock(Triplet(i,j,k));
+				return true;
+			}
+		}
+	}
+Ogre::LogManager::getSingleton().logMessage("exiting blockReached");
 	return false;
 }
 
@@ -260,9 +293,9 @@ Block* ObjectManager::createBlock(const Ogre::Vector3 position) {
 	Ogre::String name = Ogre::StringConverter::toString(++_countObject);
 	Block* b = new Block(this, mSceneMgr->getRootSceneNode(), name, 3);
 	b->getNode()->setPosition(position);
-	mTerrain[Triplet(position)] = name;
 	//TODO: setInitialState ?
 	mObjects[name] = b;
+	mTerrain.addBlock(*b);
 	return b;
 }
 
@@ -284,6 +317,10 @@ double ObjectManager::getStrench(PhysicalObject* obj) const
 		return 10;
 	else
 		return 0.1;
+}
+
+Terrain& ObjectManager::getTerrain() {
+	return mTerrain;
 }
 
 bool ObjectManager::isOnGround(PhysicalObject* obj) const

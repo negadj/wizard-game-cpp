@@ -13,7 +13,7 @@
 #include "PhysicalObject.h"
 #include "Player.h"
 #include "Block.h"
-#include "Triplet.h"
+#include "Terrain.h"
 #include "Clock.h"
 #include "MapManager.h"
 #include "Monster.h"
@@ -29,7 +29,7 @@ private:
 	MOC::CollisionTools mCollisionTools;
 	std::map<std::string,PhysicalObject*> mObjects;
 	std::vector<PhysicalObject*> mActiveObjects;
-	std::map<Triplet,Ogre::String> mTerrain;
+	Terrain mTerrain;
 	Clock mPhysicalClock;
 	MapManager mMapManager;
 
@@ -55,7 +55,8 @@ public:
 	 * Renvoie si un objet est atteint, et si oui lequel
 	 */
 	bool objectReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, PhysicalObject* &target);
-	/*
+	bool blockReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, Block* &target);
+		/*
 	 * Charge la scène où le joueur évolue.
 	 * TODO: clarifier son rôle vis-à-vis de OgreApplication::createScene()
 	 */
@@ -75,7 +76,9 @@ public:
 
 	void gameOver();
 
-	bool isEmpty(Ogre::Vector3 wantedPosition);
+	Terrain& getTerrain();
+	
+	PhysicalObject* getObject(const Ogre::String& name) const;
 };
 
 #endif /* OBJECTMANAGER_H_ */
