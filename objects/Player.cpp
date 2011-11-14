@@ -95,9 +95,9 @@ void Player::injectMouseMove(const OIS::MouseEvent& evt) {
 }
 
 void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) {
-	PhysicalObject* target = NULL;
-	if (getObjectManager()->objectReached(mCamera->getDerivedPosition(), mCamera->getDerivedDirection(), 10, target)) {
-		target->getEntity()->setVisible(false);
+	Block* target = NULL;
+	if (getObjectManager()->blockReached(mCamera->getDerivedPosition(), mCamera->getDerivedDirection(), 3, target)) {
+		getObjectManager()->getTerrain().removeBlock(target->getNode()->getPosition());
 	}
 }
 
