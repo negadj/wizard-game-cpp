@@ -14,6 +14,7 @@
 #include "Player.h"
 #include "Block.h"
 #include "Triplet.h"
+#include "Clock.h"
 
 /**
  * Classe qui s'occupe de la gestion des objets matériels du jeu.
@@ -27,6 +28,7 @@ private:
 	std::map<std::string,PhysicalObject*> mObjects;
 	std::vector<PhysicalObject*> mActiveObjects;
 	std::map<Triplet,Ogre::String> mTerrain;
+	Clock mPhysicalClock;
 
 	void moveWithCollisions(PhysicalObject* &obj, const Ogre::Real deltaTime);
 public:
