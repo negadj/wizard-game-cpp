@@ -11,7 +11,7 @@
 #define CHAR_HEIGHT 2 // hauteur du personnage
 
 Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
-	PhysicalObject(objectManager, cam->getSceneManager()->getRootSceneNode(), name, 1, "Sinbad.mesh", Ogre::Vector3(1,2,1),"Joueur"),
+	PhysicalObject(objectManager, cam->getSceneManager()->getRootSceneNode(), name, 1, "Sinbad.mesh", Ogre::Vector3(0.45,0.9,0.45),"Joueur"),
 	mCamera(cam),
 	mBodyNode(0),
 	mCameraRootNode(0),
@@ -25,8 +25,8 @@ Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 	mVerticalVelocity(0),
 	mCollisionTools(cam->getSceneManager())
 {
-//	getNode()->translate(0,-0.5,0);
-//	getNode()->setInitialState();
+	getNode()->translate(0,1,0);
+	getNode()->setInitialState();
 	setupBody(cam->getSceneManager());
 	setupCamera();
 }
@@ -106,7 +106,7 @@ void Player::setupBody(SceneManager* sceneMgr) {
 	getEntity()->attachObjectToBone("Sheath.R", mSword2);
 
 	// Création du corps du personnage
-	mBodyNode = getNode()->createChildSceneNode(Vector3::UNIT_Y * ((CHAR_HEIGHT / 2)-0.5));
+	mBodyNode = getNode()->createChildSceneNode(Vector3::UNIT_Y * 0.05);
 	mBodyNode->scale(Vector3::UNIT_SCALE * 0.2);
 	mBodyNode->yaw(Degree(180));
 	mBodyNode->setInitialState();

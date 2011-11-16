@@ -72,129 +72,177 @@ bool ObjectManager::objectReached(const Ogre::Vector3 &from, const Ogre::Vector3
 	return false;
 }
 
-
-
 void ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 &deplacement)
 {
-	std::vector<Ogre::Vector3> grid ;
-
-	// Collision selon x
-	double dx =  deplacement.dotProduct(Vector3::UNIT_X);
-	if (dx > 0)
+	Ogre::Vector3 volume = obj->getVolume();
+	for(int i = -1; i<=1; i += 2)
 	{
-		grid = obj->getContactSurface(Vector3::UNIT_X);
-		for(std::vector<Vector3>::const_iterator it = grid.begin(); it != grid.end(); ++it)
+		for(int j = -1; j<=-1; j += 2)
 		{
-			double x1 = (obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_X);
-			for(int i = floor(x1) ; i <= floor(x1 + dx); ++i )
+			for(int k = -1; k<=1; k+=2)
 			{
-				if(mTerrain.find(Triplet(i+1,floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Y)),floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Z)))) != mTerrain.end())
+				Ogre::Vector3 point = obj->getNode()->getPosition() + Vector3(i*volume.x,j*volume.y,k*volume.z);
+				std::cout << Vector3(i*volume.x,j*volume.y,k*volume.z) << std::endl;
+				std::cout << "checkout " << round(point) <<std::endl;
+				std::cout << "position wanted " << point <<std::endl;
+				if(mTerrain.find(Triplet(round(point + deplacement))) != mTerrain.end())
 				{
-					dx = std::min(dx,i - x1);
-					break;
-				}
-			}
+					Ogre::String name = mTerrain.find(Triplet(round(point+deplacement)))->second;
 
-		}
-	}
-	else if(dx < 0)
-	{
-		grid = obj->getContactSurface(Vector3::NEGATIVE_UNIT_X);
-		for(std::vector<Vector3>::const_iterator it = grid.begin(); it != grid.end(); ++it)
-		{
-			double x1 = (obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_X);
-			for(int i = floor(x1)+1 ; i >= floor(x1 + dx)+1; --i )
-			{
-				if(mTerrain.find(Triplet(i-1,floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Y)),floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Z)))) != mTerrain.end())
-				{
-					dx = std::max(dx,i - x1);
-					break;
-				}
-			}
+					PhysicalObject* obstacle = mObjects.find(name)->second;
 
-		}
-	}
-
-	deplacement.x = dx;
-
-	// Deplacement selon y
-	double dy =  deplacement.dotProduct(Vector3::UNIT_Y);
-	if (dy > 0)
-	{
-		grid = obj->getContactSurface(Vector3::UNIT_Y);
-		for(std::vector<Vector3>::const_iterator it = grid.begin(); it != grid.end(); ++it)
-		{
-			double y1 = (obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Y);
-			for(int j = floor(y1) ; j <= floor(y1 + dy); ++j )
-			{
-				if(mTerrain.find(Triplet(floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_X)),j+1,floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Z)))) != mTerrain.end())
-				{
-					dy = std::min(dy,j - y1);
-					break;
-				}
-			}
-
-		}
-	}
-	else if(dy < 0)
-	{
-		grid = obj->getContactSurface(Vector3::NEGATIVE_UNIT_Y);
-		for(std::vector<Vector3>::const_iterator it = grid.begin(); it != grid.end(); ++it)
-		{
-			double y1 = (obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Y);
-			for(int j = floor(y1)+1 ; j >= floor(y1 + dy)+1; --j )
-			{
-				if(mTerrain.find(Triplet(floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_X)),j - 1,floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Z)))) != mTerrain.end())
-				{
-					dy = std::max(dy,j - y1);
-					break;
-				}
-			}
-
-		}
-	}
-
-	deplacement.y = dy;
-
-	// Deplacement selon z
-		double dz =  deplacement.dotProduct(Vector3::UNIT_Z);
-		if (dz > 0)
-		{
-			grid = obj->getContactSurface(Vector3::UNIT_Z);
-			for(std::vector<Vector3>::const_iterator it = grid.begin(); it != grid.end(); ++it)
-			{
-				double z1 = (obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Z);
-				for(int k = floor(z1) ; k <= floor(z1 + dz); ++k )
-				{
-					if(mTerrain.find(Triplet(floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_X)),floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Y)),k+1)) != mTerrain.end())
+					std::cout << "found " << obstacle->getNode()->getPosition() << obstacle->getNode()->getPosition() - obstacle->getVolume() << obstacle->getNode()->getPosition() + obstacle->getVolume() << std::endl;
+					AxisAlignedBox box = AxisAlignedBox(obstacle->getNode()->getPosition() - obstacle->getVolume(),obstacle->getNode()->getPosition() + obstacle->getVolume());
+					std::pair<bool,Real> intersect = Math::intersects(Ray(point,deplacement),box);
+					if(intersect.first && intersect.second < deplacement.length())
 					{
-						dz = std::min(dz,k - z1) ;
-						break;
+
+						std::cout << "gotcha!" <<  Vector3(i*volume.x,j*volume.y,k*volume.z) <<  intersect.second << std::endl;
+//						Vector3 normal = Vector3::ZERO;
+//						Vector3 impact = obj->getNode()->getPosition() + intersect.second*deplacement.normalisedCopy();
+//						if((obstacle->getNode()->getPosition() + obstacle->getVolume()).x == impact.x)
+//							normal += Vector3::UNIT_X;
+//						if((obstacle->getNode()->getPosition() - obstacle->getVolume()).x == impact.x)
+//							normal -= Vector3::UNIT_X;
+//						if((obstacle->getNode()->getPosition() + obstacle->getVolume()).y == impact.y)
+//							normal += Vector3::UNIT_Y;
+//						if((obstacle->getNode()->getPosition() - obstacle->getVolume()).y == impact.y)
+//							normal -= Vector3::UNIT_Y;
+//						if((obstacle->getNode()->getPosition() + obstacle->getVolume()).z == impact.z)
+//							normal += Vector3::UNIT_Z;
+//						if((obstacle->getNode()->getPosition() - obstacle->getVolume()).z == impact.z)
+//							normal -= Vector3::UNIT_Z;
+//						deplacement = deplacement - normal.dotProduct(deplacement - deplacement.normalisedCopy() * intersect.second) * normal;
+						deplacement = deplacement.normalisedCopy() * intersect.second;
 					}
 				}
 
 			}
 		}
-		else if(dz < 0)
-		{
-			grid = obj->getContactSurface(Vector3::NEGATIVE_UNIT_Z);
-			for(std::vector<Vector3>::const_iterator it = grid.begin(); it != grid.end(); ++it)
-			{
-				double z1 = (obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Z);
-				for(int k = floor(z1)+1 ; k >= floor(z1 + dz)+1; --k )
-				{
-					if(mTerrain.find(Triplet(floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_X)),floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Y)),k-1)) != mTerrain.end())
-					{
-						dz = std::max(dz,k - z1);
-						break;
-					}
-				}
-
-			}
-		}
-
-		deplacement.z = dz;
+	}
 }
+
+//void ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 &deplacement)
+//{
+//	std::vector<Ogre::Vector3> grid ;
+//
+//	// Collision selon x
+//	double dx =  deplacement.dotProduct(Vector3::UNIT_X);
+//	if (dx > 0)
+//	{
+//		grid = obj->getContactSurface(Vector3::UNIT_X);
+//		for(std::vector<Vector3>::const_iterator it = grid.begin(); it != grid.end(); ++it)
+//		{
+//			double x1 = (obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_X);
+//			for(int i = floor(x1) ; i <= floor(x1 + dx); ++i )
+//			{
+//				if(mTerrain.find(Triplet(i+1,floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Y)),floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Z)))) != mTerrain.end())
+//				{
+//					dx = std::min(dx,i - x1);
+//					break;
+//				}
+//			}
+//
+//		}
+//	}
+//	else if(dx < 0)
+//	{
+//		grid = obj->getContactSurface(Vector3::NEGATIVE_UNIT_X);
+//		for(std::vector<Vector3>::const_iterator it = grid.begin(); it != grid.end(); ++it)
+//		{
+//			double x1 = (obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_X);
+//			for(int i = floor(x1)+1 ; i >= floor(x1 + dx)+1; --i )
+//			{
+//				if(mTerrain.find(Triplet(i-1,floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Y)),floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Z)))) != mTerrain.end())
+//				{
+//					dx = std::max(dx,i - x1);
+//					break;
+//				}
+//			}
+//
+//		}
+//	}
+//
+//	deplacement.x = dx;
+//
+//	// Deplacement selon y
+//	double dy =  deplacement.dotProduct(Vector3::UNIT_Y);
+//	if (dy > 0)
+//	{
+//		grid = obj->getContactSurface(Vector3::UNIT_Y);
+//		for(std::vector<Vector3>::const_iterator it = grid.begin(); it != grid.end(); ++it)
+//		{
+//			double y1 = (obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Y);
+//			for(int j = floor(y1) ; j <= floor(y1 + dy); ++j )
+//			{
+//				if(mTerrain.find(Triplet(floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_X)),j+1,floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Z)))) != mTerrain.end())
+//				{
+//					dy = std::min(dy,j - y1);
+//					break;
+//				}
+//			}
+//
+//		}
+//	}
+//	else if(dy < 0)
+//	{
+//		grid = obj->getContactSurface(Vector3::NEGATIVE_UNIT_Y);
+//		for(std::vector<Vector3>::const_iterator it = grid.begin(); it != grid.end(); ++it)
+//		{
+//			double y1 = (obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Y);
+//			for(int j = floor(y1)+1 ; j >= floor(y1 + dy)+1; --j )
+//			{
+//				if(mTerrain.find(Triplet(floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_X)),j - 1,floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Z)))) != mTerrain.end())
+//				{
+//					dy = std::max(dy,j - y1);
+//					break;
+//				}
+//			}
+//
+//		}
+//	}
+//
+//	deplacement.y = dy;
+//
+//	// Deplacement selon z
+//		double dz =  deplacement.dotProduct(Vector3::UNIT_Z);
+//		if (dz > 0)
+//		{
+//			grid = obj->getContactSurface(Vector3::UNIT_Z);
+//			for(std::vector<Vector3>::const_iterator it = grid.begin(); it != grid.end(); ++it)
+//			{
+//				double z1 = (obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Z);
+//				for(int k = floor(z1) ; k <= floor(z1 + dz); ++k )
+//				{
+//					if(mTerrain.find(Triplet(floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_X)),floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Y)),k+1)) != mTerrain.end())
+//					{
+//						dz = std::min(dz,k - z1) ;
+//						break;
+//					}
+//				}
+//
+//			}
+//		}
+//		else if(dz < 0)
+//		{
+//			grid = obj->getContactSurface(Vector3::NEGATIVE_UNIT_Z);
+//			for(std::vector<Vector3>::const_iterator it = grid.begin(); it != grid.end(); ++it)
+//			{
+//				double z1 = (obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Z);
+//				for(int k = floor(z1)+1 ; k >= floor(z1 + dz)+1; --k )
+//				{
+//					if(mTerrain.find(Triplet(floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_X)),floor((obj->getNode()->getPosition() + *it).dotProduct(Vector3::UNIT_Y)),k-1)) != mTerrain.end())
+//					{
+//						dz = std::max(dz,k - z1);
+//						break;
+//					}
+//				}
+//
+//			}
+//		}
+//
+//		deplacement.z = dz;
+//}
 
 void ObjectManager::updateObjects(Ogre::Real deltaTime) {
 	PhysicalObject* obj = NULL;
@@ -233,14 +281,14 @@ Block* ObjectManager::createBlock(const Ogre::Vector3 position) {
 }
 
 void ObjectManager::loadScene() {
-	for (int i=0; i<100; i++) {
-		for (int j=0; j<100; j++) {
+	for (int i=0; i<2; i++) {
+		for (int j=0; j<2; j++) {
 
 			createBlock(Vector3(2*i,-1,-2*j));
 			createBlock(Vector3(2*i,-1,-2*j-1));
 			createBlock(Vector3(2*i+1,-1,-2*j));
 			createBlock(Vector3(2*i+1,-1,-2*j-1));
-			for (int k=0; k<2; k++) {
+			for (int k=0; k<1; k++) {
 				if (rand()%2 == 0) {
 					createBlock(Vector3(i,k,-j)*2);
 				}
@@ -252,7 +300,7 @@ void ObjectManager::loadScene() {
 
 Vector3 ObjectManager::getGravity(Vector3 position) const
 {
-	return Vector3::NEGATIVE_UNIT_Y * 9.8;
+	return Vector3::NEGATIVE_UNIT_Y * 0;
 }
 
 double ObjectManager::getStrench(Vector3 position) const
