@@ -21,7 +21,7 @@ Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 	mSword1(0),
 	mSword2(0),
 	mDirection(Ogre::Vector3::ZERO),
-	mPropulsion(20),
+	mPropulsion(40),
 	mVerticalVelocity(0),
 	mCollisionTools(cam->getSceneManager())
 {
@@ -36,7 +36,9 @@ Player::~Player() {}
 void Player::update(Real deltaTime) {
 	/* Mise à jour de la vitesse du joueur en fonction des touches,
 	 dans le référentiel global. */
-	addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this->getNode()->getPosition()) + getObjectManager()->getGravity(this->getNode()->getPosition())+ mPropulsion * (getNode()->getOrientation() * mDirection.normalisedCopy())));
+	if(!getObjectManager()->isOnGround(this))
+		mDirection = Vector3::ZERO;
+	addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)+  mPropulsion * (getNode()->getOrientation() * mDirection.normalisedCopy())));
 }
 
 void Player::injectKeyDown(const OIS::KeyEvent& evt) {
@@ -58,8 +60,8 @@ void Player::injectKeyDown(const OIS::KeyEvent& evt) {
 		mDirection.x = 1;
 		break;
 	case OIS::KC_SPACE:
-		if(getObjectManager()->isOnGround(this->getNode()->getPosition()))
-			addSpeed(Ogre::Vector3::UNIT_Y * 15);
+		if(getObjectManager()->isOnGround(this))
+			addSpeed(Ogre::Vector3::UNIT_Y * 8);
 		break;
 	default:
 		break;
