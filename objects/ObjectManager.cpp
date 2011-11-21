@@ -73,36 +73,20 @@ bool ObjectManager::objectReached(const Ogre::Vector3 &from, const Ogre::Vector3
 	return false;
 }
 
-void intersect(Vector3 position,Vector3 &distance, Vector3 obstacle, Vector3 volume)
+bool intersect(Vector3 position,Vector3 &distance, Vector3 obstacle, Vector3 volume)
 {
 	float t = 0;
-	if(distance.x < 0)
-	{
-		t = ((obstacle + volume).x -position.x)/distance.x;
-		if( t > 0 && t < 1 &&
-				(position + t*distance).y > (obstacle - volume).y && (position + t*distance).y < (obstacle + volume).y
-				&& (position + t*distance).z > (obstacle - volume).z && (position + t*distance).z < (obstacle + volume).z)
-//			distance.x = obstacle.x + volume.x - position.x;
-			distance.x = 0;
-
-	}
-	else if(distance.x > 0)
-	{
-		t = ((obstacle - volume).x -position.x)/distance.x;
-		if( t > 0 && t < 1 &&
-				(position + t*distance).y > (obstacle - volume).y && (position + t*distance).y < (obstacle + volume).y
-				&& (position + t*distance).z > (obstacle - volume).z && (position + t*distance).z < (obstacle + volume).z)
-//			distance.x = obstacle.x - volume.x - position.x;
-			distance.x = 0;
-	}
 	if(distance.y < 0)
 	{
 		t = ((obstacle + volume).y -position.y)/distance.y;
 		if( t > 0 && t < 1 &&
 				(position + t*distance).x > (obstacle - volume).x && (position + t*distance).x < (obstacle + volume).x
 				&& (position + t*distance).z > (obstacle - volume).z && (position + t*distance).z < (obstacle + volume).z)
+		{
 //			distance.y = obstacle.y + volume.y - position.y;
 			distance.y = 0;
+			return true;
+		}
 
 	}
 	else if(distance.y > 0)
@@ -111,17 +95,45 @@ void intersect(Vector3 position,Vector3 &distance, Vector3 obstacle, Vector3 vol
 		if( t > 0 && t < 1 &&
 				(position + t*distance).x > (obstacle - volume).x && (position + t*distance).x < (obstacle + volume).x
 				&& (position + t*distance).z > (obstacle - volume).z && (position + t*distance).z < (obstacle + volume).z)
-//			distance.y = obstacle.y - volume.y - position.y;
+		{
 			distance.y = 0;
+			return true;
+		}
 	}
+	if(distance.x < 0)
+	{
+		t = ((obstacle + volume).x -position.x)/distance.x;
+		if( t > 0 && t < 1 &&
+				(position + t*distance).y > (obstacle - volume).y && (position + t*distance).y < (obstacle + volume).y
+				&& (position + t*distance).z > (obstacle - volume).z && (position + t*distance).z < (obstacle + volume).z)
+		{
+			distance.x = 0;
+			return true;
+		}
+
+	}
+	else if(distance.x > 0)
+	{
+		t = ((obstacle - volume).x -position.x)/distance.x;
+		if( t > 0 && t < 1 &&
+				(position + t*distance).y > (obstacle - volume).y && (position + t*distance).y < (obstacle + volume).y
+				&& (position + t*distance).z > (obstacle - volume).z && (position + t*distance).z < (obstacle + volume).z)
+		{
+			distance.x = 0;
+			return true;
+		}
+	}
+
 	if(distance.z < 0)
 	{
 		t = ((obstacle + volume).z -position.z)/distance.z;
 		if( t > 0 && t < 1 &&
 				(position + t*distance).y > (obstacle - volume).y && (position + t*distance).y < (obstacle + volume).y
 				&& (position + t*distance).x > (obstacle - volume).x && (position + t*distance).x < (obstacle + volume).x)
-//			distance.z = obstacle.z + volume.z - position.z;
+		{
 			distance.z = 0;
+			return true;
+		}
 
 	}
 	else if(distance.z > 0)
@@ -130,9 +142,13 @@ void intersect(Vector3 position,Vector3 &distance, Vector3 obstacle, Vector3 vol
 		if( t > 0 && t < 1 &&
 				(position + t*distance).y > (obstacle - volume).y && (position + t*distance).y < (obstacle + volume).y
 				&& (position + t*distance).x > (obstacle - volume).x && (position + t*distance).x < (obstacle + volume).x)
-//			distance.z = obstacle.z - volume.z - position.z;
+		{
 			distance.z = 0;
+			return true;
+		}
 	}
+
+	return false;
 }
 
 void ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 &deplacement)
@@ -140,18 +156,21 @@ void ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 &deplacem
 	Ogre::Vector3 volume = obj->getVolume();
 	for(int i = -1; i<=1; i += 2)
 	{
-		for(int j = -1; j<=-1; j += 2)
+		for(int j = -1; j<=1; j += 2)
 		{
 			for(int k = -1; k<=1; k+=2)
 			{
 				if( deplacement.x * i <=0 && deplacement.y * j <= 0 && deplacement.z * k <= 0)
 					continue;
 				Ogre::Vector3 point = obj->getNode()->getPosition() + Vector3(i*volume.x,j*volume.y,k*volume.z);
-				if(mTerrain.find(Triplet(round(point + deplacement))) != mTerrain.end())
+				while(mTerrain.find(Triplet(round(point + deplacement))) != mTerrain.end())
 				{
+					Vector3 planed_deplacement = deplacement;
 					Ogre::String name = mTerrain.find(Triplet(round(point+deplacement)))->second;
 					PhysicalObject* obstacle = mObjects.find(name)->second;
 					intersect(point,deplacement,obstacle->getNode()->getPosition(),obstacle->getVolume());
+					if(planed_deplacement == deplacement)
+						break;
 
 				}
 
@@ -197,14 +216,14 @@ Block* ObjectManager::createBlock(const Ogre::Vector3 position) {
 }
 
 void ObjectManager::loadScene() {
-	for (int i=0; i<2; i++) {
-		for (int j=0; j<2; j++) {
+	for (int i=0; i<10; i++) {
+		for (int j=0; j<10; j++) {
 
 			createBlock(Vector3(2*i,-1,-2*j));
 			createBlock(Vector3(2*i,-1,-2*j-1));
 			createBlock(Vector3(2*i+1,-1,-2*j));
 			createBlock(Vector3(2*i+1,-1,-2*j-1));
-			for (int k=0; k<1; k++) {
+			for (int k=0; k < 2; k++) {
 				if (rand()%2 == 0) {
 					createBlock(Vector3(i,k,-j)*2);
 				}
@@ -214,20 +233,28 @@ void ObjectManager::loadScene() {
 	return;
 }
 
-Vector3 ObjectManager::getGravity(Vector3 position) const
+Vector3 ObjectManager::getGravity(PhysicalObject* obj) const
 {
-	return Vector3::NEGATIVE_UNIT_Y * 0;
+	if(isOnGround(obj))
+		return Vector3::ZERO;
+	else
+		return Vector3::NEGATIVE_UNIT_Y * 9.8;
 }
 
-double ObjectManager::getStrench(Vector3 position) const
+double ObjectManager::getStrench(PhysicalObject* obj) const
 {
-	if(isOnGround(position))
+	if(isOnGround(obj))
 		return 10;
 	else
 		return 0.1;
 }
 
-bool ObjectManager::isOnGround(Vector3 position) const
+bool ObjectManager::isOnGround(PhysicalObject* obj) const
 {
-	return mTerrain.find(Triplet(round(position.x),position.y-1,round(position.z))) != mTerrain.end();
+	Vector3 position = obj->getNode()->getPosition();
+
+	if(mTerrain.find(Triplet(round(position.x),floor(position.y-obj->getVolume().y),round(position.z))) == mTerrain.end())
+		return false;
+	PhysicalObject* obstacle = mObjects.find(mTerrain.find(Triplet(round(position.x),floor(position.y-obj->getVolume().y),round(position.z)))->second)->second;
+	return ( 0.01 > position.y-obj->getVolume().y - obstacle->getNode()->getPosition().y - obstacle->getVolume().y);
 }
