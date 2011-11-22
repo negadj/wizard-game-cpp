@@ -24,7 +24,8 @@ ObjectManager::ObjectManager(Ogre::SceneManager* scnMgr) :
 	mSceneMgr(scnMgr),
 	mCollisionTools(scnMgr),
 	mTerrain(std::map<Triplet,String>()),
-	mPhysicalClock(Clock(0.02))
+	mPhysicalClock(Clock(0.02)),
+	mMapManager(50)
 {}
 
 ObjectManager::~ObjectManager()
@@ -216,20 +217,23 @@ Block* ObjectManager::createBlock(const Ogre::Vector3 position) {
 }
 
 void ObjectManager::loadScene() {
-	for (int i=0; i<10; i++) {
-		for (int j=0; j<10; j++) {
-
-			createBlock(Vector3(2*i,-1,-2*j));
-			createBlock(Vector3(2*i,-1,-2*j-1));
-			createBlock(Vector3(2*i+1,-1,-2*j));
-			createBlock(Vector3(2*i+1,-1,-2*j-1));
-			for (int k=0; k < 2; k++) {
-				if (rand()%2 == 0) {
-					createBlock(Vector3(i,k,-j)*2);
-				}
-			}
-		}
-	}
+//	for (int i=0; i<10; i++) {
+//		for (int j=0; j<10; j++) {
+//
+//			createBlock(Vector3(2*i,-1,-2*j));
+//			createBlock(Vector3(2*i,-1,-2*j-1));
+//			createBlock(Vector3(2*i+1,-1,-2*j));
+//			createBlock(Vector3(2*i+1,-1,-2*j-1));
+//			for (int k=0; k < 2; k++) {
+//				if (rand()%2 == 0) {
+//					createBlock(Vector3(i,k,-j)*2);
+//				}
+//			}
+//		}
+//	}
+	std::vector<Ogre::Vector3> chunk = mMapManager.loadChunk(Vector3::ZERO);
+	for(std::vector<Vector3>::iterator it = chunk.begin(); it != chunk.end(); ++it)
+		createBlock(*it);
 	return;
 }
 

@@ -25,7 +25,7 @@ Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 	mVerticalVelocity(0),
 	mCollisionTools(cam->getSceneManager())
 {
-	getNode()->translate(0,1,0);
+	getNode()->translate(1,1.5,1);
 	getNode()->setInitialState();
 	setupBody(cam->getSceneManager());
 	setupCamera();
