@@ -25,7 +25,7 @@ ObjectManager::ObjectManager(Ogre::SceneManager* scnMgr) :
 	mCollisionTools(scnMgr),
 	mTerrain(std::map<Triplet,String>()),
 	mPhysicalClock(Clock(0.02)),
-	mMapManager(50)
+	mMapManager(10)
 {}
 
 ObjectManager::~ObjectManager()
@@ -234,7 +234,6 @@ void ObjectManager::loadScene() {
 	std::vector<Ogre::Vector3> chunk = mMapManager.loadChunk(Vector3::ZERO);
 	for(std::vector<Vector3>::iterator it = chunk.begin(); it != chunk.end(); ++it)
 		createBlock(*it);
-	return;
 }
 
 Vector3 ObjectManager::getGravity(PhysicalObject* obj) const
