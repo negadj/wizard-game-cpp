@@ -164,16 +164,29 @@ void ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 &deplacem
 				if( deplacement.x * i <=0 && deplacement.y * j <= 0 && deplacement.z * k <= 0)
 					continue;
 				Ogre::Vector3 point = obj->getNode()->getPosition() + Vector3(i*volume.x,j*volume.y,k*volume.z);
-				while(mTerrain.find(Triplet(round(point + deplacement))) != mTerrain.end())
+				Ogre::Vector3 planned_move = deplacement;
+				do
 				{
-					Vector3 planed_deplacement = deplacement;
-					Ogre::String name = mTerrain.find(Triplet(round(point+deplacement)))->second;
-					PhysicalObject* obstacle = mObjects.find(name)->second;
-					intersect(point,deplacement,obstacle->getNode()->getPosition(),obstacle->getVolume());
-					if(planed_deplacement == deplacement)
-						break;
-
-				}
+					planned_move = deplacement;
+					if(mTerrain.find(Triplet(round(point+Vector3(deplacement.x,0,0)))) != mTerrain.end())
+					{
+						Ogre::String name = mTerrain.find(Triplet(round(point+Vector3(deplacement.x,0,0))))->second;
+						PhysicalObject* obstacle = mObjects.find(name)->second;
+						intersect(point,deplacement,obstacle->getNode()->getPosition(),obstacle->getVolume());
+					}
+					if(mTerrain.find(Triplet(round(point+Vector3(0,deplacement.y,0)))) != mTerrain.end())
+					{
+						Ogre::String name = mTerrain.find(Triplet(round(point+Vector3(0,deplacement.y,0))))->second;
+						PhysicalObject* obstacle = mObjects.find(name)->second;
+						intersect(point,deplacement,obstacle->getNode()->getPosition(),obstacle->getVolume());
+					}
+					if(mTerrain.find(Triplet(round(point+Vector3(0,0,deplacement.z)))) != mTerrain.end())
+					{
+						Ogre::String name = mTerrain.find(Triplet(round(point+Vector3(0,0,deplacement.z))))->second;
+						PhysicalObject* obstacle = mObjects.find(name)->second;
+						intersect(point,deplacement,obstacle->getNode()->getPosition(),obstacle->getVolume());
+					}
+				} while(planned_move != deplacement);
 
 			}
 		}
@@ -217,20 +230,6 @@ Block* ObjectManager::createBlock(const Ogre::Vector3 position) {
 }
 
 void ObjectManager::loadScene() {
-//	for (int i=0; i<10; i++) {
-//		for (int j=0; j<10; j++) {
-//
-//			createBlock(Vector3(2*i,-1,-2*j));
-//			createBlock(Vector3(2*i,-1,-2*j-1));
-//			createBlock(Vector3(2*i+1,-1,-2*j));
-//			createBlock(Vector3(2*i+1,-1,-2*j-1));
-//			for (int k=0; k < 2; k++) {
-//				if (rand()%2 == 0) {
-//					createBlock(Vector3(i,k,-j)*2);
-//				}
-//			}
-//		}
-//	}
 	std::vector<Ogre::Vector3> chunk = mMapManager.loadChunk(Vector3::ZERO);
 	for(std::vector<Vector3>::iterator it = chunk.begin(); it != chunk.end(); ++it)
 		createBlock(*it);
@@ -239,10 +238,7 @@ void ObjectManager::loadScene() {
 
 Vector3 ObjectManager::getGravity(PhysicalObject* obj) const
 {
-	if(isOnGround(obj))
-		return Vector3::ZERO;
-	else
-		return Vector3::NEGATIVE_UNIT_Y * 9.8;
+	return Vector3::NEGATIVE_UNIT_Y * 9.8;
 }
 
 double ObjectManager::getStrench(PhysicalObject* obj) const
