@@ -193,6 +193,7 @@ void ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 &deplacem
 	}
 }
 
+
 void ObjectManager::updateObjects(Ogre::Real deltaTime) {
 	PhysicalObject* obj = NULL;
 	for(std::vector<PhysicalObject*>::iterator it = mActiveObjects.begin();
