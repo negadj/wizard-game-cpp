@@ -16,6 +16,7 @@
 #include "Triplet.h"
 #include "Clock.h"
 #include "MapManager.h"
+#include "Monster.h"
 
 /**
  * Classe qui s'occupe de la gestion des objets matériels du jeu.
@@ -48,6 +49,8 @@ public:
 	 * Ajoute un Block
 	 */
 	Block* createBlock(const Ogre::Vector3 position = Ogre::Vector3::ZERO);
+
+	Monster* createMonster(const Ogre::Vector3 position = Ogre::Vector3::ZERO);
 	/*
 	 * Renvoie si un objet est atteint, et si oui lequel
 	 */
@@ -69,6 +72,8 @@ public:
 	double getStrench(PhysicalObject* obj) const;
 
 	bool isOnGround(PhysicalObject* obj) const;
+
+	void gameOver();
 };
 
 #endif /* OBJECTMANAGER_H_ */
