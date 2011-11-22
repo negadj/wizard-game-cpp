@@ -193,13 +193,18 @@ void ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 &deplacem
 	}
 }
 
+void ObjectManager::gameOver()
+{
+	exit(0);
+}
 
 void ObjectManager::updateObjects(Ogre::Real deltaTime) {
 	PhysicalObject* obj = NULL;
-	for(std::vector<PhysicalObject*>::iterator it = mActiveObjects.begin();
+	while(mPhysicalClock.ticked(deltaTime)){
+		for(std::vector<PhysicalObject*>::iterator it = mActiveObjects.begin();
 			it != mActiveObjects.end(); ++it) {
-		obj = *it;
-		while(mPhysicalClock.ticked(deltaTime)){
+			obj = *it;
+
 
 
 		// On lance d'abord les update personalisés de chaque objet
@@ -208,6 +213,25 @@ void ObjectManager::updateObjects(Ogre::Real deltaTime) {
 
 		// Calcul des nouvelles positions des objets.
 			moveWithCollisions(obj, mPhysicalClock.getStep());
+		}
+	}
+	for(std::vector<PhysicalObject*>::iterator it = mActiveObjects.begin(); it != mActiveObjects.end();++it)
+	{
+		obj = *it;
+		if(obj->getId() == (ObjectId_t) 1)
+		{
+			PhysicalObject* obj2 = NULL;
+			for(std::vector<PhysicalObject*>::iterator it2 = mActiveObjects.begin(); it2 != mActiveObjects.end();++it2)
+			{
+				obj2 = *it2;
+				if(obj != obj2)
+				{
+					if((obj2->getNode()->getPosition() - obj->getNode()->getPosition()).length() < 0.9)
+					{
+						gameOver();
+					}
+				}
+			}
 		}
 	}
 }
@@ -220,9 +244,18 @@ Player* ObjectManager::createPlayer(Ogre::Camera* camera) {
 	return p;
 }
 
+Monster* ObjectManager::createMonster(const Ogre::Vector3 position)
+{
+	Ogre::String name = Ogre::StringConverter::toString(++_countObject);
+	Monster* m = new Monster(this, mSceneMgr->getRootSceneNode(), name);
+	m->getNode()->setPosition(position);
+	mObjects[name] = m;
+	return m;
+}
+
 Block* ObjectManager::createBlock(const Ogre::Vector3 position) {
 	Ogre::String name = Ogre::StringConverter::toString(++_countObject);
-	Block* b = new Block(this, mSceneMgr->getRootSceneNode(), name, 2);
+	Block* b = new Block(this, mSceneMgr->getRootSceneNode(), name, 3);
 	b->getNode()->setPosition(position);
 	mTerrain[Triplet(position)] = name;
 	//TODO: setInitialState ?
@@ -234,6 +267,7 @@ void ObjectManager::loadScene() {
 	std::vector<Ogre::Vector3> chunk = mMapManager.loadChunk(Vector3::ZERO);
 	for(std::vector<Vector3>::iterator it = chunk.begin(); it != chunk.end(); ++it)
 		createBlock(*it);
+	mActiveObjects.push_back(createMonster(Vector3(1,50,3)));
 }
 
 Vector3 ObjectManager::getGravity(PhysicalObject* obj) const
