@@ -36,9 +36,10 @@ Player::~Player() {}
 void Player::update(Real deltaTime) {
 	/* Mise à jour de la vitesse du joueur en fonction des touches,
 	 dans le référentiel global. */
-	if(!getObjectManager()->isOnGround(this))
-		mDirection = Vector3::ZERO;
-	addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)+  mPropulsion * (getNode()->getOrientation() * mDirection.normalisedCopy())));
+	if(getObjectManager()->isOnGround(this))
+		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)+  mPropulsion * (getNode()->getOrientation() * mDirection.normalisedCopy())));
+	else
+		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)));
 }
 
 void Player::injectKeyDown(const OIS::KeyEvent& evt) {
@@ -121,7 +122,7 @@ void Player::setupBody(SceneManager* sceneMgr) {
 
 void Player::setupCamera() {
 	// On créer les noeuds pour les cameras
-	mCameraRootNode = getNode()->createChildSceneNode(Vector3(0,CHAR_HEIGHT-0.3,-0.2));
+	mCameraRootNode = getNode()->createChildSceneNode(Vector3(0,0.3,-0.3));
 	mCameraFPNode = mCameraRootNode->createChildSceneNode();
 	mCameraTPNode = mCameraRootNode->createChildSceneNode(Vector3::UNIT_Z*8);
 	mCameraGoal = mCameraRootNode->createChildSceneNode(Vector3::NEGATIVE_UNIT_Z*10);
