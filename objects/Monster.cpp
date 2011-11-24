@@ -7,6 +7,9 @@
 
 #include "Monster.h"
 #include "ObjectManager.h"
+#include "RandomIA.h"
+#include "GuardianIA.h"
+#include "PatrollIA.h"
 
 Monster::Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name):
 	PhysicalObject(objectManager, originNode, name, 2, "Sinbad.mesh", Ogre::Vector3(0.45,0.9,0.45),"Monster"),
@@ -15,13 +18,14 @@ Monster::Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre
 	mSword2(0),
 	mDirection(Ogre::Vector3::ZERO),
 	mPropulsion(40),
-	mVerticalVelocity(0)
+	mVerticalVelocity(0),
+	mIA(new PatrollIA(this))
 {
 	setupBody(originNode);
 }
 
 Monster::~Monster() {
-	// TODO Auto-generated destructor stub
+	delete mIA;
 }
 
 void Monster::setupBody(Ogre::SceneNode* originNode) {
@@ -42,8 +46,13 @@ void Monster::setupBody(Ogre::SceneNode* originNode) {
 void Monster::update(Ogre::Real deltaTime) {
 	/* Mise à jour de la vitesse du joueur en fonction des touches,
 	 dans le référentiel global. */
-	if(getObjectManager()->isOnGround(this))
-		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)+  mPropulsion * (getNode()->getOrientation() * mDirection.normalisedCopy())));
+	Ogre::Vector3 absoluteDirection = mIA->findDirection();
+
+	if(getObjectManager()->isOnGround(this) && absoluteDirection != Ogre::Vector3::ZERO)
+	{
+		getNode()->setDirection(absoluteDirection,Ogre::Node::TS_LOCAL);
+		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)+  mPropulsion * (getNode()->getOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z)));
+	}
 	else
 		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)));
 }

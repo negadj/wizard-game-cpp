@@ -11,6 +11,10 @@
 #include <Ogre.h>
 #include "PhysicalObject.h"
 
+class Monster;
+
+#include "IA.h"
+
 class Monster: public PhysicalObject
 {
 public:
@@ -25,6 +29,7 @@ private:
 	Ogre::Vector3 mDirection; // direction du joueur donnée par les touches du clavier
 	Ogre::Real mPropulsion;
 	Ogre::Real mVerticalVelocity; // for jumping
+	IA* mIA;
 	void setupBody(Ogre::SceneNode* originNode);
 };
 
