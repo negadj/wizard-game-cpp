@@ -7,7 +7,9 @@ Author: Gecko
 #include <Ogre.h>
 #include <OIS.h>
 #include "objects/ObjectManager.h"
+#ifndef NO_CEGUI
 #include "MenuManager.h"
+#endif
 
 using namespace Ogre;
 
@@ -37,7 +39,11 @@ private:
 	 */
 	void exitGame();
 
+#ifdef _WINDOWS
+    bool OgreApplication::frameStarted(const FrameEvent& evt);
+#else
 	bool frameRenderingQueued(const Ogre::FrameEvent& evt);
+#endif
 	void startOIS();
 	void windowResized(RenderWindow* rw);
 	void windowClosed(RenderWindow* rw);
@@ -62,7 +68,9 @@ private:
 	OIS::Mouse*         mMouse;
 	OIS::Keyboard*      mKeyboard;
 
-	MenuManager mMenuMgr;
+#ifndef NO_CEGUI
+    MenuManager mMenuMgr;
+#endif
 	Overlay* mDebugOverlay;
 
 	Player* mPlayer;

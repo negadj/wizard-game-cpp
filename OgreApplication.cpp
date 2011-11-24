@@ -14,12 +14,18 @@ OgreApplication::OgreApplication() :
 	mInputManager(NULL),
 	mMouse(NULL),
 	mKeyboard(NULL),
+#ifndef NO_CEGUI
 	mMenuMgr(this),
+#endif
 	mDebugOverlay(NULL),
 	mPlayer(NULL),
 	mContinue(true),
 	mStarted(false),
+#ifdef NO_CEGUI
+    mLocked(false)
+#else
 	mLocked(true)
+#endif
 {}
 
 OgreApplication::~OgreApplication() {
@@ -46,10 +52,15 @@ bool OgreApplication::start() {
 	mObjectMgr = new ObjectManager(mSceneMgr);
 	createCamera();
 	createViewPort();
+#ifndef NO_CEGUI
 	mMenuMgr.setup();
+#endif
 	createFrameListener();
-
+#ifndef NO_CEGUI
 	mMenuMgr.showMainMenu();
+#else
+    startGame();
+#endif
 	mRoot->startRendering();
 
 	return true;
@@ -58,6 +69,9 @@ bool OgreApplication::start() {
 void OgreApplication::startGame() {
 	createScene();
 	mPlayer = mObjectMgr->createPlayer(mCamera);
+#ifdef DEBUG_MODE
+    toggleDebugOverlay();
+#endif
 	mStarted = true;
 }
 
@@ -136,7 +150,14 @@ void OgreApplication::createFrameListener() {
 	mRoot->addFrameListener(this);
 }
 
+#ifdef _WINDOWS
+bool OgreApplication::frameStarted(const FrameEvent& evt) {
+#else
 bool OgreApplication::frameRenderingQueued(const FrameEvent& evt) {
+#endif
+#ifdef DEBUG_MODE
+Ogre::LogManager::getSingleton().logMessage("enter frame rendering");
+#endif
 	if(mWindow->isClosed())
         return false;
 
@@ -152,7 +173,9 @@ bool OgreApplication::frameRenderingQueued(const FrameEvent& evt) {
     	// Calcul des modifications sur les objets de la scène
     	mObjectMgr->updateObjects(evt.timeSinceLastFrame);
     }
-
+#ifdef DEBUG_MODE
+Ogre::LogManager::getSingleton().logMessage("exit frame rendering");
+#endif
     return mContinue;
 }
 
@@ -201,15 +224,24 @@ void OgreApplication::windowClosed(RenderWindow* rw) {
 }
 
 bool OgreApplication::mouseMoved(const OIS::MouseEvent &e) {
-	mMenuMgr.mouseMoved(e);
+#ifdef DEBUG_MODE
+Ogre::LogManager::getSingleton().logMessage("entering mouseMoved");
+#endif
+#ifndef NO_CEGUI
+    mMenuMgr.mouseMoved(e);
+#endif
 	if (mStarted && !mLocked)
 		mPlayer->injectMouseMove(e);
-
+#ifdef DEBUG_MODE
+Ogre::LogManager::getSingleton().logMessage("exiting mouseMoved");
+#endif
 	return true;
 }
 
 bool OgreApplication::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id) {
-	mMenuMgr.mouseButtonDown(id);
+#ifndef NO_CEGUI
+    mMenuMgr.mouseButtonDown(id);
+#endif
 	if (mStarted && !mLocked)
 		mPlayer->injectMouseDown(e, id);
 
@@ -217,18 +249,29 @@ bool OgreApplication::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID 
 }
 
 bool OgreApplication::mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id) {
-	mMenuMgr.mouseButtonUp(id);
+#ifndef NO_CEGUI
+    mMenuMgr.mouseButtonUp(id);
+#endif
 	return true;
 }
 
 bool OgreApplication::keyPressed(const OIS::KeyEvent &e) {
-	mMenuMgr.keyPressed(e);
+#ifdef DEBUG_MODE
+Ogre::LogManager::getSingleton().logMessage("entering keyPressed");
+#endif
+#ifndef NO_CEGUI
+    mMenuMgr.keyPressed(e);
+#endif
 	// Si une partie est en cours
 	if (mStarted) {
 		switch (e.key) {
 		case OIS::KC_ESCAPE:
-			mMenuMgr.togglePauseMenu();
-			break;
+#ifndef NO_CEGUI
+            mMenuMgr.togglePauseMenu();
+#else
+            mContinue = false;
+#endif
+            break;
 		case OIS::KC_F8: //Toggle bounding boxes
 			mSceneMgr->showBoundingBoxes(!mSceneMgr->getShowBoundingBoxes());
 			break;
@@ -241,13 +284,16 @@ bool OgreApplication::keyPressed(const OIS::KeyEvent &e) {
 			break;
 		}
 	}
-
+#ifdef DEBUG_MODE
+Ogre::LogManager::getSingleton().logMessage("exiting keyPressed");
+#endif
 	return true;
 }
 
 bool OgreApplication::keyReleased(const OIS::KeyEvent &e) {
-	mMenuMgr.keyReleased(e);
-
+#ifndef NO_CEGUI
+    mMenuMgr.keyReleased(e);
+#endif
 	if (mStarted && !mLocked)
 		mPlayer->injectKeyUp(e);
 
@@ -262,6 +308,9 @@ void OgreApplication::toggleDebugOverlay() {
 }
 
 void OgreApplication::updateDebugInfo(Real deltaTime) {
+#ifdef DEBUG_MODE
+Ogre::LogManager::getSingleton().logMessage("enter updateDebugInfo");
+#endif
 	OverlayContainer* debugPanel = mDebugOverlay->getChild("Wizard/DebugPanel");
 
 	// Mise à jour des FPS
@@ -279,4 +328,7 @@ void OgreApplication::updateDebugInfo(Real deltaTime) {
 				"Y : " + StringConverter::toString(y));
 	debugPanel->getChild("Wizard/DebugPanel/Zposition")->setCaption(
 				"Z : " + StringConverter::toString(z));
+#ifdef DEBUG_MODE
+Ogre::LogManager::getSingleton().logMessage("exit updateDebugInfo");
+#endif
 }
