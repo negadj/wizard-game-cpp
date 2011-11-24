@@ -74,6 +74,8 @@ public:
 	bool isOnGround(PhysicalObject* obj) const;
 
 	void gameOver();
+
+	bool isEmpty(Ogre::Vector3 wantedPosition);
 };
 
 #endif /* OBJECTMANAGER_H_ */

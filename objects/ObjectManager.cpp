@@ -267,7 +267,7 @@ void ObjectManager::loadScene() {
 	std::vector<Ogre::Vector3> chunk = mMapManager.loadChunk(Vector3::ZERO);
 	for(std::vector<Vector3>::iterator it = chunk.begin(); it != chunk.end(); ++it)
 		createBlock(*it);
-	mActiveObjects.push_back(createMonster(Vector3(1,50,3)));
+	mActiveObjects.push_back(createMonster(Vector3(3,1.5,5)));
 }
 
 Vector3 ObjectManager::getGravity(PhysicalObject* obj) const
@@ -291,4 +291,9 @@ bool ObjectManager::isOnGround(PhysicalObject* obj) const
 		return false;
 	PhysicalObject* obstacle = mObjects.find(mTerrain.find(Triplet(round(position.x),floor(position.y-obj->getVolume().y),round(position.z)))->second)->second;
 	return ( 0.01 > position.y-obj->getVolume().y - obstacle->getNode()->getPosition().y - obstacle->getVolume().y);
+}
+
+bool ObjectManager::isEmpty(Vector3 wantedPosition)
+{
+	return mTerrain.find(Triplet(round(wantedPosition))) == mTerrain.end();
 }
