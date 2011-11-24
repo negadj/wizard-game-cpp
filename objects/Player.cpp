@@ -120,7 +120,12 @@ void Player::setupBody(SceneManager* sceneMgr) {
 
 	/* Le constructeur de PhysicalObject attache mEntity à mNode,
 	   ce n'est pas ce que l'on souhaite ici */
-	getEntity()->detachFromParent();
+#ifdef _WINDOWS
+    getEntity()->getParentSceneNode()->detachObject(getEntity());
+#else
+    getEntity()->detachFromParent();
+#endif
+
 	mBodyNode->attachObject(getEntity());
 }
 
@@ -140,11 +145,20 @@ void Player::setupCamera() {
 void Player::toggleCameraMode() {
 	// From First Person to Third Person
 	if (mCamera->getParentSceneNode() == mCameraFPNode) {
-		mCamera->detachFromParent();
+#ifdef _WINDOWS
+        mCamera->getParentSceneNode()->detachObject(mCamera);
+#else
+        mCamera->detachFromParent();
+#endif
+
 		mCameraTPNode->attachObject(mCamera);
 	}
 	else { // From Third Person to First Person
-		mCamera->detachFromParent();
+#ifdef _WINDOWS
+        mCamera->getParentSceneNode()->detachObject(mCamera);
+#else
+        mCamera->detachFromParent();
+#endif
 		mCameraFPNode->attachObject(mCamera);
 	}
 }
