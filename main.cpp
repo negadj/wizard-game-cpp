@@ -21,7 +21,7 @@ extern "C" {
     {
         // Create application object
         OgreApplication app;
-
+        srand(time(NULL));
         try {
             app.start();
         } catch( Ogre::Exception& e ) {

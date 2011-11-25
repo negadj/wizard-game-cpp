@@ -29,6 +29,7 @@ Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 	getNode()->setInitialState();
 	setupBody(cam->getSceneManager());
 	setupCamera();
+	getNode()->yaw(Degree(180));
 }
 
 Player::~Player() {}
@@ -62,7 +63,7 @@ void Player::injectKeyDown(const OIS::KeyEvent& evt) {
 		break;
 	case OIS::KC_SPACE:
 		if(getObjectManager()->isOnGround(this))
-			addSpeed(Ogre::Vector3::UNIT_Y * 8);
+			addSpeed(Ogre::Vector3::UNIT_Y * 15);
 		break;
 	default:
 		break;
@@ -97,7 +98,6 @@ void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) 
 	PhysicalObject* target = NULL;
 	if (getObjectManager()->objectReached(mCamera->getDerivedPosition(), mCamera->getDerivedDirection(), 10, target)) {
 		target->getEntity()->setVisible(false);
-		std::cout << target->getName() << std::endl;
 	}
 }
 

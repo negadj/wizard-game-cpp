@@ -20,7 +20,8 @@ PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* or
 	mSolidity(20),
 	mDensity(1),
 	mIntegrity(100),
-	mVolume(volume)
+	mVolume(volume),
+	mCollisionCorrection(Ogre::Vector3::ZERO)
 {
 	mEntity = mNode->getCreator()->createEntity(mName, meshName);
 	mNode->attachObject(mEntity);
@@ -199,3 +200,12 @@ std::vector<Ogre::Vector3> PhysicalObject::getContactSurface(const Ogre::Vector3
 	return result;
 }
 
+Ogre::Vector3 PhysicalObject::getCollisionCorrection() const
+{
+	return mCollisionCorrection;
+}
+
+void PhysicalObject::setCollisionCorrection(Ogre::Vector3 correction)
+{
+	mCollisionCorrection = correction;
+}
