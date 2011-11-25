@@ -32,16 +32,17 @@ std::vector<Ogre::Vector3> MapManager::loadChunk(Ogre::Vector3 chunkPosition)
 		}
 		else if( c == ' ')
 		{
-			result.push_back(Ogre::Vector3(i,0,k));
+			result.push_back(Ogre::Vector3(chunkPosition.x * mChunkSize + i,chunkPosition.y * mChunkSize , chunkPosition.z * mChunkSize +k));
 			i++;
 		}
 		else if( c == 'x')
 		{
-			result.push_back(Ogre::Vector3(i,0,k));
-			result.push_back(Ogre::Vector3(i,1,k));
-			result.push_back(Ogre::Vector3(i,2,k));
+			result.push_back(Ogre::Vector3(chunkPosition.x * mChunkSize + i,chunkPosition.y * mChunkSize , chunkPosition.z * mChunkSize +k));
+			result.push_back(Ogre::Vector3(chunkPosition.x * mChunkSize + i,chunkPosition.y * mChunkSize + 1 , chunkPosition.z * mChunkSize +k));
+			result.push_back(Ogre::Vector3(chunkPosition.x * mChunkSize + i,chunkPosition.y * mChunkSize + 2, chunkPosition.z * mChunkSize +k));
 			i++;
 		}
 	}
+	chunk.close();
 	return result;
 }
