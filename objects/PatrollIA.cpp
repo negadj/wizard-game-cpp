@@ -21,7 +21,7 @@ PatrollIA::~PatrollIA() {
 
 Ogre::Vector3 PatrollIA::findDirection()
 {
-	if(mMonster->getObjectManager()->isEmpty(mMonster->getNode()->getPosition() + mMonster->getNode()->_getDerivedOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z))
+	if(mMonster->getCollisionCorrection().dotProduct(mMonster->getNode()->_getDerivedOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z) >= 0)
 		return Ogre::Vector3::NEGATIVE_UNIT_Z;
 	else
 		return Ogre::Vector3::UNIT_Z;

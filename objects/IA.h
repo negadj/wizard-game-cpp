@@ -21,6 +21,7 @@ public:
 	IA(Monster* monster);
 	~IA();
 	virtual Ogre::Vector3 findDirection() =0;
+	static IA* getIA(Monster* monster);
 };
 
 #endif /* IA_H_ */

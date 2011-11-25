@@ -51,9 +51,10 @@ void ObjectManager::moveWithCollisions(PhysicalObject* &obj, const Ogre::Real de
     // On gère les éventuelles collisions
     if(obj->getSpeed() != Ogre::Vector3::ZERO && deltaTime != 0){
     	Ogre::Vector3 distance = obj->getSpeed() * deltaTime;
-    	handleCollision(obj,distance);
-        obj->getNode()->translate(distance); //TODO: TS_WORLD ?
-        obj->setSpeed(distance/deltaTime);
+    	Ogre::Vector3 newDistance = handleCollision(obj,distance);
+        obj->getNode()->translate(newDistance); //TODO: TS_WORLD ?
+        obj->setSpeed(newDistance/deltaTime);
+        obj->setCollisionCorrection(newDistance - distance);
     }
 }
 
@@ -152,7 +153,7 @@ bool intersect(Vector3 position,Vector3 &distance, Vector3 obstacle, Vector3 vol
 	return false;
 }
 
-void ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 &deplacement)
+Ogre::Vector3 ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 deplacement)
 {
 	Ogre::Vector3 volume = obj->getVolume();
 	for(int i = -1; i<=1; i += 2)
@@ -191,10 +192,12 @@ void ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 &deplacem
 			}
 		}
 	}
+	return deplacement;
 }
 
 void ObjectManager::gameOver()
 {
+	clear();
 	exit(0);
 }
 

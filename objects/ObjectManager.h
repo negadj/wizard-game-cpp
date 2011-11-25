@@ -65,7 +65,7 @@ public:
 	 */
 	void clear();
 
-	void handleCollision(const PhysicalObject* obj, Vector3 &deplacement);
+	Ogre::Vector3 handleCollision(const PhysicalObject* obj, Vector3 deplacement);
 
 	Vector3 getGravity(PhysicalObject* obj) const;
 
