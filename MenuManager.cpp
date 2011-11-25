@@ -6,6 +6,9 @@
  */
 
 #include "MenuManager.h"
+
+#ifndef NO_CEGUI
+
 #include "OgreApplication.h"
 
 // Méthode statique pour convertir les évènements de souris de OIS à CEGUI
@@ -70,18 +73,32 @@ bool MenuManager::keyReleased(const OIS::KeyEvent &e) {
 }
 
 void MenuManager::setup() {
+#ifdef DEBUG_MODE
+Ogre::LogManager::getSingleton().logMessage("enter MenuManager::setup");
+#endif
 	mDarkOverlay = Ogre::OverlayManager::getSingleton().getByName("Wizard/DarkOverlay");
-
+                                                                                                        Ogre::LogManager::getSingleton().logMessage("1");
+#ifdef _WINDOWS
+    mCeguiRenderer = new CEGUI::OgreCEGUIRenderer(mApp->mWindow, Ogre::RENDER_QUEUE_OVERLAY, false, 3000, mApp->mSceneMgr);
+#else
 	mCeguiRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
+#endif
+                                                                                                        Ogre::LogManager::getSingleton().logMessage("2");
 	mSys = CEGUI::System::getSingletonPtr();
 	CEGUI::Imageset::setDefaultResourceGroup("GUI");
 	CEGUI::Font::setDefaultResourceGroup("GUI");
 	CEGUI::Scheme::setDefaultResourceGroup("GUI");
 	CEGUI::WidgetLookManager::setDefaultResourceGroup("GUI");
 	CEGUI::WindowManager::setDefaultResourceGroup("GUI");
+                                                                                                        Ogre::LogManager::getSingleton().logMessage("3");
+#ifdef _WINDOWS
+	CEGUI::SchemeManager::getSingleton().loadScheme("TaharezLook.scheme");
+#else
 	CEGUI::SchemeManager::getSingleton().create("TaharezLook.scheme");
+#endif
+                                                                                                        Ogre::LogManager::getSingleton().logMessage("3.5");
 	mSys->setDefaultMouseCursor("TaharezLook", "MouseArrow");
-
+                                                                                                        Ogre::LogManager::getSingleton().logMessage("4");
 	CEGUI::WindowManager &wmgr = CEGUI::WindowManager::getSingleton();
 
 	//Configuration d'une GUI vierge (utilisée pendant le jeu)
@@ -93,7 +110,7 @@ void MenuManager::setup() {
 			CEGUI::Event::Subscriber(&MenuManager::startGame, this));
 	mMainSheet->getChild("Main/Quit")->subscribeEvent(CEGUI::PushButton::EventClicked,
 		CEGUI::Event::Subscriber(&MenuManager::quit, this));
-
+                                                                                                        Ogre::LogManager::getSingleton().logMessage("5");
 	// Configuration du menu Pause
 	mPauseSheet = wmgr.loadWindowLayout("GUI/Pause.layout");
 	mPauseSheet->getChild("Pause/Back")->subscribeEvent(CEGUI::PushButton::EventClicked,
@@ -102,14 +119,16 @@ void MenuManager::setup() {
 			CEGUI::Event::Subscriber(&MenuManager::displaySettings, this));
 	mPauseSheet->getChild("Pause/Quit")->subscribeEvent(CEGUI::PushButton::EventClicked,
 				CEGUI::Event::Subscriber(&MenuManager::exitGame, this));
-
+                                                                                                        Ogre::LogManager::getSingleton().logMessage("6");
 	// Configuration du menu Options
 	mSettingsSheet = wmgr.loadWindowLayout("GUI/Settings.layout");
 	mSettingsSheet->getChild("Settings/Shadows")->subscribeEvent(CEGUI::PushButton::EventClicked,
 			CEGUI::Event::Subscriber(&MenuManager::configureShadows, this));
 	mSettingsSheet->getChild("Settings/Back")->subscribeEvent(CEGUI::PushButton::EventClicked,
 				CEGUI::Event::Subscriber(&MenuManager::back, this));
-
+#ifdef DEBUG_MODE
+Ogre::LogManager::getSingleton().logMessage("exit MenuManager::setup");
+#endif
 }
 
 void MenuManager::togglePauseMenu() {
@@ -190,3 +209,4 @@ bool MenuManager::configureShadows(const CEGUI::EventArgs &e) {
 	return true;
 }
 
+#endif
