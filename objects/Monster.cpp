@@ -7,9 +7,7 @@
 
 #include "Monster.h"
 #include "ObjectManager.h"
-#include "RandomIA.h"
-#include "GuardianIA.h"
-#include "PatrollIA.h"
+
 
 Monster::Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name):
 	PhysicalObject(objectManager, originNode, name, 2, "Sinbad.mesh", Ogre::Vector3(0.45,0.9,0.45),"Monster"),
@@ -19,7 +17,7 @@ Monster::Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre
 	mDirection(Ogre::Vector3::ZERO),
 	mPropulsion(40),
 	mVerticalVelocity(0),
-	mIA(new PatrollIA(this))
+	mIA(IA::getIA(this))
 {
 	setupBody(originNode);
 }
@@ -46,6 +44,11 @@ void Monster::setupBody(Ogre::SceneNode* originNode) {
 void Monster::update(Ogre::Real deltaTime) {
 	/* Mise à jour de la vitesse du joueur en fonction des touches,
 	 dans le référentiel global. */
+	if(rand()%100 == 0)
+	{
+		delete mIA;
+		IA::getIA(this);
+	}
 	Ogre::Vector3 absoluteDirection = mIA->findDirection();
 
 	if(getObjectManager()->isOnGround(this) && absoluteDirection != Ogre::Vector3::ZERO)

@@ -32,6 +32,7 @@ private:
 	float mDensity;
 	int mIntegrity; //~= points de vie pour un objet
 	Ogre::Vector3 mVolume;
+	Ogre::Vector3 mCollisionCorrection;
 
 	void setupVolume(Ogre::Vector3 centreMin,Ogre::Vector3 CentreMax);
 
@@ -67,6 +68,8 @@ public:
     ObjectManager* getObjectManager() const;
     const Ogre::Vector3 getVolume() const;
     std::vector<Ogre::Vector3> getContactSurface(const Ogre::Vector3 normal) const;
+    Ogre::Vector3 getCollisionCorrection() const;
+    void setCollisionCorrection(Ogre::Vector3 correction);
 
 };
 
