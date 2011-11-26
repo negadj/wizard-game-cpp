@@ -13,6 +13,8 @@ Clock::Clock(double step):
 {
 }
 
+Clock::~Clock() {}
+
 bool Clock::ticked(Ogre::Real &deltaTime)
 {
 	/* Pour éviter les problèmes dûs à un énorme coup de lag

@@ -43,7 +43,6 @@ bool OgreApplication::start() {
 
 	mSceneMgr = mRoot->createSceneManager("DefaultSceneManager", "Wizard Scene Manager");
 	mDebugOverlay = OverlayManager::getSingleton().getByName("Wizard/DebugOverlay");
-	mObjectMgr = new ObjectManager(mSceneMgr);
 	createCamera();
 	createViewPort();
 	mMenuMgr.setup();
@@ -56,22 +55,18 @@ bool OgreApplication::start() {
 }
 
 void OgreApplication::startGame() {
-LOG("enter startGame");
+	mObjectMgr = new ObjectManager(mSceneMgr);
 	createScene();
 	mPlayer = mObjectMgr->createPlayer(mCamera);
 	mStarted = true;
-LOG("exit startGame");
 }
 
 void OgreApplication::exitGame() {
-LOG("enter startGame");
 	mStarted = false;
 	mDebugOverlay->hide();
 	mCamera->setAutoTracking(false); //Supprime une référence sur un noeud qui va disparaître
-	mObjectMgr->clear();
-	mSceneMgr->clearScene();
-	mPlayer = NULL;
-LOG("exit startGame");
+	mPlayer = NULL; // Par précaution
+	delete mObjectMgr; //Nettoie la scène.
 }
 
 void OgreApplication::createScene() {
