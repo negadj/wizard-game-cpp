@@ -42,7 +42,7 @@ void ObjectManager::clear()
 	}
 	mObjects.clear();
 	mActiveObjects.clear();
-	mTerrain.clear();
+	//mTerrain.clear();
 }
 
 PhysicalObject* ObjectManager::getObject(const Ogre::String& name) const {
@@ -202,21 +202,21 @@ Ogre::Vector3 ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 
 				do
 				{
 					planned_move = deplacement;
-					if(mTerrain.find(Triplet(round(point+Vector3(deplacement.x,0,0)))) != mTerrain.end())
+					if(!mTerrain.isFree(Triplet(round(point+Vector3(deplacement.x,0,0)))))
 					{
-						Ogre::String name = mTerrain.find(Triplet(round(point+Vector3(deplacement.x,0,0))))->second;
+						Ogre::String name = mTerrain.getBlock(Triplet(round(point+Vector3(deplacement.x,0,0))))->getName();
 						PhysicalObject* obstacle = mObjects.find(name)->second;
 						intersect(point,deplacement,obstacle->getNode()->getPosition(),obstacle->getVolume());
 					}
-					if(mTerrain.find(Triplet(round(point+Vector3(0,deplacement.y,0)))) != mTerrain.end())
+					if(!mTerrain.isFree(Triplet(round(point+Vector3(0,deplacement.y,0)))))
 					{
-						Ogre::String name = mTerrain.find(Triplet(round(point+Vector3(0,deplacement.y,0))))->second;
+						Ogre::String name = mTerrain.getBlock(Triplet(round(point+Vector3(0,deplacement.y,0))))->getName();
 						PhysicalObject* obstacle = mObjects.find(name)->second;
 						intersect(point,deplacement,obstacle->getNode()->getPosition(),obstacle->getVolume());
 					}
-					if(mTerrain.find(Triplet(round(point+Vector3(0,0,deplacement.z)))) != mTerrain.end())
+					if(!mTerrain.isFree(Triplet(round(point+Vector3(0,0,deplacement.z)))))
 					{
-						Ogre::String name = mTerrain.find(Triplet(round(point+Vector3(0,0,deplacement.z))))->second;
+						Ogre::String name = mTerrain.getBlock(Triplet(round(point+Vector3(0,0,deplacement.z))))->getName();
 						PhysicalObject* obstacle = mObjects.find(name)->second;
 						intersect(point,deplacement,obstacle->getNode()->getPosition(),obstacle->getVolume());
 					}
@@ -327,13 +327,8 @@ bool ObjectManager::isOnGround(PhysicalObject* obj) const
 {
 	Vector3 position = obj->getNode()->getPosition();
 
-	if(mTerrain.find(Triplet(round(position.x),floor(position.y-obj->getVolume().y),round(position.z))) == mTerrain.end())
+	if(mTerrain.isFree(Triplet(round(position.x),floor(position.y-obj->getVolume().y),round(position.z))))
 		return false;
-	PhysicalObject* obstacle = mObjects.find(mTerrain.find(Triplet(round(position.x),floor(position.y-obj->getVolume().y),round(position.z)))->second)->second;
+	PhysicalObject* obstacle = mTerrain.getBlock(Triplet(round(position.x),floor(position.y-obj->getVolume().y),round(position.z)));
 	return ( 0.01 > position.y-obj->getVolume().y - obstacle->getNode()->getPosition().y - obstacle->getVolume().y);
-}
-
-bool ObjectManager::isEmpty(Vector3 wantedPosition)
-{
-	return mTerrain.find(Triplet(round(wantedPosition))) == mTerrain.end();
 }

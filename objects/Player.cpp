@@ -99,6 +99,10 @@ void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) 
 	if (getObjectManager()->blockReached(mCamera->getDerivedPosition(), mCamera->getDerivedDirection(), 3, target)) {
 		getObjectManager()->getTerrain().removeBlock(target->getNode()->getPosition());
 	}
+//	if (getObjectManager()->objectReached(mCamera->getDerivedPosition(), mCamera->getDerivedDirection(), 10, target)) {
+//		target->getEntity()->setVisible(false);
+//		std::cout << target->getName() << std::endl;
+//	}
 }
 
 void Player::setupBody(SceneManager* sceneMgr) {

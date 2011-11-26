@@ -17,7 +17,9 @@ Terrain::Terrain(const ObjectManager* objMgr, Ogre::StaticGeometry* staticGeomet
 	mStaticGeometry->build();
 }
 
-Terrain::~Terrain() {}
+Terrain::~Terrain() {
+	mStaticGeometry->reset();
+}
 
 bool Terrain::addBlock(Block& b) {
 	Ogre::Vector3 pos = b.getNode()->getPosition();
