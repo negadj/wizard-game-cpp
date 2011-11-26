@@ -18,6 +18,7 @@ private:
 
 public:
 	Clock(double step);
+	virtual ~Clock();
 	bool ticked(Ogre::Real &deltaTime);
 	Ogre::Real getStep();
 };

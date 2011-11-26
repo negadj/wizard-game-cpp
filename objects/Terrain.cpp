@@ -17,9 +17,11 @@ Terrain::Terrain(const ObjectManager* objMgr, Ogre::StaticGeometry* staticGeomet
 	mStaticGeometry->build();
 }
 
-Terrain::~Terrain() {
-	mStaticGeometry->reset();
-}
+/* Note : ne pas chercher à détruire la static geometry.
+ * Elle le sera lorsque la scène sera nettoyée, à la destruction
+ * de l'ObjectManager.
+ */
+Terrain::~Terrain() {}
 
 bool Terrain::addBlock(Block& b) {
 	Ogre::Vector3 pos = b.getNode()->getPosition();
