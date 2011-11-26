@@ -53,6 +53,7 @@ PhysicalObject* ObjectManager::getObject(const Ogre::String& name) const {
 
 void ObjectManager::moveWithCollisions(PhysicalObject* &obj, const Ogre::Real deltaTime)
 {
+LOG("enter moveWithCollisions");
     // Calcul des nouvelles positions des objets.
     // On gère les éventuelles collisions
     if(obj->getSpeed() != Ogre::Vector3::ZERO && deltaTime != 0){
@@ -62,6 +63,7 @@ void ObjectManager::moveWithCollisions(PhysicalObject* &obj, const Ogre::Real de
         obj->setSpeed(newDistance/deltaTime);
         obj->setCollisionCorrection(newDistance - distance);
     }
+LOG("exit moveWithCollisions");
 }
 
 bool ObjectManager::objectReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, PhysicalObject* &target) {
@@ -94,10 +96,10 @@ Ogre::LogManager::getSingleton().logMessage("entering blockReached");
 	int i = from.x, j = from.y, k = from.z;
 	for (int step = 0; step < int(reachRadius*10); step++) {
 		currentPos = from + (double(step) / 10) * normal;
-		if (i != int(currentPos.x) || j != int(currentPos.y) || k != int(currentPos.z)) {
-			i = int(currentPos.x);
-			j = int(currentPos.y);
-			k = int(currentPos.z);
+		if (i != int(currentPos.x + 0.5) || j != int(currentPos.y + 0.5) || k != int(currentPos.z + 0.5)) {
+			i = int(currentPos.x + 0.5);
+			j = int(currentPos.y + 0.5);
+			k = int(currentPos.z + 0.5);
 			if (!mTerrain.isFree(Triplet(i,j,k))) {
 				target = mTerrain.getBlock(Triplet(i,j,k));
 				return true;
@@ -110,6 +112,7 @@ Ogre::LogManager::getSingleton().logMessage("exiting blockReached");
 
 bool intersect(Vector3 position,Vector3 &distance, Vector3 obstacle, Vector3 volume)
 {
+LOG("enter intersect");
 	float t = 0;
 	if(distance.y < 0)
 	{
@@ -120,6 +123,7 @@ bool intersect(Vector3 position,Vector3 &distance, Vector3 obstacle, Vector3 vol
 		{
 //			distance.y = obstacle.y + volume.y - position.y;
 			distance.y = 0;
+LOG("exit intersect");
 			return true;
 		}
 
@@ -132,6 +136,7 @@ bool intersect(Vector3 position,Vector3 &distance, Vector3 obstacle, Vector3 vol
 				&& (position + t*distance).z > (obstacle - volume).z && (position + t*distance).z < (obstacle + volume).z)
 		{
 			distance.y = 0;
+LOG("exit intersect");
 			return true;
 		}
 	}
@@ -143,6 +148,7 @@ bool intersect(Vector3 position,Vector3 &distance, Vector3 obstacle, Vector3 vol
 				&& (position + t*distance).z > (obstacle - volume).z && (position + t*distance).z < (obstacle + volume).z)
 		{
 			distance.x = 0;
+LOG("exit intersect");
 			return true;
 		}
 
@@ -155,6 +161,7 @@ bool intersect(Vector3 position,Vector3 &distance, Vector3 obstacle, Vector3 vol
 				&& (position + t*distance).z > (obstacle - volume).z && (position + t*distance).z < (obstacle + volume).z)
 		{
 			distance.x = 0;
+LOG("exit intersect");
 			return true;
 		}
 	}
@@ -167,6 +174,7 @@ bool intersect(Vector3 position,Vector3 &distance, Vector3 obstacle, Vector3 vol
 				&& (position + t*distance).x > (obstacle - volume).x && (position + t*distance).x < (obstacle + volume).x)
 		{
 			distance.z = 0;
+LOG("exit intersect");
 			return true;
 		}
 
@@ -179,15 +187,17 @@ bool intersect(Vector3 position,Vector3 &distance, Vector3 obstacle, Vector3 vol
 				&& (position + t*distance).x > (obstacle - volume).x && (position + t*distance).x < (obstacle + volume).x)
 		{
 			distance.z = 0;
+LOG("exit intersect");
 			return true;
 		}
 	}
-
+LOG("exit intersect");
 	return false;
 }
 
 Ogre::Vector3 ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 deplacement)
 {
+LOG("enter handleCollision");
 	Ogre::Vector3 volume = obj->getVolume();
 	for(int i = -1; i<=1; i += 2)
 	{
@@ -225,28 +235,32 @@ Ogre::Vector3 ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 
 			}
 		}
 	}
+LOG("exit handleCollision");
 	return deplacement;
 }
 
 void ObjectManager::gameOver()
 {
-	clear();
-	exit(0);
+LOG("GAME OVER");
+//	clear();
+//	exit(0);
 }
 
 void ObjectManager::updateObjects(Ogre::Real deltaTime) {
+LOG("enter updateObjects");
+LOG("nbr objets : " + StringConverter::toString(mObjects.size()) + ", actifs : " + StringConverter::toString(mActiveObjects.size()));
 	PhysicalObject* obj = NULL;
 	while(mPhysicalClock.ticked(deltaTime)){
+LOG("tick");
 		for(std::vector<PhysicalObject*>::iterator it = mActiveObjects.begin();
 			it != mActiveObjects.end(); ++it) {
 			obj = *it;
 
-
-
-		// On lance d'abord les update personalisés de chaque objet
+			// On lance d'abord les update personalisés de chaque objet
 		// (pour les animations, modifications de vitesse, etc...).
+LOG("pre object updated");
 			obj->update(mPhysicalClock.getStep());
-
+LOG("post object updated");
 		// Calcul des nouvelles positions des objets.
 			moveWithCollisions(obj, mPhysicalClock.getStep());
 		}
@@ -254,12 +268,14 @@ void ObjectManager::updateObjects(Ogre::Real deltaTime) {
 	for(std::vector<PhysicalObject*>::iterator it = mActiveObjects.begin(); it != mActiveObjects.end();++it)
 	{
 		obj = *it;
+LOG("Object1 : " + obj->getName() + ", position : " + StringConverter::toString(obj->getNode()->getPosition()));
 		if(obj->getId() == (ObjectId_t) 1)
 		{
 			PhysicalObject* obj2 = NULL;
 			for(std::vector<PhysicalObject*>::iterator it2 = mActiveObjects.begin(); it2 != mActiveObjects.end();++it2)
 			{
 				obj2 = *it2;
+LOG("Object2 : " + obj->getName() + ", position : " + StringConverter::toString(obj2->getNode()->getPosition()));
 				if(obj != obj2)
 				{
 					if((obj2->getNode()->getPosition() - obj->getNode()->getPosition()).length() < 0.9)
@@ -270,6 +286,7 @@ void ObjectManager::updateObjects(Ogre::Real deltaTime) {
 			}
 		}
 	}
+LOG("exit updateObjects");
 }
 
 Player* ObjectManager::createPlayer(Ogre::Camera* camera) {
@@ -293,17 +310,18 @@ Block* ObjectManager::createBlock(const Ogre::Vector3 position) {
 	Ogre::String name = Ogre::StringConverter::toString(++_countObject);
 	Block* b = new Block(this, mSceneMgr->getRootSceneNode(), name, 3);
 	b->getNode()->setPosition(position);
-	//TODO: setInitialState ?
 	mObjects[name] = b;
 	mTerrain.addBlock(*b);
 	return b;
 }
 
 void ObjectManager::loadScene() {
+LOG("enter loadScene");
 	std::vector<Ogre::Vector3> chunk = mMapManager.loadChunk(Vector3::ZERO);
 	for(std::vector<Vector3>::iterator it = chunk.begin(); it != chunk.end(); ++it)
 		createBlock(*it);
 	mActiveObjects.push_back(createMonster(Vector3(3,1.5,5)));
+LOG("exit loadScene");
 }
 
 Vector3 ObjectManager::getGravity(PhysicalObject* obj) const

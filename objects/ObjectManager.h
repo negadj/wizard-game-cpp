@@ -18,6 +18,8 @@
 #include "MapManager.h"
 #include "Monster.h"
 
+#define LOG(x) Ogre::LogManager::getSingleton().logMessage(x)
+
 /**
  * Classe qui s'occupe de la gestion des objets matériels du jeu.
  * C'est via cette classe que tous les objets doivent être créés.
