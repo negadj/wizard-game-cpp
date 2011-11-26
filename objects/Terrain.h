@@ -38,12 +38,12 @@ public:
 	 * Renvoie un pointeur sur le bloc à la position choisie,
 	 * ou NULL s'il n'y a pas de bloc.
 	 */
-	Block* getBlock(const Triplet& pos);
-	Block* getBlock(const Ogre::Vector3& pos);
-	Ogre::String getBlockByName(const Triplet& pos);
-	Ogre::String getBlockByName(const Ogre::Vector3& pos);
-	bool isFree(const Triplet& pos);
-	bool isFree(const Ogre::Vector3& pos);
+	Block* getBlock(const Triplet& pos) const;
+	Block* getBlock(const Ogre::Vector3& pos) const;
+	Ogre::String getBlockByName(const Triplet& pos) const;
+	Ogre::String getBlockByName(const Ogre::Vector3& pos) const;
+	bool isFree(const Triplet& pos) const;
+	bool isFree(const Ogre::Vector3& pos) const;
 	void removeBlock(const Triplet& pos);
 };
 

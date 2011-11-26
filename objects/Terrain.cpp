@@ -58,31 +58,31 @@ bool Terrain::addBlocks(const std::vector<Block*> &blocs) {
 	return res;
 }
 
-bool Terrain::isFree(const Triplet& pos) {
+bool Terrain::isFree(const Triplet& pos) const {
 	return mMap.find(pos) == mMap.end();
 }
 
-bool Terrain::isFree(const Ogre::Vector3& pos) {
+bool Terrain::isFree(const Ogre::Vector3& pos) const {
 	return isFree(Triplet(pos));
 }
 
-Block* Terrain::getBlock(const Triplet& pos) {
+Block* Terrain::getBlock(const Triplet& pos) const {
 	if(isFree(pos))
 		return NULL;
-	return static_cast<Block*>(mObjMgr->getObject(mMap[pos]));
+	return static_cast<Block*>(mObjMgr->getObject(mMap.at(pos)));
 }
 
-Block* Terrain::getBlock(const Ogre::Vector3& pos) {
+Block* Terrain::getBlock(const Ogre::Vector3& pos) const {
 	return getBlock(Triplet(pos));
 }
 
-Ogre::String Terrain::getBlockByName(const Triplet& pos) {
+Ogre::String Terrain::getBlockByName(const Triplet& pos) const {
 	if(isFree(pos))
 		return "";
-	return mMap[pos];
+	return mMap.at(pos);
 }
 
-Ogre::String Terrain::getBlockByName(const Ogre::Vector3& pos) {
+Ogre::String Terrain::getBlockByName(const Ogre::Vector3& pos) const {
 	return getBlockByName(Triplet(pos));
 }
 
