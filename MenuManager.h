@@ -8,8 +8,6 @@
 #ifndef MENUMANAGER_H_
 #define MENUMANAGER_H_
 
-#ifndef NOCEGUI
-
 #include <CEGUI.h>
 #ifdef _WINDOWS
 #include <OgreCEGUIRenderer.h>
@@ -89,7 +87,5 @@ private:
 	Ogre::Overlay* mDarkOverlay; // Utilisé pour griser l'écran lorsqu'un menu s'affiche
 
 };
-
-#endif /* NO_CEGUI */
 
 #endif /* MENUMANAGER_H_ */

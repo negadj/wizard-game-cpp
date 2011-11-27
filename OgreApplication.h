@@ -7,9 +7,7 @@ Author: Gecko
 #include <Ogre.h>
 #include <OIS.h>
 #include "objects/ObjectManager.h"
-#ifndef NO_CEGUI
 #include "MenuManager.h"
-#endif
 
 using namespace Ogre;
 
@@ -68,9 +66,7 @@ private:
 	OIS::Mouse*         mMouse;
 	OIS::Keyboard*      mKeyboard;
 
-#ifndef NO_CEGUI
     MenuManager mMenuMgr;
-#endif
 	Overlay* mDebugOverlay;
 
 	Player* mPlayer;
