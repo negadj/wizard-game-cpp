@@ -6,9 +6,6 @@
  */
 
 #include "MenuManager.h"
-
-#ifndef NO_CEGUI
-
 #include "OgreApplication.h"
 
 // Méthode statique pour convertir les évènements de souris de OIS à CEGUI
@@ -73,32 +70,31 @@ bool MenuManager::keyReleased(const OIS::KeyEvent &e) {
 }
 
 void MenuManager::setup() {
-#ifdef DEBUG_MODE
-Ogre::LogManager::getSingleton().logMessage("enter MenuManager::setup");
-#endif
+
 	mDarkOverlay = Ogre::OverlayManager::getSingleton().getByName("Wizard/DarkOverlay");
-                                                                                                        Ogre::LogManager::getSingleton().logMessage("1");
 #ifdef _WINDOWS
     mCeguiRenderer = new CEGUI::OgreCEGUIRenderer(mApp->mWindow, Ogre::RENDER_QUEUE_OVERLAY, false, 3000, mApp->mSceneMgr);
+    mSys = new CEGUI::System(mCeguiRenderer);
+    CEGUI::Logger::getSingleton().setLoggingLevel(CEGUI::Informative);
 #else
 	mCeguiRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
+    mSys = CEGUI::System::getSingletonPtr();
 #endif
-                                                                                                        Ogre::LogManager::getSingleton().logMessage("2");
-	mSys = CEGUI::System::getSingletonPtr();
+
 	CEGUI::Imageset::setDefaultResourceGroup("GUI");
 	CEGUI::Font::setDefaultResourceGroup("GUI");
 	CEGUI::Scheme::setDefaultResourceGroup("GUI");
 	CEGUI::WidgetLookManager::setDefaultResourceGroup("GUI");
 	CEGUI::WindowManager::setDefaultResourceGroup("GUI");
-                                                                                                        Ogre::LogManager::getSingleton().logMessage("3");
+                                                        Ogre::LogManager::getSingleton().logMessage("3");
 #ifdef _WINDOWS
 	CEGUI::SchemeManager::getSingleton().loadScheme("TaharezLook.scheme");
 #else
 	CEGUI::SchemeManager::getSingleton().create("TaharezLook.scheme");
 #endif
-                                                                                                        Ogre::LogManager::getSingleton().logMessage("3.5");
+                                                        Ogre::LogManager::getSingleton().logMessage("3.5");
 	mSys->setDefaultMouseCursor("TaharezLook", "MouseArrow");
-                                                                                                        Ogre::LogManager::getSingleton().logMessage("4");
+                                                        Ogre::LogManager::getSingleton().logMessage("4");
 	CEGUI::WindowManager &wmgr = CEGUI::WindowManager::getSingleton();
 
 	//Configuration d'une GUI vierge (utilisée pendant le jeu)
@@ -126,9 +122,6 @@ Ogre::LogManager::getSingleton().logMessage("enter MenuManager::setup");
 			CEGUI::Event::Subscriber(&MenuManager::configureShadows, this));
 	mSettingsSheet->getChild("Settings/Back")->subscribeEvent(CEGUI::PushButton::EventClicked,
 				CEGUI::Event::Subscriber(&MenuManager::back, this));
-#ifdef DEBUG_MODE
-Ogre::LogManager::getSingleton().logMessage("exit MenuManager::setup");
-#endif
 }
 
 void MenuManager::togglePauseMenu() {
@@ -209,4 +202,3 @@ bool MenuManager::configureShadows(const CEGUI::EventArgs &e) {
 	return true;
 }
 
-#endif

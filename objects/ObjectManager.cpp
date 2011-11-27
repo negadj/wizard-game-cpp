@@ -47,9 +47,6 @@ void ObjectManager::clear()
 
 void ObjectManager::moveWithCollisions(PhysicalObject* &obj, const Ogre::Real deltaTime)
 {
-#ifdef DEBUG_MODE
-Ogre::LogManager::getSingleton().logMessage("entering ObjectManager::moveWithCollisions");
-#endif
     // Calcul des nouvelles positions des objets.
     // On gère les éventuelles collisions
     if(obj->getSpeed() != Ogre::Vector3::ZERO && deltaTime != 0){
@@ -58,9 +55,6 @@ Ogre::LogManager::getSingleton().logMessage("entering ObjectManager::moveWithCol
         obj->getNode()->translate(distance); //TODO: TS_WORLD ?
         obj->setSpeed(distance/deltaTime);
     }
-#ifdef DEBUG_MODE
-Ogre::LogManager::getSingleton().logMessage("quiting ObjectManager::moveWithCollisions");
-#endif
 }
 
 bool ObjectManager::objectReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, PhysicalObject* &target) {
@@ -200,9 +194,6 @@ void ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 &deplacem
 }
 
 void ObjectManager::updateObjects(Ogre::Real deltaTime) {
-#ifdef DEBUG_MODE
-Ogre::LogManager::getSingleton().logMessage("entering ObjectManager::updateObjects");
-#endif
 	PhysicalObject* obj = NULL;
 	for(std::vector<PhysicalObject*>::iterator it = mActiveObjects.begin();
 			it != mActiveObjects.end(); ++it) {
@@ -218,9 +209,6 @@ Ogre::LogManager::getSingleton().logMessage("entering ObjectManager::updateObjec
 			moveWithCollisions(obj, mPhysicalClock.getStep());
 		}
 	}
-#ifdef DEBUG_MODE
-Ogre::LogManager::getSingleton().logMessage("quiting ObjectManager::updateObjects");
-#endif
 }
 
 Player* ObjectManager::createPlayer(Ogre::Camera* camera) {
