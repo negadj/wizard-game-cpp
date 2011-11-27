@@ -6,18 +6,13 @@
  */
 
 #include "ExplorerIA.h"
-#include "ObjectManager.h"
+#include "../ObjectManager.h"
 
 ExplorerIA::ExplorerIA(Monster* monster):
 	IA(monster)
-{
-	// TODO Auto-generated constructor stub
+{}
 
-}
-
-ExplorerIA::~ExplorerIA() {
-	// TODO Auto-generated destructor stub
-}
+ExplorerIA::~ExplorerIA() {}
 
 Ogre::Vector3 ExplorerIA::findDirection()
 {

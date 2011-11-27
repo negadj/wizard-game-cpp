@@ -16,14 +16,9 @@
 
 GuardianIA::GuardianIA(Monster* monster):
 	IA(monster)
-{
-	// TODO Auto-generated constructor stub
+{}
 
-}
-
-GuardianIA::~GuardianIA() {
-	// TODO Auto-generated destructor stub
-}
+GuardianIA::~GuardianIA() {}
 
 Ogre::Vector3 GuardianIA::findDirection()
 {

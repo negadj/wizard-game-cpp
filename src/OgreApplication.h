@@ -6,7 +6,7 @@ Author: Gecko
 
 #include <Ogre.h>
 #include <OIS.h>
-#include "objects/ObjectManager.h"
+#include "ObjectManager.h"
 #include "MenuManager.h"
 
 using namespace Ogre;

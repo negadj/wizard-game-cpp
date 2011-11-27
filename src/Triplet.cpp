@@ -34,9 +34,7 @@ Triplet::Triplet(const Ogre::Vector3& vector)
 	this->z = Ogre::Math::IFloor(vector.z);
 }
 
-Triplet::~Triplet() {
-	// TODO Auto-generated destructor stub
-}
+Triplet::~Triplet() {}
 
 bool operator==(Triplet const& a, Triplet const& b)
 {

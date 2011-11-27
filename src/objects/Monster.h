@@ -13,7 +13,7 @@
 
 class Monster;
 
-#include "IA.h"
+#include "../IA/IA.h"
 
 class Monster: public PhysicalObject
 {

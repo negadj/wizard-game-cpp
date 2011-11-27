@@ -10,7 +10,7 @@
 
 #include <Ogre.h>
 #include "Triplet.h"
-#include "Block.h"
+#include "objects/Block.h"
 
 class ObjectManager;
 

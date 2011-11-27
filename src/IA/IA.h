@@ -12,7 +12,7 @@
 
 class IA;
 
-#include "Monster.h"
+#include "../objects/Monster.h"
 
 class IA {
 protected:
