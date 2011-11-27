@@ -6,18 +6,13 @@
  */
 
 #include "PatrollIA.h"
-#include "ObjectManager.h"
+#include "../ObjectManager.h"
 
 PatrollIA::PatrollIA(Monster* monster):
 	IA(monster)
-{
-	// TODO Auto-generated constructor stub
+{}
 
-}
-
-PatrollIA::~PatrollIA() {
-	// TODO Auto-generated destructor stub
-}
+PatrollIA::~PatrollIA() {}
 
 Ogre::Vector3 PatrollIA::findDirection()
 {

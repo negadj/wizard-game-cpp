@@ -6,7 +6,7 @@
  */
 
 #include "Player.h"
-#include "ObjectManager.h"
+#include "../ObjectManager.h"
 
 #define CHAR_HEIGHT 2 // hauteur du personnage
 

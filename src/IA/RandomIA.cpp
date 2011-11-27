@@ -9,14 +9,9 @@
 
 RandomIA::RandomIA(Monster* monster):
 	IA(monster)
-{
-	// TODO Auto-generated constructor stub
+{}
 
-}
-
-RandomIA::~RandomIA() {
-	// TODO Auto-generated destructor stub
-}
+RandomIA::~RandomIA() {}
 
 Ogre::Vector3 RandomIA::findDirection()
 {

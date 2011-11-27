@@ -9,14 +9,14 @@
 #define OBJECTMANAGER_H_
 
 #include "Ogre.h"
-#include "../CollisionTools.h"
-#include "PhysicalObject.h"
-#include "Player.h"
-#include "Block.h"
+#include "CollisionTools.h"
+#include "objects/PhysicalObject.h"
+#include "objects/Player.h"
+#include "objects/Block.h"
 #include "Terrain.h"
 #include "Clock.h"
 #include "MapManager.h"
-#include "Monster.h"
+#include "objects/Monster.h"
 
 //#define LOG(x) Ogre::LogManager::getSingleton().logMessage(x)
 

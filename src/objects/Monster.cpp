@@ -6,7 +6,7 @@
  */
 
 #include "Monster.h"
-#include "ObjectManager.h"
+#include "../ObjectManager.h"
 
 
 Monster::Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name):

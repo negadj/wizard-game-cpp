@@ -12,14 +12,9 @@
 #include "ExplorerIA.h"
 IA::IA(Monster* monster):
 	mMonster(monster)
-{
-	// TODO Auto-generated constructor stub
+{}
 
-}
-
-IA::~IA() {
-	// TODO Auto-generated destructor stub
-}
+IA::~IA() {}
 
 IA* IA::getIA(Monster* monster)
 {
