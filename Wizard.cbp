@@ -15,8 +15,6 @@
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-D_DEBUG" />
-					<Add option="-DDEBUG_MODE" />
-					<Add option="-DNO_CEGUI" />
 				</Compiler>
 				<Linker>
 					<Add library="OgreMain_d" />
