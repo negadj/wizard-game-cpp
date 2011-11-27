@@ -14,18 +14,12 @@ OgreApplication::OgreApplication() :
 	mInputManager(NULL),
 	mMouse(NULL),
 	mKeyboard(NULL),
-#ifndef NO_CEGUI
 	mMenuMgr(this),
-#endif
 	mDebugOverlay(NULL),
 	mPlayer(NULL),
 	mContinue(true),
 	mStarted(false),
-#ifdef NO_CEGUI
-    mLocked(false)
-#else
 	mLocked(true)
-#endif
 {}
 
 OgreApplication::~OgreApplication() {
@@ -51,15 +45,9 @@ bool OgreApplication::start() {
 	mDebugOverlay = OverlayManager::getSingleton().getByName("Wizard/DebugOverlay");
 	createCamera();
 	createViewPort();
-#ifndef NO_CEGUI
 	mMenuMgr.setup();
-#endif
 	createFrameListener();
-#ifndef NO_CEGUI
 	mMenuMgr.showMainMenu();
-#else
-    startGame();
-#endif
 	mRoot->startRendering();
 
 	return true;
@@ -69,9 +57,6 @@ void OgreApplication::startGame() {
 	mObjectMgr = new ObjectManager(mSceneMgr);
 	createScene();
 	mPlayer = mObjectMgr->createPlayer(mCamera);
-#ifdef DEBUG_MODE
-    toggleDebugOverlay();
-#endif
 	mStarted = true;
 }
 
@@ -146,9 +131,6 @@ bool OgreApplication::frameStarted(const FrameEvent& evt) {
 #else
 bool OgreApplication::frameRenderingQueued(const FrameEvent& evt) {
 #endif
-#ifdef DEBUG_MODE
-Ogre::LogManager::getSingleton().logMessage("enter frame rendering");
-#endif
 	if(mWindow->isClosed())
         return false;
 
@@ -164,9 +146,6 @@ Ogre::LogManager::getSingleton().logMessage("enter frame rendering");
     	// Calcul des modifications sur les objets de la scène
     	mObjectMgr->updateObjects(evt.timeSinceLastFrame);
     }
-#ifdef DEBUG_MODE
-Ogre::LogManager::getSingleton().logMessage("exit frame rendering");
-#endif
     return mContinue;
 }
 
@@ -215,24 +194,14 @@ void OgreApplication::windowClosed(RenderWindow* rw) {
 }
 
 bool OgreApplication::mouseMoved(const OIS::MouseEvent &e) {
-#ifdef DEBUG_MODE
-Ogre::LogManager::getSingleton().logMessage("entering mouseMoved");
-#endif
-#ifndef NO_CEGUI
     mMenuMgr.mouseMoved(e);
-#endif
 	if (mStarted && !mLocked)
 		mPlayer->injectMouseMove(e);
-#ifdef DEBUG_MODE
-Ogre::LogManager::getSingleton().logMessage("exiting mouseMoved");
-#endif
 	return true;
 }
 
 bool OgreApplication::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id) {
-#ifndef NO_CEGUI
     mMenuMgr.mouseButtonDown(id);
-#endif
 	if (mStarted && !mLocked)
 		mPlayer->injectMouseDown(e, id);
 
@@ -240,28 +209,17 @@ bool OgreApplication::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID 
 }
 
 bool OgreApplication::mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id) {
-#ifndef NO_CEGUI
     mMenuMgr.mouseButtonUp(id);
-#endif
 	return true;
 }
 
 bool OgreApplication::keyPressed(const OIS::KeyEvent &e) {
-#ifdef DEBUG_MODE
-Ogre::LogManager::getSingleton().logMessage("entering keyPressed");
-#endif
-#ifndef NO_CEGUI
     mMenuMgr.keyPressed(e);
-#endif
 	// Si une partie est en cours
 	if (mStarted) {
 		switch (e.key) {
 		case OIS::KC_ESCAPE:
-#ifndef NO_CEGUI
             mMenuMgr.togglePauseMenu();
-#else
-            mContinue = false;
-#endif
             break;
 		case OIS::KC_F8: //Toggle bounding boxes
 			mSceneMgr->showBoundingBoxes(!mSceneMgr->getShowBoundingBoxes());
@@ -275,16 +233,11 @@ Ogre::LogManager::getSingleton().logMessage("entering keyPressed");
 			break;
 		}
 	}
-#ifdef DEBUG_MODE
-Ogre::LogManager::getSingleton().logMessage("exiting keyPressed");
-#endif
 	return true;
 }
 
 bool OgreApplication::keyReleased(const OIS::KeyEvent &e) {
-#ifndef NO_CEGUI
     mMenuMgr.keyReleased(e);
-#endif
 	if (mStarted && !mLocked)
 		mPlayer->injectKeyUp(e);
 
@@ -299,9 +252,6 @@ void OgreApplication::toggleDebugOverlay() {
 }
 
 void OgreApplication::updateDebugInfo(Real deltaTime) {
-#ifdef DEBUG_MODE
-Ogre::LogManager::getSingleton().logMessage("enter updateDebugInfo");
-#endif
 	OverlayContainer* debugPanel = mDebugOverlay->getChild("Wizard/DebugPanel");
 
 	// Mise à jour des FPS
@@ -319,7 +269,4 @@ Ogre::LogManager::getSingleton().logMessage("enter updateDebugInfo");
 				"Y : " + StringConverter::toString(y));
 	debugPanel->getChild("Wizard/DebugPanel/Zposition")->setCaption(
 				"Z : " + StringConverter::toString(z));
-#ifdef DEBUG_MODE
-Ogre::LogManager::getSingleton().logMessage("exit updateDebugInfo");
-#endif
 }
