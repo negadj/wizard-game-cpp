@@ -9,7 +9,7 @@
 #define OBJECTMANAGER_H_
 
 #include "Ogre.h"
-#include "CollisionTools.h"
+#include "CollisionManager.h"
 #include "objects/PhysicalObject.h"
 #include "objects/Player.h"
 #include "objects/Block.h"
@@ -28,7 +28,7 @@ class ObjectManager {
 private:
 	static unsigned long _countObject; // Sert à attribuer un numéro unique à chaque objet.
 	Ogre::SceneManager* mSceneMgr;
-	MOC::CollisionTools mCollisionTools;
+	CollisionManager mCollisionMgr;
 	std::map<std::string,PhysicalObject*> mObjects; // Tous les objets créés.
 	/*
 	 * Sous-ensemble d'objets dits "actifs" car susceptibles de se déplacer
@@ -45,7 +45,6 @@ private:
 	Clock mPhysicalClock;
 	MapManager mMapManager;
 
-	void moveWithCollisions(PhysicalObject* &obj, const Ogre::Real deltaTime);
 public:
 	ObjectManager(Ogre::SceneManager* scnMgr);
 	~ObjectManager();
@@ -95,15 +94,9 @@ public:
 	 */
 	void clear();
 
-	Ogre::Vector3 handleCollision(const PhysicalObject* obj, Vector3 deplacement);
-
 	Vector3 getGravity(PhysicalObject* obj) const;
 
 	double getStrench(PhysicalObject* obj) const;
-
-	bool isOnGround(PhysicalObject* obj) const;
-
-	void gameOver();
 
 	Terrain& getTerrain();
 	

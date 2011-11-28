@@ -25,4 +25,8 @@ bool operator==(Triplet const& a, Triplet const& b);
 
 bool operator<(Triplet const& a, Triplet const& b);
 
+Ogre::Vector3 round(const Ogre::Vector3 vector);
+
+Ogre::Vector3 floor(const Ogre::Vector3 vector);
+
 #endif /* TRIPLET_H_ */

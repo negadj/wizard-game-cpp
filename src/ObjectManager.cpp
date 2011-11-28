@@ -10,19 +10,9 @@
 
 unsigned long ObjectManager::_countObject = 0;
 
-Vector3 round(const Vector3 vector)
-{
-	return Vector3(round(vector.x),round(vector.y),round(vector.z));
-}
-
-Vector3 floor(const Vector3 vector)
-{
-	return Vector3(floor(vector.x),floor(vector.y),floor(vector.z));
-}
-
 ObjectManager::ObjectManager(Ogre::SceneManager* scnMgr) :
 	mSceneMgr(scnMgr),
-	mCollisionTools(scnMgr),
+	mCollisionMgr(this, scnMgr),
 	mTerrain(this, scnMgr->createStaticGeometry("terrain")),
 	mPhysicalClock(Clock(0.02)),
 	mMapManager(10)
@@ -46,19 +36,6 @@ PhysicalObject* ObjectManager::getObject(const Ogre::String& name) const {
 	return mObjects.at(name);
 }
 
-void ObjectManager::moveWithCollisions(PhysicalObject* &obj, const Ogre::Real deltaTime)
-{
-    // Calcul des nouvelles positions des objets.
-    // On gère les éventuelles collisions
-    if(obj->getSpeed() != Ogre::Vector3::ZERO && deltaTime != 0){
-    	Ogre::Vector3 distance = obj->getSpeed() * deltaTime;
-    	Ogre::Vector3 newDistance = handleCollision(obj,distance);
-        obj->getNode()->translate(newDistance); //TODO: TS_WORLD ?
-        obj->setSpeed(newDistance/deltaTime);
-        obj->setCollisionCorrection(newDistance - distance);
-    }
-}
-
 bool ObjectManager::objectReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, PhysicalObject* &target) {
 	target = NULL;
 	Ogre::Real dist = 0;
@@ -67,7 +44,7 @@ bool ObjectManager::objectReached(const Ogre::Vector3 &from, const Ogre::Vector3
 	Ogre::Vector3 polygon_normal;
 
 	// On cherche si un objet actif est atteint
-	if (mCollisionTools.raycastFromPoint(from, normal, pos, entity, dist,polygon_normal)
+	if (mCollisionMgr.raycast(from, normal, pos, entity, dist, polygon_normal)
 		&& dist < reachRadius) {
 		std::map<std::string, PhysicalObject*>::iterator it = mObjects.find(entity->getParentSceneNode()->getName());
 		if (it != mObjects.end()) {
@@ -101,125 +78,6 @@ bool ObjectManager::blockReached(const Ogre::Vector3 &from, const Ogre::Vector3 
 	return false;
 }
 
-bool intersect(Vector3 position,Vector3 &distance, Vector3 obstacle, Vector3 volume)
-{
-	float t = 0;
-	if(distance.y < 0)
-	{
-		t = ((obstacle + volume).y -position.y)/distance.y;
-		if( t > 0 && t < 1 &&
-				(position + t*distance).x > (obstacle - volume).x && (position + t*distance).x < (obstacle + volume).x
-				&& (position + t*distance).z > (obstacle - volume).z && (position + t*distance).z < (obstacle + volume).z)
-		{
-//			distance.y = obstacle.y + volume.y - position.y;
-			distance.y = 0;
-			return true;
-		}
-
-	}
-	else if(distance.y > 0)
-	{
-		t = ((obstacle - volume).y -position.y)/distance.y;
-		if( t > 0 && t < 1 &&
-				(position + t*distance).x > (obstacle - volume).x && (position + t*distance).x < (obstacle + volume).x
-				&& (position + t*distance).z > (obstacle - volume).z && (position + t*distance).z < (obstacle + volume).z)
-		{
-			distance.y = 0;
-			return true;
-		}
-	}
-	if(distance.x < 0)
-	{
-		t = ((obstacle + volume).x -position.x)/distance.x;
-		if( t > 0 && t < 1 &&
-				(position + t*distance).y > (obstacle - volume).y && (position + t*distance).y < (obstacle + volume).y
-				&& (position + t*distance).z > (obstacle - volume).z && (position + t*distance).z < (obstacle + volume).z)
-		{
-			distance.x = 0;
-			return true;
-		}
-
-	}
-	else if(distance.x > 0)
-	{
-		t = ((obstacle - volume).x -position.x)/distance.x;
-		if( t > 0 && t < 1 &&
-				(position + t*distance).y > (obstacle - volume).y && (position + t*distance).y < (obstacle + volume).y
-				&& (position + t*distance).z > (obstacle - volume).z && (position + t*distance).z < (obstacle + volume).z)
-		{
-			distance.x = 0;
-			return true;
-		}
-	}
-
-	if(distance.z < 0)
-	{
-		t = ((obstacle + volume).z -position.z)/distance.z;
-		if( t > 0 && t < 1 &&
-				(position + t*distance).y > (obstacle - volume).y && (position + t*distance).y < (obstacle + volume).y
-				&& (position + t*distance).x > (obstacle - volume).x && (position + t*distance).x < (obstacle + volume).x)
-		{
-			distance.z = 0;
-			return true;
-		}
-
-	}
-	else if(distance.z > 0)
-	{
-		t = ((obstacle - volume).z -position.z)/distance.z;
-		if( t > 0 && t < 1 &&
-				(position + t*distance).y > (obstacle - volume).y && (position + t*distance).y < (obstacle + volume).y
-				&& (position + t*distance).x > (obstacle - volume).x && (position + t*distance).x < (obstacle + volume).x)
-		{
-			distance.z = 0;
-			return true;
-		}
-	}
-	return false;
-}
-
-Ogre::Vector3 ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 deplacement)
-{
-	Ogre::Vector3 volume = obj->getVolume();
-	for(int i = -1; i<=1; i += 2)
-	{
-		for(int j = -1; j<=1; j += 2)
-		{
-			for(int k = -1; k<=1; k+=2)
-			{
-				if( deplacement.x * i <=0 && deplacement.y * j <= 0 && deplacement.z * k <= 0)
-					continue;
-				Ogre::Vector3 point = obj->getNode()->getPosition() + Vector3(i*volume.x,j*volume.y,k*volume.z);
-				Ogre::Vector3 planned_move = deplacement;
-				do
-				{
-					planned_move = deplacement;
-					if(!mTerrain.isFree(Triplet(round(point+Vector3(deplacement.x,0,0)))))
-					{
-						Ogre::String name = mTerrain.getBlock(Triplet(round(point+Vector3(deplacement.x,0,0))))->getName();
-						PhysicalObject* obstacle = mObjects.find(name)->second;
-						intersect(point,deplacement,obstacle->getNode()->getPosition(),obstacle->getVolume());
-					}
-					if(!mTerrain.isFree(Triplet(round(point+Vector3(0,deplacement.y,0)))))
-					{
-						Ogre::String name = mTerrain.getBlock(Triplet(round(point+Vector3(0,deplacement.y,0))))->getName();
-						PhysicalObject* obstacle = mObjects.find(name)->second;
-						intersect(point,deplacement,obstacle->getNode()->getPosition(),obstacle->getVolume());
-					}
-					if(!mTerrain.isFree(Triplet(round(point+Vector3(0,0,deplacement.z)))))
-					{
-						Ogre::String name = mTerrain.getBlock(Triplet(round(point+Vector3(0,0,deplacement.z))))->getName();
-						PhysicalObject* obstacle = mObjects.find(name)->second;
-						intersect(point,deplacement,obstacle->getNode()->getPosition(),obstacle->getVolume());
-					}
-				} while(planned_move != deplacement);
-
-			}
-		}
-	}
-	return deplacement;
-}
-
 void ObjectManager::updateObjects(Ogre::Real deltaTime) {
 	PhysicalObject* obj = NULL;
 	while(mPhysicalClock.ticked(deltaTime)){
@@ -231,7 +89,7 @@ void ObjectManager::updateObjects(Ogre::Real deltaTime) {
 		// (pour les animations, modifications de vitesse, etc...).
 			obj->update(mPhysicalClock.getStep());
 		// Calcul des nouvelles positions des objets.
-			moveWithCollisions(obj, mPhysicalClock.getStep());
+			mCollisionMgr.moveWithCollisions(obj, mPhysicalClock.getStep());
 		}
 	}
 	for(std::vector<PhysicalObject*>::iterator it = mActiveObjects.begin(); it != mActiveObjects.end();++it)
@@ -295,7 +153,7 @@ Vector3 ObjectManager::getGravity(PhysicalObject* obj) const
 
 double ObjectManager::getStrench(PhysicalObject* obj) const
 {
-	if(isOnGround(obj))
+	if(obj->isOnGround())
 		return 10;
 	else
 		return 0.1;
@@ -305,12 +163,4 @@ Terrain& ObjectManager::getTerrain() {
 	return mTerrain;
 }
 
-bool ObjectManager::isOnGround(PhysicalObject* obj) const
-{
-	Vector3 position = obj->getNode()->getPosition();
 
-	if(mTerrain.isFree(Triplet(round(position.x),floor(position.y-obj->getVolume().y),round(position.z))))
-		return false;
-	PhysicalObject* obstacle = mTerrain.getBlock(Triplet(round(position.x),floor(position.y-obj->getVolume().y),round(position.z)));
-	return ( 0.01 > position.y-obj->getVolume().y - obstacle->getNode()->getPosition().y - obstacle->getVolume().y);
-}

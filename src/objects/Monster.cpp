@@ -51,7 +51,7 @@ void Monster::update(Ogre::Real deltaTime) {
 	}
 	Ogre::Vector3 absoluteDirection = mIA->findDirection();
 
-	if(getObjectManager()->isOnGround(this) && absoluteDirection != Ogre::Vector3::ZERO)
+	if(isOnGround() && absoluteDirection != Ogre::Vector3::ZERO)
 	{
 		getNode()->setDirection(absoluteDirection,Ogre::Node::TS_LOCAL);
 		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)+  mPropulsion * (getNode()->getOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z)));
