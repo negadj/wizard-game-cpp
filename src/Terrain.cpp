@@ -8,7 +8,7 @@
 #include "Terrain.h"
 #include "ObjectManager.h"
 
-Terrain::Terrain(const ObjectManager* objMgr, Ogre::StaticGeometry* staticGeometry) :
+Terrain::Terrain(ObjectManager* objMgr, Ogre::StaticGeometry* staticGeometry) :
 	mObjMgr(objMgr),
 	mStaticGeometry(staticGeometry)
 {
@@ -68,24 +68,24 @@ bool Terrain::isFree(const Ogre::Vector3& pos) const {
 	return isFree(Triplet(pos));
 }
 
-Block* Terrain::getBlock(const Triplet& pos) const {
+Block* Terrain::getBlock(const Triplet& pos) {
 	if(isFree(pos))
 		return NULL;
-	return static_cast<Block*>(mObjMgr->getObject(mMap.at(pos)));
+	return static_cast<Block*>(mObjMgr->getObject(mMap[pos]));
 }
 
-Block* Terrain::getBlock(const Ogre::Vector3& pos) const {
+Block* Terrain::getBlock(const Ogre::Vector3& pos) {
 	return getBlock(Triplet(pos));
 }
 
-Ogre::String Terrain::getBlockByName(const Triplet& pos) const {
+Ogre::String Terrain::getBlockName(const Triplet& pos) {
 	if(isFree(pos))
 		return "";
-	return mMap.at(pos);
+	return mMap[pos];
 }
 
-Ogre::String Terrain::getBlockByName(const Ogre::Vector3& pos) const {
-	return getBlockByName(Triplet(pos));
+Ogre::String Terrain::getBlockName(const Ogre::Vector3& pos) {
+	return getBlockName(Triplet(pos));
 }
 
 void Terrain::removeBlock(const Triplet& pos) {

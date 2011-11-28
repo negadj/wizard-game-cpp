@@ -101,8 +101,8 @@ public:
 	double getStrench(PhysicalObject* obj) const;
 
 	Terrain& getTerrain();
-	
-	PhysicalObject* getObject(const Ogre::String& name) const;
+
+	PhysicalObject* getObject(const Ogre::String& name);
 };
 
 #endif /* OBJECTMANAGER_H_ */

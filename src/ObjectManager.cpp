@@ -30,13 +30,13 @@ ObjectManager::~ObjectManager()
 	mActiveObjects.clear();
 }
 
-PhysicalObject* ObjectManager::getObject(const Ogre::String& name) const {
+PhysicalObject* ObjectManager::getObject(const Ogre::String& name) {
 #ifdef DEBUG_MODE
 LOG("call ObjectManager::getObject");
 #endif
 	if (mObjects.find(name) == mObjects.end())
 		return NULL;
-	return mObjects.at(name);
+	return mObjects[name];
 }
 
 bool ObjectManager::objectReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, PhysicalObject* &target) {
