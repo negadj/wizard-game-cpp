@@ -16,12 +16,12 @@ class ObjectManager;
 
 class Terrain {
 private:
-	const ObjectManager* mObjMgr;
+	ObjectManager* mObjMgr;
 	std::map<Triplet,Ogre::String> mMap;
 	Ogre::StaticGeometry* mStaticGeometry;
 
 public:
-	Terrain(const ObjectManager* objMgr, Ogre::StaticGeometry* staticGeometry);
+	Terrain(ObjectManager* objMgr, Ogre::StaticGeometry* staticGeometry);
 	virtual ~Terrain();
 	/**
 	 * Rajoute le bloc au terrain
@@ -38,10 +38,10 @@ public:
 	 * Renvoie un pointeur sur le bloc à la position choisie,
 	 * ou NULL s'il n'y a pas de bloc.
 	 */
-	Block* getBlock(const Triplet& pos) const;
-	Block* getBlock(const Ogre::Vector3& pos) const;
-	Ogre::String getBlockByName(const Triplet& pos) const;
-	Ogre::String getBlockByName(const Ogre::Vector3& pos) const;
+	Block* getBlock(const Triplet& pos);
+	Block* getBlock(const Ogre::Vector3& pos);
+	Ogre::String getBlockName(const Triplet& pos);
+	Ogre::String getBlockName(const Ogre::Vector3& pos);
 	bool isFree(const Triplet& pos) const;
 	bool isFree(const Ogre::Vector3& pos) const;
 	void removeBlock(const Triplet& pos);

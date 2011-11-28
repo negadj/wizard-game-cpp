@@ -37,7 +37,11 @@ void Monster::setupBody(Ogre::SceneNode* originNode) {
 
 	/* Le constructeur de PhysicalObject attache mEntity à mNode,
 	   ce n'est pas ce que l'on souhaite ici */
+#ifdef _WINDOWS
+    getEntity()->getParentSceneNode()->detachObject(getEntity());
+#else
 	getEntity()->detachFromParent();
+#endif
 	mBodyNode->attachObject(getEntity());
 }
 
