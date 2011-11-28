@@ -7,6 +7,10 @@
 
 #include "Clock.h"
 
+#ifdef DEBUG_MODE
+#define LOG(x) Ogre::LogManager::getSingleton().logMessage(x)
+#endif
+
 Clock::Clock(double step):
 	mStep(step),
 	mCurrentTime(0)
@@ -21,8 +25,12 @@ bool Clock::ticked(Ogre::Real &deltaTime)
 	 * (comme au chargement de la scène), si deltaTime dépasse 1s,
 	 * les calculs physiques sont annulés
 	 */
-	if (deltaTime > 1)
+	if (deltaTime > 1) {
+#ifdef DEBUG_MODE
+LOG("TICK SKIPPED !");
+#endif
 		return false;
+	}
 
 	if(deltaTime > mStep)
 	{

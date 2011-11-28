@@ -42,15 +42,26 @@ void Monster::setupBody(Ogre::SceneNode* originNode) {
 }
 
 void Monster::update(Ogre::Real deltaTime) {
+#ifdef DEBUG_MODE
+LOG("enter Monster::update");
+#endif
 	/* Mise à jour de la vitesse du joueur en fonction des touches,
 	 dans le référentiel global. */
 	if(rand()%100 == 0)
 	{
+#ifdef DEBUG_MODE
+LOG("monster : changement d'IA");
+#endif
 		delete mIA;
-		IA::getIA(this);
+		mIA = IA::getIA(this);
+#ifdef DEBUG_MODE
+LOG("monster : IA changée");
+#endif
 	}
 	Ogre::Vector3 absoluteDirection = mIA->findDirection();
-
+#ifdef DEBUG_MODE
+LOG("monster : direction choisie");
+#endif
 	if(isOnGround() && absoluteDirection != Ogre::Vector3::ZERO)
 	{
 		getNode()->setDirection(absoluteDirection,Ogre::Node::TS_LOCAL);
@@ -58,4 +69,7 @@ void Monster::update(Ogre::Real deltaTime) {
 	}
 	else
 		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)));
+#ifdef DEBUG_MODE
+LOG("exit Monster::update");
+#endif
 }

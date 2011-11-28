@@ -31,12 +31,18 @@ ObjectManager::~ObjectManager()
 }
 
 PhysicalObject* ObjectManager::getObject(const Ogre::String& name) const {
+#ifdef DEBUG_MODE
+LOG("call ObjectManager::getObject");
+#endif
 	if (mObjects.find(name) == mObjects.end())
 		return NULL;
 	return mObjects.at(name);
 }
 
 bool ObjectManager::objectReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, PhysicalObject* &target) {
+#ifdef DEBUG_MODE
+LOG("call ObjectManager::objectReached");
+#endif
 	target = NULL;
 	Ogre::Real dist = 0;
 	Ogre::Vector3 pos;
@@ -57,6 +63,9 @@ bool ObjectManager::objectReached(const Ogre::Vector3 &from, const Ogre::Vector3
 }
 
 bool ObjectManager::blockReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, Block* &target) {
+#ifdef DEBUG_MODE
+LOG("call ObjectManager::blockReached");
+#endif
 	target = NULL;
 	// On trouve le premier bloc libre sur la trajectoire
 	// en regardant régulièrement le long de la direction visée.
@@ -79,14 +88,22 @@ bool ObjectManager::blockReached(const Ogre::Vector3 &from, const Ogre::Vector3 
 }
 
 void ObjectManager::updateObjects(Ogre::Real deltaTime) {
+#ifdef DEBUG_MODE
+LOG("enter ObjectManager::updateObjects");
+LOG("nbr d'objets : " + Ogre::StringConverter::toString(mObjects.size()) + ", actifs : " + Ogre::StringConverter::toString(mActiveObjects.size()));
+#endif
 	PhysicalObject* obj = NULL;
 	while(mPhysicalClock.ticked(deltaTime)){
+#ifdef DEBUG_MODE
+LOG("tick");
+#endif
 		for(std::vector<PhysicalObject*>::iterator it = mActiveObjects.begin();
 			it != mActiveObjects.end(); ++it) {
 			obj = *it;
 
 			// On lance d'abord les update personalisés de chaque objet
 		// (pour les animations, modifications de vitesse, etc...).
+
 			obj->update(mPhysicalClock.getStep());
 		// Calcul des nouvelles positions des objets.
 			mCollisionMgr.moveWithCollisions(obj, mPhysicalClock.getStep());
@@ -105,19 +122,31 @@ void ObjectManager::updateObjects(Ogre::Real deltaTime) {
 				{
 					if((obj2->getNode()->getPosition() - obj->getNode()->getPosition()).length() < 0.9)
 					{
+					#ifdef DEBUG_MODE
+						LOG("CONTACT !");
+					#endif
 						obj->setIntegrity(0);
 					}
 				}
 			}
 		}
 	}
+#ifdef DEBUG_MODE
+LOG("exit ObjectManager::updateObjects");
+#endif
 }
 
 Player* ObjectManager::createPlayer(Ogre::Camera* camera) {
+#ifdef DEBUG_MODE
+LOG("enter ObjectManager::createPlayer");
+#endif
 	Ogre::String name = Ogre::StringConverter::toString(++_countObject);
 	Player* p = new Player(this, name, camera);
 	mObjects[name] = p;
 	mActiveObjects.push_back(p);
+#ifdef DEBUG_MODE
+LOG("exit ObjectManager::createPlayer");
+#endif
 	return p;
 }
 
@@ -140,10 +169,16 @@ Block* ObjectManager::createBlock(const Ogre::Vector3 position) {
 }
 
 void ObjectManager::loadScene() {
+#ifdef DEBUG_MODE
+LOG("enter ObjectManager::loadScene");
+#endif
 	std::vector<Ogre::Vector3> chunk = mMapManager.loadChunk(Vector3::ZERO);
 	for(std::vector<Vector3>::iterator it = chunk.begin(); it != chunk.end(); ++it)
 		createBlock(*it);
 	mActiveObjects.push_back(createMonster(Vector3(3,1.5,5)));
+#ifdef DEBUG_MODE
+LOG("exit ObjectManager::loadScene");
+#endif
 }
 
 Vector3 ObjectManager::getGravity(PhysicalObject* obj) const

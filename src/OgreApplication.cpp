@@ -55,14 +55,23 @@ bool OgreApplication::start() {
 }
 
 void OgreApplication::startGame() {
+#ifdef DEBUG_MODE
+LOG("enter OgreApplication::startGame");
+#endif
 	mObjectMgr = new ObjectManager(mSceneMgr);
 	createScene();
 	mPlayer = mObjectMgr->createPlayer(mCamera);
 	mPlayer->addListener(this); // Pour détecter la fin de partie.
 	mStarted = true;
+#ifdef DEBUG_MODE
+LOG("exit OgreApplication::startGame");
+#endif
 }
 
 void OgreApplication::exitGame() {
+#ifdef DEBUG_MODE
+LOG("enter OgreApplication::exitGame");
+#endif
 	mStarted = false;
 	mRequestEndGame = false; //normalement déjà à false, mais autant s'en assurer.
 	mDebugOverlay->hide();
@@ -71,9 +80,15 @@ void OgreApplication::exitGame() {
 	delete mObjectMgr; //Nettoie la scène.
 
 	mMenuMgr.showMainMenu();
+#ifdef DEBUG_MODE
+LOG("exit OgreApplication::exitGame");
+#endif
 }
 
 void OgreApplication::createScene() {
+#ifdef DEBUG_MODE
+LOG("enter OgreApplication::createScene");
+#endif
 	// Set ambient light
 	mSceneMgr->setAmbientLight(ColourValue(0.8, 0.8, 0.8));
 //	mSceneMgr->setFog(FOG_EXP2, ColourValue(0.8, 0.8, 0.9));
@@ -91,11 +106,15 @@ void OgreApplication::createScene() {
 
 	//Ajout de plein de cubes
 	mObjectMgr->loadScene();
-
+#ifdef DEBUG_MODE
+LOG("exit OgreApplication::createScene");
+#endif
 }
 
 void OgreApplication::loadResources() {
-
+#ifdef DEBUG_MODE
+LOG("enter OgreApplication::loadResources");
+#endif
 	ConfigFile configFile;
 	configFile.load("config/resources.cfg");
 	ConfigFile::SectionIterator seci = configFile.getSectionIterator();
@@ -113,6 +132,9 @@ void OgreApplication::loadResources() {
 					archName, typeName, secName);
 		}
 	}
+#ifdef DEBUG_MODE
+LOG("exit OgreApplication::loadResources");
+#endif
 }
 
 void OgreApplication::createCamera() {
@@ -127,14 +149,23 @@ void OgreApplication::createViewPort() {
 }
 
 void OgreApplication::createFrameListener() {
+#ifdef DEBUG_MODE
+LOG("enter OgreApplication::createFrameListener");
+#endif
 	startOIS();
 	mRoot->addFrameListener(this);
+#ifdef DEBUG_MODE
+LOG("exit OgreApplication::createFrameListener");
+#endif
 }
 
 #ifdef _WINDOWS
 bool OgreApplication::frameStarted(const FrameEvent& evt) {
 #else
 bool OgreApplication::frameRenderingQueued(const FrameEvent& evt) {
+#endif
+#ifdef DEBUG_MODE
+LOG("enter OgreApplication::frameRenderingQueued");
 #endif
 	if(mWindow->isClosed())
         return false;
@@ -147,6 +178,9 @@ bool OgreApplication::frameRenderingQueued(const FrameEvent& evt) {
     	exitGame();
     }
     else if (mStarted) {
+#ifdef DEBUG_MODE
+LOG("mStarted = true");
+#endif
     	// On met à jour les informations de debug si besoin
     	if (mDebugOverlay->isVisible()) {
     		updateDebugInfo(evt.timeSinceLastFrame);
@@ -156,6 +190,9 @@ bool OgreApplication::frameRenderingQueued(const FrameEvent& evt) {
     	mObjectMgr->updateObjects(evt.timeSinceLastFrame);
     }
     return mContinue;
+#ifdef DEBUG_MODE
+LOG("exit OgreApplication::frameRenderingQueued");
+#endif
 }
 
 void OgreApplication::startOIS() {
@@ -210,22 +247,39 @@ bool OgreApplication::mouseMoved(const OIS::MouseEvent &e) {
 }
 
 bool OgreApplication::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id) {
-    mMenuMgr.mouseButtonDown(id);
+#ifdef DEBUG_MODE
+LOG("enter OgreApplication::mousePressed");
+#endif
+	mMenuMgr.mouseButtonDown(id);
 	if (mStarted && !mLocked)
 		mPlayer->injectMouseDown(e, id);
-
+#ifdef DEBUG_MODE
+LOG("exit OgreApplication::mousePressed");
+#endif
 	return true;
 }
 
 bool OgreApplication::mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id) {
-    mMenuMgr.mouseButtonUp(id);
+#ifdef DEBUG_MODE
+LOG("enter OgreApplication::mouseReleased");
+#endif
+	mMenuMgr.mouseButtonUp(id);
+#ifdef DEBUG_MODE
+LOG("enter OgreApplication::startGame");
+#endif
 	return true;
 }
 
 bool OgreApplication::keyPressed(const OIS::KeyEvent &e) {
+#ifdef DEBUG_MODE
+LOG("enter OgreApplication::keyPressed");
+#endif
     mMenuMgr.keyPressed(e);
 	// Si une partie est en cours
 	if (mStarted) {
+#ifdef DEBUG_MODE
+LOG("mStarted = true");
+#endif
 		switch (e.key) {
 		case OIS::KC_ESCAPE:
             mMenuMgr.togglePauseMenu();
@@ -242,14 +296,22 @@ bool OgreApplication::keyPressed(const OIS::KeyEvent &e) {
 			break;
 		}
 	}
+#ifdef DEBUG_MODE
+LOG("exit OgreApplication::keyPressed");
+#endif
 	return true;
 }
 
 bool OgreApplication::keyReleased(const OIS::KeyEvent &e) {
+#ifdef DEBUG_MODE
+LOG("enter OgreApplication::keyReleased");
+#endif
     mMenuMgr.keyReleased(e);
 	if (mStarted && !mLocked)
 		mPlayer->injectKeyUp(e);
-
+#ifdef DEBUG_MODE
+LOG("exit OgreApplication::keyReleased");
+#endif
 	return true;
 }
 
@@ -261,6 +323,9 @@ void OgreApplication::toggleDebugOverlay() {
 }
 
 void OgreApplication::updateDebugInfo(Real deltaTime) {
+#ifdef DEBUG_MODE
+LOG("enter OgreApplication::updateDebugInfo");
+#endif
 	OverlayContainer* debugPanel = mDebugOverlay->getChild("Wizard/DebugPanel");
 
 	// Mise à jour des FPS
@@ -278,6 +343,9 @@ void OgreApplication::updateDebugInfo(Real deltaTime) {
 				"Y : " + StringConverter::toString(y));
 	debugPanel->getChild("Wizard/DebugPanel/Zposition")->setCaption(
 				"Z : " + StringConverter::toString(z));
+#ifdef DEBUG_MODE
+LOG("exit OgreApplication::updateDebugInfo");
+#endif
 }
 
 void OgreApplication::objectDestroyed(const PhysicalObject* object) {
