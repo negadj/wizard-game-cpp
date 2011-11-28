@@ -189,10 +189,10 @@ LOG("mStarted = true");
     	// Calcul des modifications sur les objets de la scène
     	mObjectMgr->updateObjects(evt.timeSinceLastFrame);
     }
-    return mContinue;
 #ifdef DEBUG_MODE
 LOG("exit OgreApplication::frameRenderingQueued");
 #endif
+    return mContinue;
 }
 
 void OgreApplication::startOIS() {
