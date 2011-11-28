@@ -17,7 +17,11 @@ Clock::Clock(double step):
 {
 }
 
-Clock::~Clock() {}
+Clock::~Clock() {
+#ifdef DEBUG_MODE
+LOG("call Clock destructor");
+#endif
+}
 
 bool Clock::ticked(Ogre::Real &deltaTime)
 {

@@ -66,12 +66,12 @@ private:
 	SceneManager* mSceneMgr;
 	Camera* mCamera;
 	Viewport* mViewPort;
-	ObjectManager* mObjectMgr;
 
 	OIS::InputManager*  mInputManager;
 	OIS::Mouse*         mMouse;
 	OIS::Keyboard*      mKeyboard;
 
+	ObjectManager* mObjectMgr;
     MenuManager mMenuMgr;
 	Overlay* mDebugOverlay;
 

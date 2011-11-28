@@ -39,7 +39,6 @@ extern "C" {
                         e.what() << std::endl;
         #endif
                 }
-
         return 0;
     }
 

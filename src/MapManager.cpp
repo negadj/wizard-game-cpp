@@ -7,6 +7,10 @@
 
 #include "MapManager.h"
 
+#ifdef DEBUG_MODE
+#define LOG(x) Ogre::LogManager::getSingleton().logMessage(x)
+#endif
+
 MapManager::MapManager(int chunkSize):
 	mChunkSize(chunkSize)
 {
@@ -14,6 +18,9 @@ MapManager::MapManager(int chunkSize):
 
 MapManager::~MapManager()
 {
+#ifdef DEBUG_MODE
+LOG("call MapManager destructor");
+#endif
 }
 
 std::vector<Ogre::Vector3> MapManager::loadChunk(Ogre::Vector3 chunkPosition)

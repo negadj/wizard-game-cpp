@@ -13,6 +13,8 @@ unsigned long ObjectManager::_countObject = 0;
 ObjectManager::ObjectManager(Ogre::SceneManager* scnMgr) :
 	mSceneMgr(scnMgr),
 	mCollisionMgr(this, scnMgr),
+	mObjects(std::map<std::string,PhysicalObject*>()),
+	mActiveObjects(std::vector<PhysicalObject*>()),
 	mTerrain(this, scnMgr->createStaticGeometry("terrain")),
 	mPhysicalClock(Clock(0.02)),
 	mMapManager(10)
@@ -20,14 +22,26 @@ ObjectManager::ObjectManager(Ogre::SceneManager* scnMgr) :
 
 ObjectManager::~ObjectManager()
 {
+#ifdef DEBUG_MODE
+LOG("enter ObjectManager destructor");
+#endif
 	// On détruit tout les objets référencés
-	mSceneMgr->clearScene();
+		mSceneMgr->clearScene();
+#ifdef DEBUG_MODE
+LOG("scene cleared");
+#endif
 	for(std::map<std::string,PhysicalObject*>::iterator it = mObjects.begin();
 			it != mObjects.end(); ++it) {
 		delete (it->second);
 	}
-	mObjects.clear();
+#ifdef DEBUG_MODE
+LOG("objects deleted");
+#endif
 	mActiveObjects.clear();
+	mObjects.clear();
+#ifdef DEBUG_MODE
+LOG("exit ObjectManager destructor");
+#endif
 }
 
 PhysicalObject* ObjectManager::getObject(const Ogre::String& name) {

@@ -10,10 +10,10 @@ OgreApplication::OgreApplication() :
 	mSceneMgr(NULL),
 	mCamera(NULL),
 	mViewPort(NULL),
-	mObjectMgr(NULL),
 	mInputManager(NULL),
 	mMouse(NULL),
 	mKeyboard(NULL),
+	mObjectMgr(NULL),
 	mMenuMgr(this),
 	mDebugOverlay(NULL),
 	mPlayer(NULL),
@@ -24,10 +24,25 @@ OgreApplication::OgreApplication() :
 {}
 
 OgreApplication::~OgreApplication() {
+#ifdef DEBUG_MODE
+LOG("enter OgreApplication destructor");
+#endif
 	WindowEventUtilities::removeWindowEventListener(mWindow, this);
 	windowClosed(mWindow);
+#ifdef DEBUG_MODE
+LOG("window closed");
+#endif
 	delete mObjectMgr;
+#ifdef DEBUG_MODE
+LOG("object manager deleted");
+#endif
 	delete mRoot;
+#ifdef DEBUG_MODE
+LOG("ogre root deleted");
+#endif
+#ifdef DEBUG_MODE
+LOG("exit OgreApplication destructor");
+#endif
 }
 
 bool OgreApplication::start() {
@@ -51,6 +66,9 @@ bool OgreApplication::start() {
 	mMenuMgr.showMainMenu();
 	mRoot->startRendering();
 
+#ifdef DEBUG_MODE
+LOG("stop rendering");
+#endif
 	return true;
 }
 
@@ -265,7 +283,7 @@ LOG("enter OgreApplication::mouseReleased");
 #endif
 	mMenuMgr.mouseButtonUp(id);
 #ifdef DEBUG_MODE
-LOG("enter OgreApplication::startGame");
+LOG("exit OgreApplication::mouseReleased");
 #endif
 	return true;
 }

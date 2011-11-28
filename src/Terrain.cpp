@@ -21,7 +21,11 @@ Terrain::Terrain(ObjectManager* objMgr, Ogre::StaticGeometry* staticGeometry) :
  * Elle le sera lorsque la scène sera nettoyée, à la destruction
  * de l'ObjectManager.
  */
-Terrain::~Terrain() {}
+Terrain::~Terrain() {
+#ifdef DEBUG_MODE
+LOG("call Terrain destructor");
+#endif
+}
 
 bool Terrain::addBlock(Block& b) {
 	Ogre::Vector3 pos = b.getNode()->getPosition();
