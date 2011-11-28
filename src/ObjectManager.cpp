@@ -220,12 +220,6 @@ Ogre::Vector3 ObjectManager::handleCollision(const PhysicalObject* obj, Vector3 
 	return deplacement;
 }
 
-void ObjectManager::gameOver()
-{
-//	clear();
-//	exit(0);
-}
-
 void ObjectManager::updateObjects(Ogre::Real deltaTime) {
 	PhysicalObject* obj = NULL;
 	while(mPhysicalClock.ticked(deltaTime)){
@@ -253,7 +247,7 @@ void ObjectManager::updateObjects(Ogre::Real deltaTime) {
 				{
 					if((obj2->getNode()->getPosition() - obj->getNode()->getPosition()).length() < 0.9)
 					{
-						gameOver();
+						obj->setIntegrity(0);
 					}
 				}
 			}

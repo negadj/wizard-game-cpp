@@ -19,7 +19,8 @@ OgreApplication::OgreApplication() :
 	mPlayer(NULL),
 	mContinue(true),
 	mStarted(false),
-	mLocked(true)
+	mLocked(true),
+	mRequestEndGame(false)
 {}
 
 OgreApplication::~OgreApplication() {
@@ -57,15 +58,19 @@ void OgreApplication::startGame() {
 	mObjectMgr = new ObjectManager(mSceneMgr);
 	createScene();
 	mPlayer = mObjectMgr->createPlayer(mCamera);
+	mPlayer->addListener(this); // Pour détecter la fin de partie.
 	mStarted = true;
 }
 
 void OgreApplication::exitGame() {
 	mStarted = false;
+	mRequestEndGame = false; //normalement déjà à false, mais autant s'en assurer.
 	mDebugOverlay->hide();
 	mCamera->setAutoTracking(false); //Supprime une référence sur un noeud qui va disparaître
 	mPlayer = NULL; // Par précaution
 	delete mObjectMgr; //Nettoie la scène.
+
+	mMenuMgr.showMainMenu();
 }
 
 void OgreApplication::createScene() {
@@ -137,7 +142,11 @@ bool OgreApplication::frameRenderingQueued(const FrameEvent& evt) {
     mKeyboard->capture();
     mMouse->capture();
 
-    if (mStarted) {
+    if (mRequestEndGame) {
+    	mRequestEndGame = false;
+    	exitGame();
+    }
+    else if (mStarted) {
     	// On met à jour les informations de debug si besoin
     	if (mDebugOverlay->isVisible()) {
     		updateDebugInfo(evt.timeSinceLastFrame);
@@ -269,4 +278,11 @@ void OgreApplication::updateDebugInfo(Real deltaTime) {
 				"Y : " + StringConverter::toString(y));
 	debugPanel->getChild("Wizard/DebugPanel/Zposition")->setCaption(
 				"Z : " + StringConverter::toString(z));
+}
+
+void OgreApplication::objectDestroyed(const PhysicalObject* object) {
+	/* Si cette fonction a été appelée, c'est que le joueur a été tué,
+	 * donc GAME OVER.
+	 */
+	mRequestEndGame = true;
 }

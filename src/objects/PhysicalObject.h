@@ -9,6 +9,7 @@
 #define PHYSICALOBJECT_H_
 
 #include "Ogre.h"
+#include "PhysicalObjectListener.h"
 
 // forward declaration
 class ObjectManager;
@@ -33,18 +34,25 @@ private:
 	int mIntegrity; //~= points de vie pour un objet
 	Ogre::Vector3 mVolume;
 	Ogre::Vector3 mCollisionCorrection;
+	std::set<PhysicalObjectListener*> mListeners;
 
 	void setupVolume(Ogre::Vector3 centreMin,Ogre::Vector3 CentreMax);
+	void fireDestruction() const;
 
 protected:
 	/*
-	 * Attention : name doit être unique.
+	 * Attention : name doit être unique. Mieux vaut laisser l'ObjectManager s'en charger seul.
 	 */
 	PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, int id, Ogre::String meshName, Ogre::Vector3 volume, std::string description = "Objet");
 	virtual ~PhysicalObject();
 	/* Met à jour tout ce qui concerne l'objet hormis les déplacements (qui sont gérés par l'ObjectManager)*/
 	virtual void update(Ogre::Real deltaTime);
 	void setEntity(Ogre::Entity *mEntity);
+	/*
+	 * Actions à mener lorsque l'objet est détruit
+	 * (i.e. lorsque son intégrité vaut 0, pas lorsque le destructeur est appelé)
+	 */
+	virtual void destroy();
 
 public:
 	Ogre::Vector3 getAcceleration() const;
@@ -53,24 +61,26 @@ public:
     std::string getName() const;
     Ogre::SceneNode* getNode() const;
     Ogre::Vector3 getSpeed() const;
-    void setAcceleration(Ogre::Vector3 mAcceleration);
+    void setAcceleration(Ogre::Vector3 acceleration);
     void setId(ObjectId_t mId);
     void setIntegrity(int mIntegrity);
-    void setSpeed(Ogre::Vector3 mSpeed);
+    void setSpeed(Ogre::Vector3 speed);
     void addSpeed(Ogre::Vector3 speed);
     float getDensity() const;
     int getSolidity() const;
-    void setDensity(float mDensity);
-    void setSolidity(int mSolidity);
+    void setDensity(float density);
+    void setSolidity(int solidity);
     Ogre::Entity *getEntity() const;
     Ogre::String getDescription() const;
-    void setDescription(Ogre::String mDescription);
+    void setDescription(Ogre::String description);
     ObjectManager* getObjectManager() const;
     const Ogre::Vector3 getVolume() const;
     std::vector<Ogre::Vector3> getContactSurface(const Ogre::Vector3 normal) const;
     Ogre::Vector3 getCollisionCorrection() const;
     void setCollisionCorrection(Ogre::Vector3 correction);
 
+    void addListener(PhysicalObjectListener* listener);
+    void removeListener(PhysicalObjectListener* listener);
 };
 
 #endif /* PHYSICALOBJECT_H_ */

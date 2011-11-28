@@ -167,7 +167,6 @@ bool MenuManager::startGame(const CEGUI::EventArgs &e) {
 
 bool MenuManager::exitGame(const CEGUI::EventArgs &e) {
 	mApp->exitGame();
-	showMainMenu();
 	return true;
 }
 

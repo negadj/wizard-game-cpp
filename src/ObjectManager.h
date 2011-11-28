@@ -26,11 +26,21 @@
  */
 class ObjectManager {
 private:
-	static unsigned long _countObject;
+	static unsigned long _countObject; // Sert à attribuer un numéro unique à chaque objet.
 	Ogre::SceneManager* mSceneMgr;
 	MOC::CollisionTools mCollisionTools;
-	std::map<std::string,PhysicalObject*> mObjects;
+	std::map<std::string,PhysicalObject*> mObjects; // Tous les objets créés.
+	/*
+	 * Sous-ensemble d'objets dits "actifs" car susceptibles de se déplacer
+	 * et d'interagir avec l'environnement.
+	 * De manière générale, ce sont tous les êtres vivants, mais il n'est pas exclu
+	 * qu'on y mette un jour autre chose, ou que des êtres vivants soient temporairement retiré de la liste.
+	 * Permet d'optimiser les calculs en se concentrant sur les objets qui évoluent.
+	 */
 	std::vector<PhysicalObject*> mActiveObjects;
+	/*
+	 *
+	 */
 	Terrain mTerrain;
 	Clock mPhysicalClock;
 	MapManager mMapManager;
@@ -52,11 +62,28 @@ public:
 	 */
 	Block* createBlock(const Ogre::Vector3 position = Ogre::Vector3::ZERO);
 
+	/*
+	 * Ajoute un monstre
+	 */
 	Monster* createMonster(const Ogre::Vector3 position = Ogre::Vector3::ZERO);
 	/*
-	 * Renvoie si un objet est atteint, et si oui lequel
+	 * Renvoie si un objet est à portée, et si oui lequel.
+	 * Note : ne renvoie pas pour l'instant si le terrain est atteint. Voir blockReached pour ça.
+	 *
+	 * from : position de départ
+	 * normal : direction de la visée
+	 * reachRadius : portée maximale
+	 * target : pointeur pour stocker l'objet atteint le cas échéant
 	 */
 	bool objectReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, PhysicalObject* &target);
+	/*
+	 * Indique si un bloc du terrain est à portée, et si oui lequel.
+	 *
+	 * from : position de départ
+	 * normal : direction de la visée
+	 * reachRadius : portée maximale
+	 * target : pointeur pour stocker le bloc atteint le cas échéant
+	 */
 	bool blockReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, Block* &target);
 		/*
 	 * Charge la scène où le joueur évolue.

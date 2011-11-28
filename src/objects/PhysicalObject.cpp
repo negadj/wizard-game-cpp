@@ -21,7 +21,8 @@ PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* or
 	mDensity(1),
 	mIntegrity(100),
 	mVolume(volume),
-	mCollisionCorrection(Ogre::Vector3::ZERO)
+	mCollisionCorrection(Ogre::Vector3::ZERO),
+	mListeners(std::set<PhysicalObjectListener*>())
 {
 	mEntity = mNode->getCreator()->createEntity(mName, meshName);
 	mNode->attachObject(mEntity);
@@ -61,14 +62,20 @@ Ogre::Vector3 PhysicalObject::getSpeed() const
     return mSpeed;
 }
 
-void PhysicalObject::setAcceleration(Ogre::Vector3 mAcceleration)
+void PhysicalObject::setAcceleration(Ogre::Vector3 acceleration)
 {
     this->mAcceleration = mAcceleration;
 }
 
-void PhysicalObject::setIntegrity(int mIntegrity)
+void PhysicalObject::setIntegrity(int integrity)
 {
-    this->mIntegrity = mIntegrity;
+	if (integrity <= 0) {
+		this->mIntegrity = 0;
+		destroy();
+		fireDestruction();
+	}
+	else
+		this->mIntegrity = integrity;
 }
 
 float PhysicalObject::getDensity() const
@@ -81,14 +88,14 @@ int PhysicalObject::getSolidity() const
     return mSolidity;
 }
 
-void PhysicalObject::setDensity(float mDensity)
+void PhysicalObject::setDensity(float density)
 {
-    this->mDensity = mDensity;
+    this->mDensity = density;
 }
 
-void PhysicalObject::setEntity(Ogre::Entity *mEntity)
+void PhysicalObject::setEntity(Ogre::Entity *entity)
 {
-    this->mEntity = mEntity;
+    this->mEntity = entity;
 }
 
 Ogre::String PhysicalObject::getDescription() const
@@ -101,9 +108,9 @@ ObjectManager* PhysicalObject::getObjectManager() const
     return mObjectManager;
 }
 
-void PhysicalObject::setDescription(Ogre::String mDescription)
+void PhysicalObject::setDescription(Ogre::String description)
 {
-    this->mDescription = mDescription;
+    this->mDescription = description;
 }
 
 Ogre::Entity *PhysicalObject::getEntity() const
@@ -111,25 +118,27 @@ Ogre::Entity *PhysicalObject::getEntity() const
     return mEntity;
 }
 
-void PhysicalObject::setSolidity(int mSolidity)
+void PhysicalObject::setSolidity(int solidity)
 {
-    this->mSolidity = mSolidity;
+    this->mSolidity = solidity;
 }
 
-void PhysicalObject::setSpeed(Ogre::Vector3 mSpeed)
+void PhysicalObject::setSpeed(Ogre::Vector3 speed)
 {
-    this->mSpeed = mSpeed;
+    this->mSpeed = speed;
 }
 
-void PhysicalObject::addSpeed(Ogre::Vector3 mSpeed)
+void PhysicalObject::addSpeed(Ogre::Vector3 speed)
 {
-    this->mSpeed += mSpeed;
+    this->mSpeed += speed;
 }
 
 const Ogre::Vector3  PhysicalObject::getVolume() const
 {
 	return mVolume;
 }
+
+void PhysicalObject::destroy() {}
 
 std::vector<Ogre::Vector3> PhysicalObject::getContactSurface(const Ogre::Vector3 normal) const
 {
@@ -203,4 +212,18 @@ Ogre::Vector3 PhysicalObject::getCollisionCorrection() const
 void PhysicalObject::setCollisionCorrection(Ogre::Vector3 correction)
 {
 	mCollisionCorrection = correction;
+}
+
+void PhysicalObject::addListener(PhysicalObjectListener* listener) {
+	mListeners.insert(listener);
+}
+
+void PhysicalObject::removeListener(PhysicalObjectListener* listener) {
+	mListeners.erase(listener);
+}
+
+void PhysicalObject::fireDestruction() const {
+	for (std::set<PhysicalObjectListener*>::const_iterator it = mListeners.begin(); it != mListeners.end(); ++it) {
+		(*it)->objectDestroyed(this);
+	}
 }
