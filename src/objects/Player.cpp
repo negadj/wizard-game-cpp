@@ -45,6 +45,9 @@ LOG("enter Player::update");
 	else
 		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)));
 
+	if (getSpeed() != Ogre::Vector3::ZERO)
+		getEntity()->getAnimationState("RunBase")->addTime(deltaTime);
+
 #ifdef DEBUG_MODE
 LOG("exit Player::update");
 #endif
@@ -124,6 +127,7 @@ void Player::setupBody(SceneManager* sceneMgr) {
 	mBodyNode->scale(Vector3::UNIT_SCALE * 0.2);
 	mBodyNode->yaw(Degree(180));
 	mBodyNode->setInitialState();
+	getEntity()->getAnimationState("RunBase")->setEnabled(true);
 
 	/* Le constructeur de PhysicalObject attache mEntity à mNode,
 	   ce n'est pas ce que l'on souhaite ici */
