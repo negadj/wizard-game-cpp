@@ -10,6 +10,9 @@
 
 #include "IA.h"
 
+/*
+ * IA qui "patrouille", c'est a dire qui va out droit jusqu'a rentrer dans un obstacle puis fait demi tour
+ */
 class PatrollIA: public IA {
 public:
 	PatrollIA(Monster* monster);

@@ -10,6 +10,10 @@
 
 #include "IA.h"
 
+/*
+ *  IA allant tout droit jusqu'a ce qu'il rencontre un obstacle. ALors, elle prend une direction aléatoirement sur les trois restantes
+ */
+
 class ExplorerIA: public IA {
 public:
 	ExplorerIA(Monster* monster);

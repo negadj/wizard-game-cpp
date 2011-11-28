@@ -10,6 +10,9 @@
 
 #include "IA.h"
 
+/*
+ * IA ne se déplaçant pas. Elle reste sur place
+ */
 class GuardianIA: public IA {
 public:
 	GuardianIA(Monster* monster);
