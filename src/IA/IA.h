@@ -19,7 +19,7 @@ protected:
 	Monster* mMonster;
 public:
 	IA(Monster* monster);
-	~IA();
+	virtual ~IA();
 	virtual Ogre::Vector3 findDirection() =0;
 	static IA* getIA(Monster* monster);
 };

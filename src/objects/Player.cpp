@@ -35,12 +35,19 @@ Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 Player::~Player() {}
 
 void Player::update(Real deltaTime) {
+#ifdef DEBUG_MODE
+LOG("enter Player::update");
+#endif
 	/* Mise à jour de la vitesse du joueur en fonction des touches,
 	 dans le référentiel global. */
 	if(isOnGround())
 		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)+  mPropulsion * (getNode()->getOrientation() * mDirection.normalisedCopy())));
 	else
 		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)));
+
+#ifdef DEBUG_MODE
+LOG("exit Player::update");
+#endif
 }
 
 void Player::injectKeyDown(const OIS::KeyEvent& evt) {

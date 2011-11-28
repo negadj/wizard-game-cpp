@@ -100,6 +100,9 @@ bool CollisionManager::raycast(const Ogre::Vector3 &point, const Ogre::Vector3 &
 
 void CollisionManager::moveWithCollisions(PhysicalObject* &obj, const Ogre::Real deltaTime)
 {
+#ifdef DEBUG_MODE
+LOG("enter Collision::moveWitCollisions");
+#endif
     // Calcul des nouvelles positions des objets.
     // On gère les éventuelles collisions
     if(obj->getSpeed() != Ogre::Vector3::ZERO && deltaTime != 0){
@@ -109,10 +112,16 @@ void CollisionManager::moveWithCollisions(PhysicalObject* &obj, const Ogre::Real
         obj->setSpeed(newDistance/deltaTime);
         obj->setCollisionCorrection(newDistance - distance);
     }
+#ifdef DEBUG_MODE
+LOG("exit Collision::moveWitCollisions");
+#endif
 }
 
 Ogre::Vector3 CollisionManager::handleCollision(const PhysicalObject* obj, Ogre::Vector3 deplacement)
 {
+#ifdef DEBUG_MODE
+LOG("enter Collision::handleCollision");
+#endif
 	Ogre::Vector3 volume = obj->getVolume();
 	for(int i = -1; i<=1; i += 2)
 	{
@@ -150,5 +159,8 @@ Ogre::Vector3 CollisionManager::handleCollision(const PhysicalObject* obj, Ogre:
 			}
 		}
 	}
+#ifdef DEBUG_MODE
+LOG("exit Collision::handleCollision");
+#endif
 	return deplacement;
 }
