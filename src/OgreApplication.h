@@ -8,11 +8,12 @@ Author: Gecko
 #include <OIS.h>
 #include "ObjectManager.h"
 #include "MenuManager.h"
+#include "objects/PhysicalObjectListener.h"
 
 using namespace Ogre;
 
 class OgreApplication : public FrameListener, public WindowEventListener,
-public OIS::MouseListener, public OIS::KeyListener {
+public OIS::MouseListener, public OIS::KeyListener, public PhysicalObjectListener {
 friend class MenuManager;
 
 public:
@@ -55,6 +56,11 @@ private:
 	void toggleDebugOverlay();
 	void updateDebugInfo(Real deltaTime);
 
+	/* Méthodes héritées de l'interface PhysicalObjectListener.
+	 * Nécessaire pour déterminer la fin de la partie.
+	 */
+	void objectDestroyed(const PhysicalObject* object);
+
 	Root* mRoot;
 	RenderWindow* mWindow;
 	SceneManager* mSceneMgr;
@@ -73,6 +79,13 @@ private:
 	bool mContinue; // le programme tourne tant que mContinue est vrai
 	bool mStarted; // indique si une partie est en cours
 	bool mLocked; // indique si les commandes du joueur sont bloquées (pour les menus par ex.)
+	/*
+	 * indique si la partie doit se terminer. Une telle variable permet d'attendre la fin d'une boucle
+	 * de rendu avant de terminer la partie et nettoyer la scène. Cela évite un crash dû au fait que
+	 * la pile de méthodes qui déclenche la fin de partie provient d'un objet de la scène elle-même.
+	 */
+	bool mRequestEndGame;
+
 };
 
 #endif
