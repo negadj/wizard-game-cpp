@@ -72,7 +72,6 @@ LOG("call ObjectManager::objectReached");
 			return true;
 		}
 	}
-
 	return false;
 }
 
