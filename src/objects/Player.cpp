@@ -37,7 +37,7 @@ Player::~Player() {}
 void Player::update(Real deltaTime) {
 	/* Mise à jour de la vitesse du joueur en fonction des touches,
 	 dans le référentiel global. */
-	if(getObjectManager()->isOnGround(this))
+	if(isOnGround())
 		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)+  mPropulsion * (getNode()->getOrientation() * mDirection.normalisedCopy())));
 	else
 		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)));
@@ -62,7 +62,7 @@ void Player::injectKeyDown(const OIS::KeyEvent& evt) {
 		mDirection.x = 1;
 		break;
 	case OIS::KC_SPACE:
-		if(getObjectManager()->isOnGround(this))
+		if(isOnGround())
 			addSpeed(Ogre::Vector3::UNIT_Y * 15);
 		break;
 	default:

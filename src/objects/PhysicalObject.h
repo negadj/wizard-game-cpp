@@ -78,6 +78,7 @@ public:
     std::vector<Ogre::Vector3> getContactSurface(const Ogre::Vector3 normal) const;
     Ogre::Vector3 getCollisionCorrection() const;
     void setCollisionCorrection(Ogre::Vector3 correction);
+    bool isOnGround() const;
 
     void addListener(PhysicalObjectListener* listener);
     void removeListener(PhysicalObjectListener* listener);

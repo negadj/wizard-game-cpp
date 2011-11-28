@@ -56,3 +56,13 @@ bool operator<(Triplet const& a, Triplet const& b)
 	else
 		return false;
 }
+
+Ogre::Vector3 round(const Ogre::Vector3 vector)
+{
+	return Ogre::Vector3(round(vector.x),round(vector.y),round(vector.z));
+}
+
+Ogre::Vector3 floor(const Ogre::Vector3 vector)
+{
+	return Ogre::Vector3(floor(vector.x),floor(vector.y),floor(vector.z));
+}

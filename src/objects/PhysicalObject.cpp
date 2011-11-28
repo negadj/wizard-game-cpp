@@ -214,6 +214,16 @@ void PhysicalObject::setCollisionCorrection(Ogre::Vector3 correction)
 	mCollisionCorrection = correction;
 }
 
+bool PhysicalObject::isOnGround() const
+{
+	Ogre::Vector3 position = getNode()->getPosition();
+
+	if(mObjectManager->getTerrain().isFree(Triplet(round(position.x),floor(position.y - getVolume().y),round(position.z))))
+		return false;
+	PhysicalObject* obstacle = mObjectManager->getTerrain().getBlock(Triplet(round(position.x),floor(position.y - getVolume().y),round(position.z)));
+	return ( 0.01 > position.y - getVolume().y - obstacle->getNode()->getPosition().y - obstacle->getVolume().y);
+}
+
 void PhysicalObject::addListener(PhysicalObjectListener* listener) {
 	mListeners.insert(listener);
 }
