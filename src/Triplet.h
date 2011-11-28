@@ -10,6 +10,9 @@
 
 #include "Ogre.h"
 
+/*
+ * Surcharge des vecteurs permettant d'avoir un ordre global.
+ */
 class Triplet {
 public:
 	double x;

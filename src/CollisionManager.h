@@ -15,6 +15,9 @@
 //forward declaration
 class ObjectManager;
 
+/*
+ * Moteur "physique", permetant de gérer les collisions
+ */
 class CollisionManager {
 private:
 	ObjectManager* mObjMgr;

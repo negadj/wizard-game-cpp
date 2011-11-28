@@ -15,6 +15,9 @@ class Monster;
 
 #include "../IA/IA.h"
 
+/*
+ * Represente un monstre controle par une intelligence artificielle
+ */
 class Monster: public PhysicalObject
 {
 public:

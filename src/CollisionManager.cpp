@@ -19,7 +19,6 @@ bool intersect(Ogre::Vector3 position, Ogre::Vector3 &distance, Ogre::Vector3 ob
 				(position + t*distance).x > (obstacle - volume).x && (position + t*distance).x < (obstacle + volume).x
 				&& (position + t*distance).z > (obstacle - volume).z && (position + t*distance).z < (obstacle + volume).z)
 		{
-//			distance.y = obstacle.y + volume.y - position.y;
 			distance.y = 0;
 			return true;
 		}
@@ -109,6 +108,9 @@ LOG("enter Collision::moveWitCollisions");
     	Ogre::Vector3 distance = obj->getSpeed() * deltaTime;
     	Ogre::Vector3 newDistance = handleCollision(obj,distance);
         obj->getNode()->translate(newDistance); //TODO: TS_WORLD ?
+        /*
+         * UNe fois les collisons gérées, on met à jour la vitesse et on renseigne la correction
+         */
         obj->setSpeed(newDistance/deltaTime);
         obj->setCollisionCorrection(newDistance - distance);
     }
@@ -122,6 +124,10 @@ Ogre::Vector3 CollisionManager::handleCollision(const PhysicalObject* obj, Ogre:
 #ifdef DEBUG_MODE
 LOG("enter Collision::handleCollision");
 #endif
+	/*
+	 * On récupère tout les points du parallepipede et on verifie que le mouvement ne pose de probleme pour aucune
+	 * TODO : Dans le cas d'objets très grand (aucun pour l'instant), il vaudrait peut être mieux d'ajouter des points intermédiaires
+	 */
 	Ogre::Vector3 volume = obj->getVolume();
 	for(int i = -1; i<=1; i += 2)
 	{
@@ -129,31 +135,33 @@ LOG("enter Collision::handleCollision");
 		{
 			for(int k = -1; k<=1; k+=2)
 			{
+				/* Si le point se re trouve à l'oppose du deplacement, pas la peine de s'en occcuper */
 				if( deplacement.x * i <=0 && deplacement.y * j <= 0 && deplacement.z * k <= 0)
 					continue;
 				Ogre::Vector3 point = obj->getNode()->getPosition() + Ogre::Vector3(i*volume.x,j*volume.y,k*volume.z);
 				Ogre::Vector3 planned_move = deplacement;
 				do
 				{
+					/*
+					 * On décompose le déplacment dans les 3 directions et on regarde les collisions pour chacun
+					 */
+					std::vector<Ogre::Vector3> moveComposant = std::vector<Ogre::Vector3>();
+					moveComposant.push_back(Ogre::Vector3(deplacement.x,0,0));
+					moveComposant.push_back(Ogre::Vector3(0,deplacement.y,0));
+					moveComposant.push_back(Ogre::Vector3(0,0,deplacement.z));
 					planned_move = deplacement;
-					if(!mObjMgr->getTerrain().isFree(Triplet(round(point + Ogre::Vector3(deplacement.x,0,0)))))
+					for(std::vector<Ogre::Vector3>::iterator it = moveComposant.begin() ; it < moveComposant.end() ; ++it)
 					{
-						Ogre::String name = mObjMgr->getTerrain().getBlock(Triplet(round(point + Ogre::Vector3(deplacement.x,0,0))))->getName();
-						PhysicalObject* obstacle = mObjMgr->getObject(name);;
-						intersect(point,deplacement,obstacle->getNode()->getPosition(),obstacle->getVolume());
+						if(!mObjMgr->getTerrain().isFree(Triplet(round(point + *it))))
+						{
+							Ogre::String name = mObjMgr->getTerrain().getBlock(Triplet(round(point + *it)))->getName();
+							PhysicalObject* obstacle = mObjMgr->getObject(name);;
+							intersect(point,deplacement,obstacle->getNode()->getPosition(),obstacle->getVolume());
+						}
 					}
-					if(!mObjMgr->getTerrain().isFree(Triplet(round(point + Ogre::Vector3(0,deplacement.y,0)))))
-					{
-						Ogre::String name = mObjMgr->getTerrain().getBlock(Triplet(round(point + Ogre::Vector3(0,deplacement.y,0))))->getName();
-						PhysicalObject* obstacle = mObjMgr->getObject(name);
-						intersect(point,deplacement,obstacle->getNode()->getPosition(),obstacle->getVolume());
-					}
-					if(!mObjMgr->getTerrain().isFree(Triplet(round(point + Ogre::Vector3(0,0,deplacement.z)))))
-					{
-						Ogre::String name = mObjMgr->getTerrain().getBlock(Triplet(round(point + Ogre::Vector3(0,0,deplacement.z))))->getName();
-						PhysicalObject* obstacle = mObjMgr->getObject(name);;
-						intersect(point,deplacement,obstacle->getNode()->getPosition(),obstacle->getVolume());
-					}
+					/*
+					 * On itère jusqu'a ce qu'il ny ait plus de correction
+					 */
 				} while(planned_move != deplacement);
 
 			}
