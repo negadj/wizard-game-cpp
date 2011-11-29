@@ -11,7 +11,7 @@
 #define CHAR_HEIGHT 2 // hauteur du personnage
 
 Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
-	PhysicalObject(objectManager, cam->getSceneManager()->getRootSceneNode(), name, 1, "Sinbad.mesh", Ogre::Vector3(0.45,0.9,0.45),"Joueur"),
+	AnimatedObject(objectManager, cam->getSceneManager()->getRootSceneNode(), name, 1, "Sinbad.mesh", Ogre::Vector3(0.45,0.9,0.45),"Joueur"),
 	mCamera(cam),
 	mBodyNode(0),
 	mCameraRootNode(0),
@@ -21,8 +21,6 @@ Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 	mSword1(0),
 	mSword2(0),
 	mDirection(Ogre::Vector3::ZERO),
-	mPropulsion(40),
-	mVerticalVelocity(0),
 	mCollisionTools(cam->getSceneManager())
 {
 	getNode()->translate(1,1.5,1);
@@ -30,43 +28,51 @@ Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 	setupBody(cam->getSceneManager());
 	setupCamera();
 	getNode()->yaw(Degree(180));
+	registerAnimation("RunBase");
+	registerAnimation("RunTop");
 }
 
 Player::~Player() {}
 
-void Player::update(Real deltaTime) {
+void Player::preCollisionUpdate(Real deltaTime) {
 #ifdef DEBUG_MODE
-LOG("enter Player::update");
+LOG("enter Player::preCollisionUpdate");
 #endif
 	/* Mise à jour de la vitesse du joueur en fonction des touches,
 	 dans le référentiel global. */
 	if(isOnGround())
-		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)+  mPropulsion * (getNode()->getOrientation() * mDirection.normalisedCopy())));
+		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)+  getPropulsion() * (getNode()->getOrientation() * mDirection.normalisedCopy())));
 	else
 		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)));
 
-	if (mDirection != Ogre::Vector3::ZERO) {
-		getEntity()->getAnimationState("RunBase")->setEnabled(true);
-		getEntity()->getAnimationState("RunTop")->setEnabled(true);
-		if (mDirection.z > 0) {
-			getEntity()->getAnimationState("RunBase")->addTime(-deltaTime);
-			getEntity()->getAnimationState("RunTop")->addTime(-deltaTime);
-		}
-		else {
-			getEntity()->getAnimationState("RunBase")->addTime(deltaTime);
-			getEntity()->getAnimationState("RunTop")->addTime(deltaTime);
-		}
-	}
-	else {
-		getEntity()->getAnimationState("RunBase")->setEnabled(false);
-		getEntity()->getAnimationState("RunTop")->setEnabled(false);
-		getEntity()->getAnimationState("RunBase")->setTimePosition(0); //RAZ de l'animation
-		getEntity()->getAnimationState("RunTop")->setTimePosition(0); //RAZ de l'animation
-	}
+	AnimatedObject::preCollisionUpdate(deltaTime);
+//	if (mDirection != Ogre::Vector3::ZERO) {
+//		getEntity()->getAnimationState("RunBase")->setEnabled(true);
+//		getEntity()->getAnimationState("RunTop")->setEnabled(true);
+//		if (mDirection.z > 0) {
+//			getEntity()->getAnimationState("RunBase")->addTime(-deltaTime);
+//			getEntity()->getAnimationState("RunTop")->addTime(-deltaTime);
+//		}
+//		else {
+//			getEntity()->getAnimationState("RunBase")->addTime(deltaTime);
+//			getEntity()->getAnimationState("RunTop")->addTime(deltaTime);
+//		}
+//	}
+//	else {
+//		getEntity()->getAnimationState("RunBase")->setEnabled(false);
+//		getEntity()->getAnimationState("RunTop")->setEnabled(false);
+//		getEntity()->getAnimationState("RunBase")->setTimePosition(0); //RAZ de l'animation
+//		getEntity()->getAnimationState("RunTop")->setTimePosition(0); //RAZ de l'animation
+//	}
 
 #ifdef DEBUG_MODE
-LOG("exit Player::update");
+LOG("exit Player::preCollisionUpdate");
 #endif
+}
+
+void Player::postCollisionUpdate(Ogre::Real deltaTime)
+{
+	AnimatedObject::postCollisionUpdate(deltaTime);
 }
 
 void Player::injectKeyDown(const OIS::KeyEvent& evt) {
@@ -89,7 +95,7 @@ void Player::injectKeyDown(const OIS::KeyEvent& evt) {
 		break;
 	case OIS::KC_SPACE:
 		if(isOnGround())
-			addSpeed(Ogre::Vector3::UNIT_Y * 15);
+			addSpeed(Ogre::Vector3::UNIT_Y * 8);
 		break;
 	default:
 		break;

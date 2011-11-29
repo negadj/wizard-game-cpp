@@ -9,7 +9,7 @@
 #define MONSTER_H_
 
 #include <Ogre.h>
-#include "PhysicalObject.h"
+#include "AnimatedObject.h"
 
 class Monster;
 
@@ -18,20 +18,16 @@ class Monster;
 /*
  * Represente un monstre controle par une intelligence artificielle
  */
-class Monster: public PhysicalObject
+class Monster: public AnimatedObject
 {
 public:
 	Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name);
 	virtual ~Monster();
-	virtual void update(Ogre::Real deltaTime);
+	virtual void preCollisionUpdate(Ogre::Real deltaTime);
+	virtual void postCollisionUpdate(Ogre::Real deltaTime);
 
 private:
 	Ogre::SceneNode* mBodyNode;
-	Ogre::Entity* mSword1;
-	Ogre::Entity* mSword2;
-	Ogre::Vector3 mDirection; // direction du joueur donnée par les touches du clavier
-	Ogre::Real mPropulsion;
-	Ogre::Real mVerticalVelocity; // for jumping
 	IA* mIA;
 	void setupBody(Ogre::SceneNode* originNode);
 };

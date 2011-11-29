@@ -12,17 +12,16 @@
 
 #include <Ogre.h>
 #include <OIS.h>
-#include "PhysicalObject.h"
+#include "AnimatedObject.h"
 #include "../CollisionTools.h"
 
 using namespace Ogre;
 /*
  * Represente le joueur
  */
-class Player : public PhysicalObject {
+class Player : public AnimatedObject {
 	friend class ObjectManager;
 public:
-	virtual void update(Real deltaTime);
 	void injectKeyDown(const OIS::KeyEvent& evt);
 	void injectKeyUp(const OIS::KeyEvent& evt);
 	void injectMouseMove(const OIS::MouseEvent& evt);
@@ -34,6 +33,8 @@ public:
 
 protected:
 	Player(ObjectManager* objectManager, Ogre::String name, Camera* cam);
+	virtual void postCollisionUpdate(Ogre::Real deltaTime);
+	virtual void preCollisionUpdate(Ogre::Real deltaTime);
 	virtual ~Player();
 
 private:
@@ -46,8 +47,6 @@ private:
 	Entity* mSword1;
 	Entity* mSword2;
 	Vector3 mDirection; // direction du joueur donnée par les touches du clavier
-	Real mPropulsion;
-	Real mVerticalVelocity; // for jumping
 	MOC::CollisionTools mCollisionTools;
 
 	void setupBody(SceneManager* sceneMgr);

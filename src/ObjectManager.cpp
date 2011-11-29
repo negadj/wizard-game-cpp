@@ -117,9 +117,10 @@ LOG("tick");
 			// On lance d'abord les update personalisés de chaque objet
 		// (pour les animations, modifications de vitesse, etc...).
 
-			obj->update(mPhysicalClock.getStep());
+			obj->preCollisionUpdate(mPhysicalClock.getStep());
 		// Calcul des nouvelles positions des objets.
 			mCollisionMgr.moveWithCollisions(obj, mPhysicalClock.getStep());
+			obj->postCollisionUpdate(mPhysicalClock.getStep());
 		}
 	}
 	for(std::vector<PhysicalObject*>::iterator it = mActiveObjects.begin(); it != mActiveObjects.end();++it)

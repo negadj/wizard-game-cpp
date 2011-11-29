@@ -10,15 +10,11 @@
 
 
 Monster::Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name):
-	PhysicalObject(objectManager, originNode, name, 2, "robot.mesh", Ogre::Vector3(0.45,0.9,0.45),"Monster"),
+	AnimatedObject(objectManager, originNode, name, 2, "robot.mesh", Ogre::Vector3(0.45,0.9,0.45),"Monster"),
 	mBodyNode(0),
-	mSword1(0),
-	mSword2(0),
-	mDirection(Ogre::Vector3::ZERO),
-	mPropulsion(40),
-	mVerticalVelocity(0),
 	mIA(IA::getIA(this))
 {
+	registerAnimation("Walk");
 	setupBody(originNode);
 }
 
@@ -46,9 +42,9 @@ void Monster::setupBody(Ogre::SceneNode* originNode) {
 	mBodyNode->attachObject(getEntity());
 }
 
-void Monster::update(Ogre::Real deltaTime) {
+void Monster::preCollisionUpdate(Ogre::Real deltaTime) {
 #ifdef DEBUG_MODE
-LOG("enter Monster::update");
+LOG("enter Monster::preCollisionUpdate");
 #endif
 	/* Mise à jour de la vitesse du joueur en fonction des touches,
 	 dans le référentiel global. */
@@ -64,15 +60,19 @@ LOG("enter Monster::update");
 	{
 		/* Reorientation du monstre */
 		getNode()->setDirection(relativeDirection,Ogre::Node::TS_LOCAL);
-		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)+  mPropulsion * (getNode()->getOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z)));
+		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)+  getPropulsion() * (getNode()->getOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z)));
 	}
 	else
 		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)));
 
-	if (getSpeed() != Ogre::Vector3::ZERO)
-		getEntity()->getAnimationState("Walk")->addTime(deltaTime*1.5);
+	AnimatedObject::preCollisionUpdate(deltaTime);
 
 #ifdef DEBUG_MODE
-LOG("exit Monster::update");
+LOG("exit Monster::preCollisionUpdate");
 #endif
+}
+
+void Monster::postCollisionUpdate(Ogre::Real deltaTime)
+{
+	AnimatedObject::postCollisionUpdate(deltaTime);
 }
