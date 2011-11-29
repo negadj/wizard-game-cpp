@@ -191,12 +191,13 @@ Monster* ObjectManager::createMonster(const Ogre::Vector3 position)
 	return m;
 }
 
-Block* ObjectManager::createBlock(const Ogre::Vector3 position) {
+Block* ObjectManager::createBlock(const Ogre::Vector3 position, bool add) {
 	Ogre::String name = Ogre::StringConverter::toString(++_countObject);
 	Block* b = new Block(this, mSceneMgr->getRootSceneNode(), name, 3);
 	b->getNode()->setPosition(position);
 	mObjects[name] = b;
-	mTerrain.addBlock(*b);
+	if(add)
+		mTerrain.addBlock(*b);
 	return b;
 }
 
@@ -205,8 +206,12 @@ void ObjectManager::loadScene() {
 LOG("enter ObjectManager::loadScene");
 #endif
 	std::vector<Ogre::Vector3> chunk = mMapManager.loadChunk(Vector3::ZERO);
+	std::vector<Block*> blocks= std::vector<Block*>();
 	for(std::vector<Vector3>::iterator it = chunk.begin(); it != chunk.end(); ++it)
-		createBlock(*it);
+	{
+		blocks.push_back(createBlock(*it));
+	}
+	mTerrain.addBlocks(blocks);
 	mActiveObjects.push_back(createMonster(Vector3(rand()%18 + 1,1.5,rand()%18 + 1)));
 #ifdef DEBUG_MODE
 LOG("exit ObjectManager::loadScene");
