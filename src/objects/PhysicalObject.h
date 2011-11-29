@@ -67,8 +67,11 @@ public:
     void setAcceleration(Ogre::Vector3 acceleration);
     void setId(ObjectId_t mId);
     void setIntegrity(int mIntegrity);
+
     void setSpeed(Ogre::Vector3 speed);
     void addSpeed(Ogre::Vector3 speed);
+    void addForce(Ogre::Vector3 force);
+
     float getDensity() const;
     int getSolidity() const;
     void setDensity(float density);

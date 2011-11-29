@@ -26,7 +26,7 @@ void Monster::setupBody(Ogre::SceneNode* originNode) {
 	// Entités pour le corps
 
 	// Création du corps du personnage
-	mBodyNode = getNode()->createChildSceneNode(Ogre::Vector3::NEGATIVE_UNIT_Y * 0.6);
+	mBodyNode = getNode()->createChildSceneNode(Ogre::Vector3::NEGATIVE_UNIT_Y * 0.9);
 	mBodyNode->scale(Ogre::Vector3::UNIT_SCALE * 0.02);
 	mBodyNode->yaw(Ogre::Degree(90));
 	mBodyNode->setInitialState();
@@ -46,8 +46,7 @@ void Monster::preCollisionUpdate(Ogre::Real deltaTime) {
 #ifdef DEBUG_MODE
 LOG("enter Monster::preCollisionUpdate");
 #endif
-	/* Mise à jour de la vitesse du joueur en fonction des touches,
-	 dans le référentiel global. */
+	/* Change aléatoirement de stratégie */
 	if(rand()%100 == 0)
 	{
 		delete mIA;
@@ -60,10 +59,10 @@ LOG("enter Monster::preCollisionUpdate");
 	{
 		/* Reorientation du monstre */
 		getNode()->setDirection(relativeDirection,Ogre::Node::TS_LOCAL);
-		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)+  getPropulsion() * (getNode()->getOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z)));
+
+		/* Ajout de la force motrice*/
+		addForce(getPropulsion() * (getNode()->getOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z));
 	}
-	else
-		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)));
 
 	AnimatedObject::preCollisionUpdate(deltaTime);
 
