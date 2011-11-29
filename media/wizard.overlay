@@ -1,0 +1,84 @@
+Wizard/DebugOverlay
+{
+	zorder 300
+	container BorderPanel(Wizard/DebugPanel)
+	{
+		metrics_mode pixels
+		vert_align top
+		left 10 
+		top 200
+		width 300
+		height 300
+
+		element TextArea(Wizard/DebugPanel/Fps)
+		{
+			metrics_mode pixels
+			left 0
+			top 150
+			width 90
+			height 30
+			font_name BlueHighway
+			char_height 20
+			caption FPS:
+			colour_top 1 1 1
+			colour_bottom 1 1 1
+		}
+		
+		element TextArea(Wizard/DebugPanel/Xposition)
+		{
+			metrics_mode pixels
+			left 0
+			top 0
+			width 90
+			height 30
+			font_name BlueHighway
+			char_height 20
+			caption FPS:
+			colour_top 1 1 1
+			colour_bottom 1 1 1
+		}
+		
+		element TextArea(Wizard/DebugPanel/Yposition)
+		{
+			metrics_mode pixels
+			left 0
+			top 40
+			width 90
+			height 30
+			font_name BlueHighway
+			char_height 20
+			caption FPS:
+			colour_top 1 1 1
+			colour_bottom 1 1 1
+		}
+		
+		element TextArea(Wizard/DebugPanel/Zposition)
+		{
+			metrics_mode pixels
+			left 0
+			top 80
+			width 90
+			height 30
+			font_name BlueHighway
+			char_height 20
+			caption FPS:
+			colour_top 1 1 1
+			colour_bottom 1 1 1
+		}
+	}
+}
+
+Wizard/DarkOverlay
+{
+    zorder 500
+	container BorderPanel(Wizard/DarkPanel)
+	{
+		metrics_mode relative
+		vert_align top
+		left 0 
+		top 0
+		width 1
+		height 1
+		material Wizard/DarkOverlayMaterial
+	}
+}

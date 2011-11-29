@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Wizard" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin\Debug\Wizard-dbg" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin\Debug\" />
+				<Option object_output="obj\Debug\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-D_DEBUG" />
+					<Add option="-DDEBUG_MODE" />
+					<Add option="-DNO_CEGUI" />
+				</Compiler>
+				<Linker>
+					<Add library="OgreMain_d" />
+					<Add library="OIS_d" />
+					<Add library="CEGUIBase_d" />
+					<Add library="OgreGUIRenderer_d" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin\Release\Wizard" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin\Release\" />
+				<Option object_output="obj\Release\" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-DNDEBUG" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="OgreMain" />
+					<Add library="OIS" />
+					<Add library="CEGUIBase" />
+					<Add library="OgreGUIRenderer" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-mthreads" />
+			<Add option="-fmessage-length=0" />
+			<Add option="-fexceptions" />
+			<Add option="-fident" />
+			<Add option="-DWIN32" />
+			<Add option="-D_WINDOWS" />
+			<Add directory="C:\OgreSDK\include" />
+			<Add directory="C:\OgreSDK\include\OIS" />
+			<Add directory="C:\OgreSDK\include\CEGUI" />
+			<Add directory="C:\OgreSDK\samples\include" />
+		</Compiler>
+		<Linker>
+			<Add option="-Wl,--enable-runtime-pseudo-reloc" />
+			<Add option="-Wl,--enable-auto-image-base" />
+			<Add option="-Wl,--add-stdcall-alias" />
+			<Add option="-mthreads" />
+			<Add directory="C:\OgreSDK\lib" />
+			<Add directory="C:\OgreSDK\bin\debug" />
+			<Add directory="C:\OgreSDK\bin\release" />
+		</Linker>
+		<Unit filename="src\Clock.cpp" />
+		<Unit filename="src\Clock.h" />
+		<Unit filename="src\CollisionManager.cpp" />
+		<Unit filename="src\CollisionManager.h" />
+		<Unit filename="src\CollisionTools.cpp" />
+		<Unit filename="src\CollisionTools.h" />
+		<Unit filename="src\IA\ExplorerIA.cpp" />
+		<Unit filename="src\IA\ExplorerIA.h" />
+		<Unit filename="src\IA\GuardianIA.cpp" />
+		<Unit filename="src\IA\GuardianIA.h" />
+		<Unit filename="src\IA\IA.cpp" />
+		<Unit filename="src\IA\IA.h" />
+		<Unit filename="src\IA\PatrollIA.cpp" />
+		<Unit filename="src\IA\PatrollIA.h" />
+		<Unit filename="src\IA\RandomIA.cpp" />
+		<Unit filename="src\IA\RandomIA.h" />
+		<Unit filename="src\MapManager.cpp" />
+		<Unit filename="src\MapManager.h" />
+		<Unit filename="src\MenuManager.cpp" />
+		<Unit filename="src\MenuManager.h" />
+		<Unit filename="src\ObjectManager.cpp" />
+		<Unit filename="src\ObjectManager.h" />
+		<Unit filename="src\OgreApplication.cpp" />
+		<Unit filename="src\OgreApplication.h" />
+		<Unit filename="src\Terrain.cpp" />
+		<Unit filename="src\Terrain.h" />
+		<Unit filename="src\Triplet.cpp" />
+		<Unit filename="src\Triplet.h" />
+		<Unit filename="src\main.cpp" />
+		<Unit filename="src\objects\Block.cpp" />
+		<Unit filename="src\objects\Block.h" />
+		<Unit filename="src\objects\Monster.cpp" />
+		<Unit filename="src\objects\Monster.h" />
+		<Unit filename="src\objects\PhysicalObject.cpp" />
+		<Unit filename="src\objects\PhysicalObject.h" />
+		<Unit filename="src\objects\PhysicalObjectListener.cpp" />
+		<Unit filename="src\objects\PhysicalObjectListener.h" />
+		<Unit filename="src\objects\Player.cpp" />
+		<Unit filename="src\objects\Player.h" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
