@@ -8,7 +8,15 @@
 #include "Player.h"
 #include "../ObjectManager.h"
 
-#define CHAR_HEIGHT 2 // hauteur du personnage
+#ifdef _WINDOWS
+#define MOVE_FORWARD OIS::KC_W
+#define MOVE_LEFT OIS::KC_A
+#else
+#define MOVE_FORWARD OIS::KC_Z
+#define MOVE_LEFT OIS::KC_Q
+#endif
+#define MOVE_RIGHT OIS::KC_D
+#define MOVE_BACKWARD OIS::KC_S
 
 Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 	PhysicalObject(objectManager, cam->getSceneManager()->getRootSceneNode(), name, 1, "Sinbad.mesh", Ogre::Vector3(0.45,0.9,0.45),"Joueur"),
@@ -75,16 +83,16 @@ void Player::injectKeyDown(const OIS::KeyEvent& evt) {
 		toggleCameraMode();
 		break;
 	// On met à jour la direction du joueur
-	case OIS::KC_Z:
+	case MOVE_FORWARD:
 		mDirection.z = -1;
 		break;
-	case OIS::KC_Q:
+	case MOVE_LEFT:
 		mDirection.x = -1;
 		break;
-	case OIS::KC_S:
+	case MOVE_BACKWARD:
 		mDirection.z = 1;
 		break;
-	case OIS::KC_D:
+	case MOVE_RIGHT:
 		mDirection.x = 1;
 		break;
 	case OIS::KC_SPACE:
@@ -98,13 +106,13 @@ void Player::injectKeyDown(const OIS::KeyEvent& evt) {
 
 void Player::injectKeyUp(const OIS::KeyEvent& evt) {
 	// On met à jour la direction du joueur
-	if (evt.key == OIS::KC_Z && mDirection.z == -1)
+	if (evt.key == MOVE_FORWARD && mDirection.z == -1)
 		mDirection.z = 0;
-	else if (evt.key == OIS::KC_Q && mDirection.x == -1)
+	else if (evt.key == MOVE_LEFT && mDirection.x == -1)
 		mDirection.x = 0;
-	else if (evt.key == OIS::KC_S && mDirection.z == 1)
+	else if (evt.key == MOVE_BACKWARD && mDirection.z == 1)
 		mDirection.z = 0;
-	else if (evt.key == OIS::KC_D && mDirection.x == 1)
+	else if (evt.key == MOVE_RIGHT && mDirection.x == 1)
 		mDirection.x = 0;
 }
 
@@ -125,10 +133,6 @@ void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) 
 	if (getObjectManager()->blockReached(mCamera->getDerivedPosition(), mCamera->getDerivedDirection(), 3, target)) {
 		getObjectManager()->getTerrain().removeBlock(target->getNode()->getPosition());
 	}
-//	if (getObjectManager()->objectReached(mCamera->getDerivedPosition(), mCamera->getDerivedDirection(), 10, target)) {
-//		target->getEntity()->setVisible(false);
-//		std::cout << target->getName() << std::endl;
-//	}
 }
 
 void Player::setupBody(SceneManager* sceneMgr) {
