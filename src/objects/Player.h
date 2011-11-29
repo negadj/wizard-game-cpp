@@ -16,7 +16,9 @@
 #include "../CollisionTools.h"
 
 using namespace Ogre;
-
+/*
+ * Represente le joueur
+ */
 class Player : public PhysicalObject {
 	friend class ObjectManager;
 public:

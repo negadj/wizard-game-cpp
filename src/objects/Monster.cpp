@@ -58,11 +58,12 @@ LOG("enter Monster::update");
 		mIA = IA::getIA(this);
 	}
 
-	Ogre::Vector3 absoluteDirection = mIA->findDirection();
+	Ogre::Vector3 relativeDirection = mIA->findDirection();
 
-	if(isOnGround() && absoluteDirection != Ogre::Vector3::ZERO)
+	if(isOnGround() && relativeDirection != Ogre::Vector3::ZERO)
 	{
-		getNode()->setDirection(absoluteDirection,Ogre::Node::TS_LOCAL);
+		/* Reorientation du monstre */
+		getNode()->setDirection(relativeDirection,Ogre::Node::TS_LOCAL);
 		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)+  mPropulsion * (getNode()->getOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z)));
 	}
 	else

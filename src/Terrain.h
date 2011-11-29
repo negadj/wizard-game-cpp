@@ -14,6 +14,9 @@
 
 class ObjectManager;
 
+/*
+ * Gere le terrain d'une map
+ */
 class Terrain {
 private:
 	ObjectManager* mObjMgr;
