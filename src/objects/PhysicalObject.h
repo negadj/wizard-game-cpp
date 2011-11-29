@@ -15,7 +15,9 @@
 class ObjectManager;
 
 typedef unsigned char ObjectId_t;
-
+/*
+ * Represente un objet physique, pouvant aller d'une fleur à un bloc de granite
+ */
 class PhysicalObject {
 	friend class ObjectManager;
 private:

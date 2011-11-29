@@ -10,6 +10,9 @@
 
 #include "IA.h"
 
+/*
+ * IA prenant une directionaleatoire a chaque battement d'horloge physique
+ */
 
 class RandomIA: public IA {
 public:

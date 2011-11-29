@@ -11,6 +11,9 @@
 #include <Ogre.h>
 #include <fstream>
 
+/*
+ * Gére l'import d'une map
+ */
 class MapManager {
 
 private:
