@@ -18,7 +18,7 @@ IA::~IA() {}
 
 IA* IA::getIA(Monster* monster)
 {
-	int i = 3;
+	int i = 3; //rand()%3;
 	if(i == 0)
 	{
 		return new GuardianIA(monster);
