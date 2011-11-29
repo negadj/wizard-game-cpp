@@ -17,6 +17,7 @@ ObjectManager::ObjectManager(Ogre::SceneManager* scnMgr) :
 	mActiveObjects(std::vector<PhysicalObject*>()),
 	mTerrain(this, scnMgr->createStaticGeometry("terrain")),
 	mPhysicalClock(Clock(0.02)),
+	mMonsterClock(Clock(15)),
 	mMapManager(10)
 {}
 
@@ -106,6 +107,11 @@ LOG("enter ObjectManager::updateObjects");
 LOG("nbr d'objets : " + Ogre::StringConverter::toString(mObjects.size()) + ", actifs : " + Ogre::StringConverter::toString(mActiveObjects.size()));
 #endif
 	PhysicalObject* obj = NULL;
+	Ogre::Real monsterTime = deltaTime;
+	if(mMonsterClock.ticked(monsterTime))
+	{
+		mActiveObjects.push_back(createMonster(Vector3(rand()%18 + 1,1.5,rand()%18 + 1)));
+	}
 	while(mPhysicalClock.ticked(deltaTime)){
 #ifdef DEBUG_MODE
 LOG("tick");
@@ -166,6 +172,18 @@ LOG("exit ObjectManager::createPlayer");
 
 Monster* ObjectManager::createMonster(const Ogre::Vector3 position)
 {
+	Ogre::Vector3 realPosition = position;
+	std::vector<Vector3> correction = std::vector<Vector3>();
+	correction.push_back(Ogre::Vector3::UNIT_X);
+	correction.push_back(Ogre::Vector3::UNIT_Z);
+	correction.push_back(Ogre::Vector3::NEGATIVE_UNIT_X);
+	correction.push_back(Ogre::Vector3::NEGATIVE_UNIT_Z);
+	std::vector<Vector3>::iterator it = correction.begin();
+	while(!mTerrain.isFree(round(realPosition)))
+	{
+		realPosition = position + *it;
+		++it;
+	}
 	Ogre::String name = Ogre::StringConverter::toString(++_countObject);
 	Monster* m = new Monster(this, mSceneMgr->getRootSceneNode(), name);
 	m->getNode()->setPosition(position);
@@ -189,7 +207,7 @@ LOG("enter ObjectManager::loadScene");
 	std::vector<Ogre::Vector3> chunk = mMapManager.loadChunk(Vector3::ZERO);
 	for(std::vector<Vector3>::iterator it = chunk.begin(); it != chunk.end(); ++it)
 		createBlock(*it);
-	mActiveObjects.push_back(createMonster(Vector3(3,1.5,5)));
+	mActiveObjects.push_back(createMonster(Vector3(rand()%18 + 1,1.5,rand()%18 + 1)));
 #ifdef DEBUG_MODE
 LOG("exit ObjectManager::loadScene");
 #endif

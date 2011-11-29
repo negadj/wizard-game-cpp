@@ -40,11 +40,9 @@ private:
 	 * Permet d'optimiser les calculs en se concentrant sur les objets qui évoluent.
 	 */
 	std::vector<PhysicalObject*> mActiveObjects;
-	/*
-	 *
-	 */
 	Terrain mTerrain;
 	Clock mPhysicalClock;
+	Clock mMonsterClock;
 	MapManager mMapManager;
 
 public:
