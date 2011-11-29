@@ -30,9 +30,9 @@ void Monster::setupBody(Ogre::SceneNode* originNode) {
 	// Entités pour le corps
 
 	// Création du corps du personnage
-	mBodyNode = getNode()->createChildSceneNode();//Ogre::Vector3::UNIT_Y * 0.05);
+	mBodyNode = getNode()->createChildSceneNode(Ogre::Vector3::NEGATIVE_UNIT_Y * 0.6);
 	mBodyNode->scale(Ogre::Vector3::UNIT_SCALE * 0.02);
-	//mBodyNode->yaw(Ogre::Degree(180));
+	mBodyNode->yaw(Ogre::Degree(90));
 	mBodyNode->setInitialState();
 
 	getEntity()->getAnimationState("Walk")->setEnabled(true);
@@ -69,7 +69,7 @@ LOG("enter Monster::update");
 		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)));
 
 	if (getSpeed() != Ogre::Vector3::ZERO)
-		getEntity()->getAnimationState("Walk")->addTime(deltaTime);
+		getEntity()->getAnimationState("Walk")->addTime(deltaTime*1.5);
 
 #ifdef DEBUG_MODE
 LOG("exit Monster::update");

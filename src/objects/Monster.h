@@ -20,7 +20,7 @@ class Monster: public PhysicalObject
 public:
 	Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name);
 	virtual ~Monster();
-	void update(Ogre::Real deltaTime);
+	virtual void update(Ogre::Real deltaTime);
 
 private:
 	Ogre::SceneNode* mBodyNode;

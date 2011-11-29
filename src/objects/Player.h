@@ -20,7 +20,7 @@ using namespace Ogre;
 class Player : public PhysicalObject {
 	friend class ObjectManager;
 public:
-	void update(Real deltaTime);
+	virtual void update(Real deltaTime);
 	void injectKeyDown(const OIS::KeyEvent& evt);
 	void injectKeyUp(const OIS::KeyEvent& evt);
 	void injectMouseMove(const OIS::MouseEvent& evt);
