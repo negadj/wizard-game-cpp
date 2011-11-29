@@ -45,8 +45,24 @@ LOG("enter Player::update");
 	else
 		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)));
 
-	if (getSpeed() != Ogre::Vector3::ZERO)
-		getEntity()->getAnimationState("RunBase")->addTime(deltaTime);
+	if (mDirection != Ogre::Vector3::ZERO) {
+		getEntity()->getAnimationState("RunBase")->setEnabled(true);
+		getEntity()->getAnimationState("RunTop")->setEnabled(true);
+		if (mDirection.z > 0) {
+			getEntity()->getAnimationState("RunBase")->addTime(-deltaTime);
+			getEntity()->getAnimationState("RunTop")->addTime(-deltaTime);
+		}
+		else {
+			getEntity()->getAnimationState("RunBase")->addTime(deltaTime);
+			getEntity()->getAnimationState("RunTop")->addTime(deltaTime);
+		}
+	}
+	else {
+		getEntity()->getAnimationState("RunBase")->setEnabled(false);
+		getEntity()->getAnimationState("RunTop")->setEnabled(false);
+		getEntity()->getAnimationState("RunBase")->setTimePosition(0); //RAZ de l'animation
+		getEntity()->getAnimationState("RunTop")->setTimePosition(0); //RAZ de l'animation
+	}
 
 #ifdef DEBUG_MODE
 LOG("exit Player::update");
