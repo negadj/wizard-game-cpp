@@ -266,7 +266,7 @@ bool OgreApplication::mouseMoved(const OIS::MouseEvent &e) {
 
 bool OgreApplication::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id) {
 #ifdef DEBUG_MODE
-LOG("enter OgreApplication::mousePressed");
+LOG("enter OgreApplication::mousePressed" + Ogre::StringConverter::toString(id));
 #endif
 	mMenuMgr.mouseButtonDown(id);
 	if (mStarted && !mLocked)
@@ -279,7 +279,7 @@ LOG("exit OgreApplication::mousePressed");
 
 bool OgreApplication::mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id) {
 #ifdef DEBUG_MODE
-LOG("enter OgreApplication::mouseReleased");
+LOG("enter OgreApplication::mouseReleased "+ Ogre::StringConverter::toString(id));
 #endif
 	mMenuMgr.mouseButtonUp(id);
 #ifdef DEBUG_MODE

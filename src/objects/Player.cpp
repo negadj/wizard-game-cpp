@@ -129,9 +129,16 @@ void Player::injectMouseMove(const OIS::MouseEvent& evt) {
 }
 
 void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) {
+
+
 	Block* target = NULL;
 	if (getObjectManager()->blockReached(mCamera->getDerivedPosition(), mCamera->getDerivedDirection(), 3, target)) {
-		getObjectManager()->getTerrain().removeBlock(target->getNode()->getPosition());
+
+	    if (id == 0 or id == 2)
+            {getObjectManager()->getTerrain().removeBlock(target->getNode()->getPosition());}
+        else if (id == 1)
+           {Block* newBlock = getObjectManager()->createBlock(target->getNode()->getPosition()+Ogre::Vector3(0,1,0));
+           getObjectManager()->getTerrain().addBlock(*newBlock);}
 	}
 }
 
