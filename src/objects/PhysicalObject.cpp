@@ -8,9 +8,9 @@
 #include "PhysicalObject.h"
 #include "../ObjectManager.h"
 
-PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name, int id, Ogre::String meshName,Ogre::Vector3 volume, Ogre::String description) :
+PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name, ObjectType id, Ogre::String meshName,Ogre::Vector3 volume, Ogre::String description) :
 	mObjectManager(objectManager),
-	mId(id),
+	mType(id),
 	mName(name),
 	mDescription(description),
 	mNode(originNode->createChildSceneNode(name)),
@@ -22,7 +22,8 @@ PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* or
 	mIntegrity(100),
 	mVolume(volume),
 	mCollisionCorrection(Ogre::Vector3::ZERO),
-	mListeners(std::set<PhysicalObjectListener*>())
+	mListeners(std::set<PhysicalObjectListener*>()),
+	mRemoveOnDestroy(true)
 {
 	mEntity = mNode->getCreator()->createEntity(mName, meshName);
 	mNode->attachObject(mEntity);
@@ -37,9 +38,13 @@ Ogre::Vector3 PhysicalObject::getAcceleration() const
     return mAcceleration;
 }
 
-ObjectId_t PhysicalObject::getId() const
+ObjectType PhysicalObject::getObjectType() const
 {
-    return mId;
+    return mType;
+}
+
+void PhysicalObject::setObjectType(ObjectType type) {
+	mType = type;
 }
 
 int PhysicalObject::getIntegrity() const
@@ -218,9 +223,9 @@ bool PhysicalObject::isOnGround() const
 {
 	Ogre::Vector3 position = getNode()->getPosition();
 
-	if(mObjectManager->getTerrain().isFree(Triplet(round(position.x),floor(position.y - getVolume().y),round(position.z))))
+	if(mObjectManager->isBlockFree(Triplet(round(position.x),floor(position.y - getVolume().y),round(position.z))))
 		return false;
-	PhysicalObject* obstacle = mObjectManager->getTerrain().getBlock(Triplet(round(position.x),floor(position.y - getVolume().y),round(position.z)));
+	PhysicalObject* obstacle = mObjectManager->getBlock(Triplet(round(position.x),floor(position.y - getVolume().y),round(position.z)));
 	return ( 0.01 > position.y - getVolume().y - obstacle->getNode()->getPosition().y - obstacle->getVolume().y);
 }
 

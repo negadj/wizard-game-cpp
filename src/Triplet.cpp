@@ -7,6 +7,8 @@
 
 #include "Triplet.h"
 
+const Triplet Triplet::ZERO = Triplet(0,0,0);
+
 Triplet::Triplet() :
 	x(0),
 	y(0),
@@ -55,6 +57,10 @@ bool operator<(Triplet const& a, Triplet const& b)
 		return true;
 	else
 		return false;
+}
+
+Triplet::operator Ogre::Vector3() const{
+	return Ogre::Vector3(x,y,z);
 }
 
 Ogre::Vector3 round(const Ogre::Vector3 vector)

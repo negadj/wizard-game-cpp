@@ -10,7 +10,7 @@
 
 
 Monster::Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name):
-	PhysicalObject(objectManager, originNode, name, 2, "robot.mesh", Ogre::Vector3(0.45,0.9,0.45),"Monster"),
+	PhysicalObject(objectManager, originNode, name, TYPE_HOSTILE, "robot.mesh", Ogre::Vector3(0.45,0.9,0.45),"Monster"),
 	mBodyNode(0),
 	mSword1(0),
 	mSword2(0),

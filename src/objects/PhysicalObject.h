@@ -14,7 +14,14 @@
 // forward declaration
 class ObjectManager;
 
-typedef unsigned char ObjectId_t;
+typedef enum ObjectType {
+	TYPE_FRIENDLY,
+	TYPE_HOSTILE,
+	TYPE_BLOCK,
+	TYPE_OTHER
+} ObjectType;
+
+
 /*
  * Represente un objet physique, pouvant aller d'une fleur à un bloc de granite
  */
@@ -23,7 +30,11 @@ class PhysicalObject {
 private:
 	//TODO: Matériaux ?
 	ObjectManager* mObjectManager;
-	ObjectId_t mId;
+	ObjectType mType;
+	/*
+	 * mName fait office d'id unique pour chaque objet.
+	 * Mieux vaut laisser sa gestion à l'objectManager
+	 */
 	const Ogre::String mName;
 	Ogre::String mDescription;
 	/* contient les informations de position, dimensions, rotation... */
@@ -45,26 +56,34 @@ protected:
 	/*
 	 * Attention : name doit être unique. Mieux vaut laisser l'ObjectManager s'en charger seul.
 	 */
-	PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, int id, Ogre::String meshName, Ogre::Vector3 volume, std::string description = "Objet");
+	PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, ObjectType id, Ogre::String meshName, Ogre::Vector3 volume, std::string description = "Objet");
 	virtual ~PhysicalObject();
 	/* Met à jour tout ce qui concerne l'objet hormis les déplacements (qui sont gérés par l'ObjectManager)*/
 	virtual void update(Ogre::Real deltaTime);
-	void setEntity(Ogre::Entity *mEntity);
+	void setEntity(Ogre::Entity *entity);
+	void setObjectType(ObjectType type);
 	/*
 	 * Actions à mener lorsque l'objet est détruit
 	 * (i.e. lorsque son intégrité vaut 0, pas lorsque le destructeur est appelé)
 	 */
 	virtual void destroy();
+	/*
+	 * Par défaut, l'ObjectManager appelle le destructeur de l'objet lorsque celui-ci
+	 * "meurt" (et qu'il envoie son fireDestruction).
+	 * On peut concevoir que pour certains objets, "mourir" ne signifie pas être retiré de la scène,
+	 * ou tout simplement qu'ils sont "indestructibles".
+	 * Dans ce cas, il faut mettre ce booléen à "false"
+	 */
+	bool mRemoveOnDestroy;
 
 public:
 	Ogre::Vector3 getAcceleration() const;
-    ObjectId_t getId() const;
+    ObjectType getObjectType() const;
     int getIntegrity() const;
     std::string getName() const;
     Ogre::SceneNode* getNode() const;
     Ogre::Vector3 getSpeed() const;
     void setAcceleration(Ogre::Vector3 acceleration);
-    void setId(ObjectId_t mId);
     void setIntegrity(int mIntegrity);
     void setSpeed(Ogre::Vector3 speed);
     void addSpeed(Ogre::Vector3 speed);

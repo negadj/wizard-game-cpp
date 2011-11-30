@@ -15,7 +15,8 @@
 class ObjectManager;
 
 /*
- * Gere le terrain d'une map
+ * Gère le terrain d'une scène. En particulier, ajoute et retire de manière
+ * transparente les blocks à une staticgeometry (économise des calculs au GPU).
  */
 class Terrain {
 private:
@@ -33,7 +34,7 @@ public:
 	 */
 	bool addBlock(Block& b);
 	/**
-	 * Comme addBlock, mais plus optimisé uand il faut rajouter un grand nombre de blocs.
+	 * Comme addBlock, mais plus optimisé quand il faut rajouter un grand nombre de blocs.
 	 * Renvoie false si l'un des emplacements des blocs était déjà occupé
 	 */
 	bool addBlocks(const std::vector<Block*> &blocks);

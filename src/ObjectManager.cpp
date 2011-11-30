@@ -6,7 +6,7 @@
  */
 
 #include "ObjectManager.h"
-#include <algorithm>
+//#include <algorithm>
 
 unsigned long ObjectManager::_countObject = 0;
 
@@ -14,7 +14,8 @@ ObjectManager::ObjectManager(Ogre::SceneManager* scnMgr) :
 	mSceneMgr(scnMgr),
 	mCollisionMgr(this, scnMgr),
 	mObjects(std::map<std::string,PhysicalObject*>()),
-	mActiveObjects(std::vector<PhysicalObject*>()),
+	mActiveObjects(std::set<PhysicalObject*>()),
+	mObjectsToDelete(std::queue<Ogre::String>()),
 	mTerrain(this, scnMgr->createStaticGeometry("terrain")),
 	mPhysicalClock(Clock(0.02)),
 	mMapManager(10)
@@ -105,12 +106,29 @@ void ObjectManager::updateObjects(Ogre::Real deltaTime) {
 LOG("enter ObjectManager::updateObjects");
 LOG("nbr d'objets : " + Ogre::StringConverter::toString(mObjects.size()) + ", actifs : " + Ogre::StringConverter::toString(mActiveObjects.size()));
 #endif
+
+	// On supprime les objets qui doivent disparaîtres.
+	while (!mObjectsToDelete.empty()) {
+#ifdef DEBUG_MODE
+LOG("ObjectsToDelete non vide");
+#endif
+		removeObject(mObjects[mObjectsToDelete.front()]);
+#ifdef DEBUG_MODE
+LOG("object deleted");
+#endif
+		mObjectsToDelete.pop();
+	}
+
+#ifdef DEBUG_MODE
+LOG("nbr d'objets : " + Ogre::StringConverter::toString(mObjects.size()) + ", actifs : " + Ogre::StringConverter::toString(mActiveObjects.size()));
+#endif
+
 	PhysicalObject* obj = NULL;
 	while(mPhysicalClock.ticked(deltaTime)){
 #ifdef DEBUG_MODE
 LOG("tick");
 #endif
-		for(std::vector<PhysicalObject*>::iterator it = mActiveObjects.begin();
+		for(std::set<PhysicalObject*>::iterator it = mActiveObjects.begin();
 			it != mActiveObjects.end(); ++it) {
 			obj = *it;
 
@@ -122,13 +140,13 @@ LOG("tick");
 			mCollisionMgr.moveWithCollisions(obj, mPhysicalClock.getStep());
 		}
 	}
-	for(std::vector<PhysicalObject*>::iterator it = mActiveObjects.begin(); it != mActiveObjects.end();++it)
+	for(std::set<PhysicalObject*>::iterator it = mActiveObjects.begin(); it != mActiveObjects.end();++it)
 	{
 		obj = *it;
-		if(obj->getId() == (ObjectId_t) 1)
+		if(obj->getObjectType() == TYPE_FRIENDLY)
 		{
 			PhysicalObject* obj2 = NULL;
-			for(std::vector<PhysicalObject*>::iterator it2 = mActiveObjects.begin(); it2 != mActiveObjects.end();++it2)
+			for(std::set<PhysicalObject*>::iterator it2 = mActiveObjects.begin(); it2 != mActiveObjects.end();++it2)
 			{
 				obj2 = *it2;
 				if(obj != obj2)
@@ -149,14 +167,25 @@ LOG("exit ObjectManager::updateObjects");
 #endif
 }
 
+Ogre::String ObjectManager::getUniqueName() {
+	return Ogre::StringConverter::toString(++_countObject);
+}
+
+void ObjectManager::registerObject(PhysicalObject* object, bool active) {
+	mObjects[object->getName()] = object;
+	if (active)
+		mActiveObjects.insert(object);
+	object->addListener(this);
+}
+
 Player* ObjectManager::createPlayer(Ogre::Camera* camera) {
 #ifdef DEBUG_MODE
 LOG("enter ObjectManager::createPlayer");
 #endif
-	Ogre::String name = Ogre::StringConverter::toString(++_countObject);
-	Player* p = new Player(this, name, camera);
-	mObjects[name] = p;
-	mActiveObjects.push_back(p);
+
+	Player* p = new Player(this, getUniqueName(), camera);
+	registerObject(p, true);
+
 #ifdef DEBUG_MODE
 LOG("exit ObjectManager::createPlayer");
 #endif
@@ -165,19 +194,21 @@ LOG("exit ObjectManager::createPlayer");
 
 Monster* ObjectManager::createMonster(const Ogre::Vector3 position)
 {
-	Ogre::String name = Ogre::StringConverter::toString(++_countObject);
-	Monster* m = new Monster(this, mSceneMgr->getRootSceneNode(), name);
+	Monster* m = new Monster(this, mSceneMgr->getRootSceneNode(), getUniqueName());
+	registerObject(m, true);
 	m->getNode()->setPosition(position);
-	mObjects[name] = m;
+
 	return m;
 }
 
-Block* ObjectManager::createBlock(const Ogre::Vector3 position) {
-	Ogre::String name = Ogre::StringConverter::toString(++_countObject);
-	Block* b = new Block(this, mSceneMgr->getRootSceneNode(), name, 3);
-	b->getNode()->setPosition(position);
-	mObjects[name] = b;
+Block* ObjectManager::createBlock(const Triplet& position) {
+	if (!isBlockFree(position))
+		return NULL;
+	Block* b = new Block(this, mSceneMgr->getRootSceneNode(), getUniqueName());
+	registerObject(b);
+	b->getNode()->setPosition((Ogre::Vector3)position);
 	mTerrain.addBlock(*b);
+
 	return b;
 }
 
@@ -188,7 +219,7 @@ LOG("enter ObjectManager::loadScene");
 	std::vector<Ogre::Vector3> chunk = mMapManager.loadChunk(Vector3::ZERO);
 	for(std::vector<Vector3>::iterator it = chunk.begin(); it != chunk.end(); ++it)
 		createBlock(*it);
-	mActiveObjects.push_back(createMonster(Vector3(3,1.5,5)));
+	createMonster(Vector3(3,1.5,5));
 #ifdef DEBUG_MODE
 LOG("exit ObjectManager::loadScene");
 #endif
@@ -207,8 +238,32 @@ double ObjectManager::getStrench(PhysicalObject* obj) const
 		return 0.1;
 }
 
-Terrain& ObjectManager::getTerrain() {
-	return mTerrain;
+Block* ObjectManager::getBlock(const Triplet& pos) {
+	return mTerrain.getBlock(pos);
 }
 
+bool ObjectManager::isBlockFree(const Triplet& pos) const {
+	return mTerrain.isFree(pos);
+}
 
+void ObjectManager::objectDestroyed(const PhysicalObject* object) {
+	if (object->mRemoveOnDestroy)
+		requestRemoval(object->getName());
+}
+
+void ObjectManager::requestRemoval(Ogre::String name) {
+	mObjectsToDelete.push(name);
+}
+
+void ObjectManager::removeObject(PhysicalObject* object) {
+	if (object->getObjectType() == TYPE_BLOCK) {
+		mTerrain.removeBlock(object->getNode()->getPosition());
+	}
+#ifdef DEBUG_MODE
+LOG("block removed from terrain");
+#endif
+	mObjects.erase(object->getName());
+	if (mActiveObjects.find(object) != mActiveObjects.end())
+		mActiveObjects.erase(mActiveObjects.find(object));
+	delete object;
+}

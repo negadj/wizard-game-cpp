@@ -98,7 +98,7 @@ void Terrain::removeBlock(const Triplet& pos) {
 	mMap.erase(pos);
 	mStaticGeometry->reset();
 	/**
-	 * On rajoute tout les blocs encore intégré.
+	 * On rajoute tout les blocs encore intégrés.
 	 * Inutile d'utiliser addBlock() sur eux.
 	 */
 	for (std::map<Triplet,Ogre::String>::iterator it = mMap.begin(); it != mMap.end(); ++it) {

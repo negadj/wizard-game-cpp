@@ -152,9 +152,9 @@ LOG("enter Collision::handleCollision");
 					planned_move = deplacement;
 					for(std::vector<Ogre::Vector3>::iterator it = moveComposant.begin() ; it < moveComposant.end() ; ++it)
 					{
-						if(!mObjMgr->getTerrain().isFree(Triplet(round(point + *it))))
+						if(!mObjMgr->isBlockFree(Triplet(round(point + *it))))
 						{
-							Ogre::String name = mObjMgr->getTerrain().getBlock(Triplet(round(point + *it)))->getName();
+							Ogre::String name = mObjMgr->getBlock(Triplet(round(point + *it)))->getName();
 							PhysicalObject* obstacle = mObjMgr->getObject(name);;
 							intersect(point,deplacement,obstacle->getNode()->getPosition(),obstacle->getVolume());
 						}

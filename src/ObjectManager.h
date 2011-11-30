@@ -11,6 +11,7 @@
 #include "Ogre.h"
 #include "CollisionManager.h"
 #include "objects/PhysicalObject.h"
+#include "objects/PhysicalObjectListener.h"
 #include "objects/Player.h"
 #include "objects/Block.h"
 #include "Terrain.h"
@@ -26,7 +27,7 @@
  * Classe qui s'occupe de la gestion des objets matériels du jeu.
  * C'est via cette classe que tous les objets doivent être créés.
  */
-class ObjectManager {
+class ObjectManager : public PhysicalObjectListener {
 private:
 	static unsigned long _countObject; // Sert à attribuer un numéro unique à chaque objet.
 	Ogre::SceneManager* mSceneMgr;
@@ -39,17 +40,42 @@ private:
 	 * qu'on y mette un jour autre chose, ou que des êtres vivants soient temporairement retiré de la liste.
 	 * Permet d'optimiser les calculs en se concentrant sur les objets qui évoluent.
 	 */
-	std::vector<PhysicalObject*> mActiveObjects;
+	std::set<PhysicalObject*> mActiveObjects;
 	/*
-	 *
+	 * Voir requestRemoval() pour le rôle de cette liste
 	 */
+	std::queue<Ogre::String> mObjectsToDelete;
 	Terrain mTerrain;
 	Clock mPhysicalClock;
 	MapManager mMapManager;
 
+	/*
+	 * Renvoie un nom unique pour définir un objet
+	 */
+	Ogre::String getUniqueName();
+
+	/*
+	 * Enregistre le nom d'un objet à retirer de la scène et détruire.
+	 * On ne le détruit pas immédiatement car il peut ne pas avoir terminé
+	 * tout ses traitements au moment où l'on reçoit l'information
+	 * (en particulier prévenir tout ses listeners).
+	 */
+	void requestRemoval(Ogre::String name);
+
+	/*
+	 * Retire un objet de la scène.
+	 */
+	void removeObject(PhysicalObject* object);
+
+	/*
+	 * Méthode à utiliser lors de la création d'un PhysicalObject.
+	 * Automatise l'enregistrement dans les différentes structures.
+	 */
+	void registerObject(PhysicalObject* object, bool active = false);
+
 public:
 	ObjectManager(Ogre::SceneManager* scnMgr);
-	~ObjectManager();
+	virtual ~ObjectManager();
 	/*
 	 * Met à jour les objets actifs de la scène. Inclus la gestion "moteur physique" (collisions, ...)
 	 */
@@ -61,7 +87,7 @@ public:
 	/*
 	 * Ajoute un Block
 	 */
-	Block* createBlock(const Ogre::Vector3 position = Ogre::Vector3::ZERO);
+	Block* createBlock(const Triplet& position = Triplet::ZERO);
 
 	/*
 	 * Ajoute un monstre
@@ -95,14 +121,22 @@ public:
 	 * détruit tous les objets de la scène
 	 */
 	void clear();
+	/*
+	 * Indique si un bloc est libre
+	 */
+	bool isBlockFree(const Triplet& pos) const;
+	/*
+	 * Renvoie le bloc situé à la position indiquée, ou NULL s'il n'y en a pas.
+	 */
+	Block* getBlock(const Triplet& pos);
 
 	Vector3 getGravity(PhysicalObject* obj) const;
 
 	double getStrench(PhysicalObject* obj) const;
 
-	Terrain& getTerrain();
-
 	PhysicalObject* getObject(const Ogre::String& name);
+
+	virtual void objectDestroyed(const PhysicalObject* object);
 };
 
 #endif /* OBJECTMANAGER_H_ */

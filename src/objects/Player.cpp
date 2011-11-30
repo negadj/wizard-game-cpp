@@ -11,7 +11,7 @@
 #define CHAR_HEIGHT 2 // hauteur du personnage
 
 Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
-	PhysicalObject(objectManager, cam->getSceneManager()->getRootSceneNode(), name, 1, "Sinbad.mesh", Ogre::Vector3(0.45,0.9,0.45),"Joueur"),
+	PhysicalObject(objectManager, cam->getSceneManager()->getRootSceneNode(), name, TYPE_FRIENDLY, "Sinbad.mesh", Ogre::Vector3(0.45,0.9,0.45),"Joueur"),
 	mCamera(cam),
 	mBodyNode(0),
 	mCameraRootNode(0),
@@ -123,7 +123,7 @@ void Player::injectMouseMove(const OIS::MouseEvent& evt) {
 void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) {
 	Block* target = NULL;
 	if (getObjectManager()->blockReached(mCamera->getDerivedPosition(), mCamera->getDerivedDirection(), 3, target)) {
-		getObjectManager()->getTerrain().removeBlock(target->getNode()->getPosition());
+		target->setIntegrity(0); //On casse le bloc
 	}
 //	if (getObjectManager()->objectReached(mCamera->getDerivedPosition(), mCamera->getDerivedDirection(), 10, target)) {
 //		target->getEntity()->setVisible(false);
