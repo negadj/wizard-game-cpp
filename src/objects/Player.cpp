@@ -50,8 +50,9 @@ LOG("enter Player::preCollisionUpdate");
 	 dans le référentiel global. */
 	if(isOnGround())
 		/* Ajout de la force motrice */
-		addForce(getPropulsion() * (getNode()->getOrientation() * mDirection.normalisedCopy()));
-
+		addForce((getPropulsion() * (getNode()->getOrientation() * mDirection.normalisedCopy()))*14/15);
+    else
+        addForce((getPropulsion() * (getNode()->getOrientation() * mDirection.normalisedCopy()))/15); //Permet un leger déplacement en l'air; facilite l'ergnomie
 
 	AnimatedObject::preCollisionUpdate(deltaTime);
 #ifdef DEBUG_MODE
@@ -117,14 +118,14 @@ void Player::injectMouseMove(const OIS::MouseEvent& evt) {
 
 void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) {
 
-
+    Ogre::Vector3 faceVector;
 	Block* target = NULL;
-	if (getObjectManager()->blockReached(mCamera->getDerivedPosition(), mCamera->getDerivedDirection(), 3, target)) {
+	if (getObjectManager()->blockReached(mCamera->getDerivedPosition(), mCamera->getDerivedDirection(), 3, target, &faceVector)) {
 
 	    if (id == 0 or id == 2)
             {getObjectManager()->getTerrain().removeBlock(target->getNode()->getPosition());}
         else if (id == 1)
-           {Block* newBlock = getObjectManager()->createBlock(target->getNode()->getPosition()+Ogre::Vector3(0,1,0));
+           {Block* newBlock = getObjectManager()->createBlock(target->getNode()->getPosition()+faceVector);
            getObjectManager()->getTerrain().addBlock(*newBlock);}
 	}
 }
