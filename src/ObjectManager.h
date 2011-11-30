@@ -85,7 +85,7 @@ public:
 	 * reachRadius : portée maximale
 	 * target : pointeur pour stocker le bloc atteint le cas échéant
 	 */
-	bool blockReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, Block* &target);
+	bool blockReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, Block* &target, Ogre::Vector3* faceVector=NULL);
 		/*
 	 * Charge la scène où le joueur évolue.
 	 * TODO: clarifier son rôle vis-à-vis de OgreApplication::createScene()

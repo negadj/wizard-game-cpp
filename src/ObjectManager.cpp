@@ -75,7 +75,7 @@ LOG("call ObjectManager::objectReached");
 	return false;
 }
 
-bool ObjectManager::blockReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, Block* &target) {
+bool ObjectManager::blockReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, Block* &target, Ogre::Vector3* faceVector) {
 #ifdef DEBUG_MODE
 LOG("call ObjectManager::blockReached");
 #endif
@@ -85,14 +85,20 @@ LOG("call ObjectManager::blockReached");
 	// TODO: trouver un meilleur algo
 	Ogre::Vector3 currentPos;
 	int i = from.x, j = from.y, k = from.z;
+	int faceI = 0, faceJ = 0, faceK =0;
 	for (int step = 0; step < int(reachRadius*10); step++) {
 		currentPos = from + (double(step) / 10) * normal;
 		if (i != int(currentPos.x + 0.5) || j != int(currentPos.y + 0.5) || k != int(currentPos.z + 0.5)) {
+		    faceI=i-int(currentPos.x + 0.5); //returne -1 0 ou 1
+		    faceJ=j-int(currentPos.y + 0.5); // afin de savoir quelle face a changé.
+		    faceK=k-int(currentPos.z + 0.5);
 			i = int(currentPos.x + 0.5);
 			j = int(currentPos.y + 0.5);
 			k = int(currentPos.z + 0.5);
 			if (!mTerrain.isFree(Triplet(i,j,k))) {
 				target = mTerrain.getBlock(Triplet(i,j,k));
+				if (faceVector)
+                 {*faceVector=Ogre::Vector3(faceI,faceJ,faceK);}
 				return true;
 			}
 		}
