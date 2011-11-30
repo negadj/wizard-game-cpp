@@ -47,9 +47,11 @@ protected:
 	 */
 	PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, int id, Ogre::String meshName, Ogre::Vector3 volume, std::string description = "Objet");
 	virtual ~PhysicalObject();
+	void preCollisionUpdate(Ogre::Real deltaTime);
+	void postCollisionUpdate(Ogre::Real deltaTime);
 	/* Met à jour tout ce qui concerne l'objet hormis les déplacements (qui sont gérés par l'ObjectManager)*/
-	virtual void preCollisionUpdate(Ogre::Real deltaTime);
-	virtual void postCollisionUpdate(Ogre::Real deltaTime);
+	virtual void doPreCollisionUpdate(Ogre::Real deltaTime);
+	virtual void doPostCollisionUpdate(Ogre::Real deltaTime);
 	void setEntity(Ogre::Entity *mEntity);
 	/*
 	 * Actions à mener lorsque l'objet est détruit

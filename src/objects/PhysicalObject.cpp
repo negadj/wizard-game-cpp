@@ -30,18 +30,29 @@ PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* or
 
 PhysicalObject::~PhysicalObject() {}
 
-void PhysicalObject::preCollisionUpdate(Ogre::Real deltaTime)
+void PhysicalObject::doPreCollisionUpdate(Ogre::Real deltaTime)
 {
 	/* Ajout des frottements */
 	addForce(-getSpeed()*getObjectManager()->getStrench(this));
 	/* Ajout de la gravité */
 	addForce(getObjectManager()->getGravity(this));
+}
+
+void PhysicalObject::doPostCollisionUpdate(Ogre::Real deltaTime)
+{
+
+}
+
+void PhysicalObject::preCollisionUpdate(Ogre::Real deltaTime)
+{
+	this->doPreCollisionUpdate(deltaTime);
 	/* Integration et mise à jour de la vitesse */
 	addSpeed(deltaTime * mAcceleration);
 }
 
 void PhysicalObject::postCollisionUpdate(Ogre::Real deltaTime)
 {
+	this->doPostCollisionUpdate(deltaTime);
 	mAcceleration = Ogre::Vector3::ZERO;
 }
 

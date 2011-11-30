@@ -33,8 +33,8 @@ public:
 
 protected:
 	Player(ObjectManager* objectManager, Ogre::String name, Camera* cam);
-	virtual void postCollisionUpdate(Ogre::Real deltaTime);
-	virtual void preCollisionUpdate(Ogre::Real deltaTime);
+	virtual void doPostCollisionUpdate(Ogre::Real deltaTime);
+	virtual void doPreCollisionUpdate(Ogre::Real deltaTime);
 	virtual ~Player();
 
 private:

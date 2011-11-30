@@ -42,27 +42,26 @@ Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 
 Player::~Player() {}
 
-void Player::preCollisionUpdate(Real deltaTime) {
+void Player::doPreCollisionUpdate(Real deltaTime) {
 #ifdef DEBUG_MODE
-LOG("enter Player::preCollisionUpdate");
+LOG("enter Player::doPreCollisionUpdate");
 #endif
 	/* Mise à jour de la vitesse du joueur en fonction des touches,
 	 dans le référentiel global. */
 	if(isOnGround())
 		/* Ajout de la force motrice */
-		addForce((getPropulsion() * (getNode()->getOrientation() * mDirection.normalisedCopy()))*14/15);
-    else
-        addForce((getPropulsion() * (getNode()->getOrientation() * mDirection.normalisedCopy()))/15); //Permet un leger déplacement en l'air; facilite l'ergnomie
+		addForce(getPropulsion() * (getNode()->getOrientation() * mDirection.normalisedCopy()));
 
-	AnimatedObject::preCollisionUpdate(deltaTime);
+
+	AnimatedObject::doPreCollisionUpdate(deltaTime);
 #ifdef DEBUG_MODE
-LOG("exit Player::preCollisionUpdate");
+LOG("exit Player::doPreCollisionUpdate");
 #endif
 }
 
-void Player::postCollisionUpdate(Ogre::Real deltaTime)
+void Player::doPostCollisionUpdate(Ogre::Real deltaTime)
 {
-	AnimatedObject::postCollisionUpdate(deltaTime);
+	AnimatedObject::doPostCollisionUpdate(deltaTime);
 }
 
 void Player::injectKeyDown(const OIS::KeyEvent& evt) {

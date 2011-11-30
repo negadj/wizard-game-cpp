@@ -20,14 +20,14 @@ AnimatedObject::~AnimatedObject()
 
 }
 
-void AnimatedObject::preCollisionUpdate(Ogre::Real deltaTime)
+void AnimatedObject::doPreCollisionUpdate(Ogre::Real deltaTime)
 {
-	PhysicalObject::preCollisionUpdate(deltaTime);
+	PhysicalObject::doPreCollisionUpdate(deltaTime);
 }
 
-void AnimatedObject::postCollisionUpdate(Ogre::Real deltaTime)
+void AnimatedObject::doPostCollisionUpdate(Ogre::Real deltaTime)
 {
-	PhysicalObject::postCollisionUpdate(deltaTime);
+	PhysicalObject::doPostCollisionUpdate(deltaTime);
 	for(std::vector<Ogre::String>::iterator it = mAnimations.begin() ; it != mAnimations.end() ; ++it)
 	{
 		std::cout << getSpeed() << std::endl;
