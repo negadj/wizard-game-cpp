@@ -106,7 +106,7 @@ void Player::injectKeyUp(const OIS::KeyEvent& evt) {
 void Player::injectMouseMove(const OIS::MouseEvent& evt) {
 	// On met à jour le point visé
 	getNode()->yaw(-0.2*Degree(evt.state.X.rel));
-	Radian pitch = mCameraRootNode->_getDerivedOrientation().getPitch();
+	Radian pitch = mCameraRootNode->getOrientation().getPitch();
 	Radian deltaPitch = -0.2*Degree(evt.state.Y.rel);
 	if(pitch + deltaPitch > Degree(60))
 		deltaPitch =  Degree(60) - pitch;
