@@ -40,11 +40,9 @@ private:
 	 * Permet d'optimiser les calculs en se concentrant sur les objets qui évoluent.
 	 */
 	std::vector<PhysicalObject*> mActiveObjects;
-	/*
-	 *
-	 */
 	Terrain mTerrain;
 	Clock mPhysicalClock;
+	Clock mMonsterClock;
 	MapManager mMapManager;
 
 public:
@@ -61,7 +59,7 @@ public:
 	/*
 	 * Ajoute un Block
 	 */
-	Block* createBlock(const Ogre::Vector3 position = Ogre::Vector3::ZERO);
+	Block* createBlock(const Ogre::Vector3 position = Ogre::Vector3::ZERO, bool add = true);
 
 	/*
 	 * Ajoute un monstre
