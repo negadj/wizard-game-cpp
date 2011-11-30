@@ -50,7 +50,7 @@ LOG("enter Player::doPreCollisionUpdate");
 	 dans le référentiel global. */
 	if(isOnGround())
 		/* Ajout de la force motrice */
-		addForce((getPropulsion() * (getNode()->getOrientation() * mDirection.normalisedCopy()))*14/15);
+		addForce((getPropulsion() * (getNode()->getOrientation() * mDirection.normalisedCopy())));
     else
         addForce((getPropulsion() * (getNode()->getOrientation() * mDirection.normalisedCopy()))/15);
 
