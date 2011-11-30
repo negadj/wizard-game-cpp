@@ -23,8 +23,8 @@ class Monster: public AnimatedObject
 public:
 	Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name);
 	virtual ~Monster();
-	virtual void preCollisionUpdate(Ogre::Real deltaTime);
-	virtual void postCollisionUpdate(Ogre::Real deltaTime);
+	virtual void doPreCollisionUpdate(Ogre::Real deltaTime);
+	virtual void doPostCollisionUpdate(Ogre::Real deltaTime);
 
 private:
 	Ogre::SceneNode* mBodyNode;

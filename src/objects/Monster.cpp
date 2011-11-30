@@ -42,9 +42,9 @@ void Monster::setupBody(Ogre::SceneNode* originNode) {
 	mBodyNode->attachObject(getEntity());
 }
 
-void Monster::preCollisionUpdate(Ogre::Real deltaTime) {
+void Monster::doPreCollisionUpdate(Ogre::Real deltaTime) {
 #ifdef DEBUG_MODE
-LOG("enter Monster::preCollisionUpdate");
+LOG("enter Monster::doPreCollisionUpdate");
 #endif
 	/* Change aléatoirement de stratégie */
 	if(rand()%100 == 0)
@@ -64,14 +64,14 @@ LOG("enter Monster::preCollisionUpdate");
 		addForce(getPropulsion() * (getNode()->getOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z));
 	}
 
-	AnimatedObject::preCollisionUpdate(deltaTime);
+	AnimatedObject::doPreCollisionUpdate(deltaTime);
 
 #ifdef DEBUG_MODE
-LOG("exit Monster::preCollisionUpdate");
+LOG("exit Monster::doPreCollisionUpdate");
 #endif
 }
 
-void Monster::postCollisionUpdate(Ogre::Real deltaTime)
+void Monster::doPostCollisionUpdate(Ogre::Real deltaTime)
 {
-	AnimatedObject::postCollisionUpdate(deltaTime);
+	AnimatedObject::doPostCollisionUpdate(deltaTime);
 }
