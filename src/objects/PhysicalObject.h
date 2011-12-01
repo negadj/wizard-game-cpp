@@ -58,8 +58,11 @@ protected:
 	 */
 	PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, ObjectType id, Ogre::String meshName, Ogre::Vector3 volume, std::string description = "Objet");
 	virtual ~PhysicalObject();
+	void preCollisionUpdate(Ogre::Real deltaTime);
+	void postCollisionUpdate(Ogre::Real deltaTime);
 	/* Met à jour tout ce qui concerne l'objet hormis les déplacements (qui sont gérés par l'ObjectManager)*/
-	virtual void update(Ogre::Real deltaTime);
+	virtual void doPreCollisionUpdate(Ogre::Real deltaTime);
+	virtual void doPostCollisionUpdate(Ogre::Real deltaTime);
 	void setEntity(Ogre::Entity *entity);
 	void setObjectType(ObjectType type);
 	/*
@@ -85,8 +88,11 @@ public:
     Ogre::Vector3 getSpeed() const;
     void setAcceleration(Ogre::Vector3 acceleration);
     void setIntegrity(int mIntegrity);
+
     void setSpeed(Ogre::Vector3 speed);
     void addSpeed(Ogre::Vector3 speed);
+    void addForce(Ogre::Vector3 force);
+
     float getDensity() const;
     int getSolidity() const;
     void setDensity(float density);

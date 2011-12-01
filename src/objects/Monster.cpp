@@ -10,15 +10,11 @@
 
 
 Monster::Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name):
-	PhysicalObject(objectManager, originNode, name, TYPE_HOSTILE, "robot.mesh", Ogre::Vector3(0.45,0.9,0.45),"Monster"),
+	AnimatedObject(objectManager, originNode, name, TYPE_HOSTILE, "robot.mesh", Ogre::Vector3(0.45,0.9,0.45),"Monster"),
 	mBodyNode(0),
-	mSword1(0),
-	mSword2(0),
-	mDirection(Ogre::Vector3::ZERO),
-	mPropulsion(40),
-	mVerticalVelocity(0),
 	mIA(IA::getIA(this))
 {
+	registerAnimation("Walk");
 	setupBody(originNode);
 }
 
@@ -30,7 +26,7 @@ void Monster::setupBody(Ogre::SceneNode* originNode) {
 	// Entités pour le corps
 
 	// Création du corps du personnage
-	mBodyNode = getNode()->createChildSceneNode(Ogre::Vector3::NEGATIVE_UNIT_Y * 0.6);
+	mBodyNode = getNode()->createChildSceneNode(Ogre::Vector3::NEGATIVE_UNIT_Y * 0.9);
 	mBodyNode->scale(Ogre::Vector3::UNIT_SCALE * 0.02);
 	mBodyNode->yaw(Ogre::Degree(90));
 	mBodyNode->setInitialState();
@@ -46,12 +42,11 @@ void Monster::setupBody(Ogre::SceneNode* originNode) {
 	mBodyNode->attachObject(getEntity());
 }
 
-void Monster::update(Ogre::Real deltaTime) {
+void Monster::doPreCollisionUpdate(Ogre::Real deltaTime) {
 #ifdef DEBUG_MODE
-LOG("enter Monster::update");
+LOG("enter Monster::doPreCollisionUpdate");
 #endif
-	/* Mise à jour de la vitesse du joueur en fonction des touches,
-	 dans le référentiel global. */
+	/* Change aléatoirement de stratégie */
 	if(rand()%100 == 0)
 	{
 		delete mIA;
@@ -64,15 +59,19 @@ LOG("enter Monster::update");
 	{
 		/* Reorientation du monstre */
 		getNode()->setDirection(relativeDirection,Ogre::Node::TS_LOCAL);
-		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)+  mPropulsion * (getNode()->getOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z)));
-	}
-	else
-		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)));
 
-	if (getSpeed() != Ogre::Vector3::ZERO)
-		getEntity()->getAnimationState("Walk")->addTime(deltaTime*1.5);
+		/* Ajout de la force motrice*/
+		addForce(getPropulsion() * (getNode()->getOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z));
+	}
+
+	AnimatedObject::doPreCollisionUpdate(deltaTime);
 
 #ifdef DEBUG_MODE
-LOG("exit Monster::update");
+LOG("exit Monster::doPreCollisionUpdate");
 #endif
+}
+
+void Monster::doPostCollisionUpdate(Ogre::Real deltaTime)
+{
+	AnimatedObject::doPostCollisionUpdate(deltaTime);
 }

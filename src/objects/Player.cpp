@@ -8,10 +8,18 @@
 #include "Player.h"
 #include "../ObjectManager.h"
 
-#define CHAR_HEIGHT 2 // hauteur du personnage
+#ifdef _WINDOWS
+#define MOVE_FORWARD OIS::KC_W
+#define MOVE_LEFT OIS::KC_A
+#else
+#define MOVE_FORWARD OIS::KC_Z
+#define MOVE_LEFT OIS::KC_Q
+#endif
+#define MOVE_RIGHT OIS::KC_D
+#define MOVE_BACKWARD OIS::KC_S
 
 Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
-	PhysicalObject(objectManager, cam->getSceneManager()->getRootSceneNode(), name, TYPE_FRIENDLY, "Sinbad.mesh", Ogre::Vector3(0.45,0.9,0.45),"Joueur"),
+	AnimatedObject(objectManager, cam->getSceneManager()->getRootSceneNode(), name, TYPE_FRIENDLY, "Sinbad.mesh", Ogre::Vector3(0.45,0.9,0.45),"Joueur"),
 	mCamera(cam),
 	mBodyNode(0),
 	mCameraRootNode(0),
@@ -21,8 +29,6 @@ Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 	mSword1(0),
 	mSword2(0),
 	mDirection(Ogre::Vector3::ZERO),
-	mPropulsion(40),
-	mVerticalVelocity(0),
 	mCollisionTools(cam->getSceneManager())
 {
 	getNode()->translate(1,1.5,1);
@@ -30,43 +36,34 @@ Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 	setupBody(cam->getSceneManager());
 	setupCamera();
 	getNode()->yaw(Degree(180));
+	registerAnimation("RunBase");
+	registerAnimation("RunTop");
 }
 
 Player::~Player() {}
 
-void Player::update(Real deltaTime) {
+void Player::doPreCollisionUpdate(Real deltaTime) {
 #ifdef DEBUG_MODE
-LOG("enter Player::update");
+LOG("enter Player::doPreCollisionUpdate");
 #endif
 	/* Mise à jour de la vitesse du joueur en fonction des touches,
 	 dans le référentiel global. */
 	if(isOnGround())
-		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)+  mPropulsion * (getNode()->getOrientation() * mDirection.normalisedCopy())));
-	else
-		addSpeed(deltaTime * (-getSpeed()*getObjectManager()->getStrench(this) + getObjectManager()->getGravity(this)));
+		/* Ajout de la force motrice */
+		addForce((getPropulsion() * (getNode()->getOrientation() * mDirection.normalisedCopy())));
+    else
+        addForce((getPropulsion() * (getNode()->getOrientation() * mDirection.normalisedCopy()))/15);
 
-	if (mDirection != Ogre::Vector3::ZERO) {
-		getEntity()->getAnimationState("RunBase")->setEnabled(true);
-		getEntity()->getAnimationState("RunTop")->setEnabled(true);
-		if (mDirection.z > 0) {
-			getEntity()->getAnimationState("RunBase")->addTime(-deltaTime);
-			getEntity()->getAnimationState("RunTop")->addTime(-deltaTime);
-		}
-		else {
-			getEntity()->getAnimationState("RunBase")->addTime(deltaTime);
-			getEntity()->getAnimationState("RunTop")->addTime(deltaTime);
-		}
-	}
-	else {
-		getEntity()->getAnimationState("RunBase")->setEnabled(false);
-		getEntity()->getAnimationState("RunTop")->setEnabled(false);
-		getEntity()->getAnimationState("RunBase")->setTimePosition(0); //RAZ de l'animation
-		getEntity()->getAnimationState("RunTop")->setTimePosition(0); //RAZ de l'animation
-	}
 
+	AnimatedObject::doPreCollisionUpdate(deltaTime);
 #ifdef DEBUG_MODE
-LOG("exit Player::update");
+LOG("exit Player::doPreCollisionUpdate");
 #endif
+}
+
+void Player::doPostCollisionUpdate(Ogre::Real deltaTime)
+{
+	AnimatedObject::doPostCollisionUpdate(deltaTime);
 }
 
 void Player::injectKeyDown(const OIS::KeyEvent& evt) {
@@ -75,21 +72,21 @@ void Player::injectKeyDown(const OIS::KeyEvent& evt) {
 		toggleCameraMode();
 		break;
 	// On met à jour la direction du joueur
-	case OIS::KC_Z:
+	case MOVE_FORWARD:
 		mDirection.z = -1;
 		break;
-	case OIS::KC_Q:
+	case MOVE_LEFT:
 		mDirection.x = -1;
 		break;
-	case OIS::KC_S:
+	case MOVE_BACKWARD:
 		mDirection.z = 1;
 		break;
-	case OIS::KC_D:
+	case MOVE_RIGHT:
 		mDirection.x = 1;
 		break;
 	case OIS::KC_SPACE:
 		if(isOnGround())
-			addSpeed(Ogre::Vector3::UNIT_Y * 15);
+			addSpeed(Ogre::Vector3::UNIT_Y * 8);
 		break;
 	default:
 		break;
@@ -98,20 +95,20 @@ void Player::injectKeyDown(const OIS::KeyEvent& evt) {
 
 void Player::injectKeyUp(const OIS::KeyEvent& evt) {
 	// On met à jour la direction du joueur
-	if (evt.key == OIS::KC_Z && mDirection.z == -1)
+	if (evt.key == MOVE_FORWARD && mDirection.z == -1)
 		mDirection.z = 0;
-	else if (evt.key == OIS::KC_Q && mDirection.x == -1)
+	else if (evt.key == MOVE_LEFT && mDirection.x == -1)
 		mDirection.x = 0;
-	else if (evt.key == OIS::KC_S && mDirection.z == 1)
+	else if (evt.key == MOVE_BACKWARD && mDirection.z == 1)
 		mDirection.z = 0;
-	else if (evt.key == OIS::KC_D && mDirection.x == 1)
+	else if (evt.key == MOVE_RIGHT && mDirection.x == 1)
 		mDirection.x = 0;
 }
 
 void Player::injectMouseMove(const OIS::MouseEvent& evt) {
 	// On met à jour le point visé
 	getNode()->yaw(-0.2*Degree(evt.state.X.rel));
-	Radian pitch = mCameraRootNode->_getDerivedOrientation().getPitch();
+	Radian pitch = mCameraRootNode->getOrientation().getPitch();
 	Radian deltaPitch = -0.2*Degree(evt.state.Y.rel);
 	if(pitch + deltaPitch > Degree(60))
 		deltaPitch =  Degree(60) - pitch;
@@ -121,14 +118,18 @@ void Player::injectMouseMove(const OIS::MouseEvent& evt) {
 }
 
 void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) {
+
+    Ogre::Vector3 faceVector;
 	Block* target = NULL;
-	if (getObjectManager()->blockReached(mCamera->getDerivedPosition(), mCamera->getDerivedDirection(), 3, target)) {
-		target->setIntegrity(0); //On casse le bloc
+	if (getObjectManager()->blockReached(mCamera->getDerivedPosition(), mCamera->getDerivedDirection(), 3, target, &faceVector)) {
+
+	    if (id == 0 or id == 2) {
+            target->setIntegrity(0); //On casse le bloc
+		}
+        else if (id == 1)
+           {Block* newBlock = getObjectManager()->createBlock(target->getNode()->getPosition()+faceVector);
+           getObjectManager()->getTerrain().addBlock(*newBlock);}
 	}
-//	if (getObjectManager()->objectReached(mCamera->getDerivedPosition(), mCamera->getDerivedDirection(), 10, target)) {
-//		target->getEntity()->setVisible(false);
-//		std::cout << target->getName() << std::endl;
-//	}
 }
 
 void Player::setupBody(SceneManager* sceneMgr) {
