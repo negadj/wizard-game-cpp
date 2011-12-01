@@ -8,8 +8,8 @@
 #include "AnimatedObject.h"
 #include "../Triplet.h"
 
-AnimatedObject::AnimatedObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, int id, Ogre::String meshName, Ogre::Vector3 volume, std::string description):
-	PhysicalObject(objectManager,node,name,id,meshName,volume,description),
+AnimatedObject::AnimatedObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, ObjectType type, Ogre::String meshName, Ogre::Vector3 volume, std::string description):
+	PhysicalObject(objectManager, node, name, type, meshName, volume, description),
 	mPropulsion(40)
 {
 

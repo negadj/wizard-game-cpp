@@ -127,8 +127,9 @@ void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) 
             target->setIntegrity(0); //On casse le bloc
 		}
         else if (id == 1)
-           {Block* newBlock = getObjectManager()->createBlock(target->getNode()->getPosition()+faceVector);
-           getObjectManager()->getTerrain().addBlock(*newBlock);}
+        {
+        	getObjectManager()->createBlock(target->getNode()->getPosition()+faceVector);
+        }
 	}
 }
 

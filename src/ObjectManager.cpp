@@ -134,7 +134,7 @@ LOG("nbr d'objets : " + Ogre::StringConverter::toString(mObjects.size()) + ", ac
 	Ogre::Real monsterTime = deltaTime;
 	if(mMonsterClock.ticked(monsterTime))
 	{
-		mActiveObjects.push_back(createMonster(Vector3(rand()%18 + 1,1.5,rand()%18 + 1)));
+		createMonster(Vector3(rand()%18 + 1,1.5,rand()%18 + 1));
 	}
 	while(mPhysicalClock.ticked(deltaTime)){
 #ifdef DEBUG_MODE
@@ -249,7 +249,7 @@ LOG("enter ObjectManager::loadScene");
 		blocks.push_back(createBlock(*it, false));
 	}
 	mTerrain.addBlocks(blocks);
-	mActiveObjects.push_back(createMonster(Vector3(rand()%18 + 1,1.5,rand()%18 + 1)));
+	createMonster(Vector3(rand()%18 + 1,1.5,rand()%18 + 1));
 #ifdef DEBUG_MODE
 LOG("exit ObjectManager::loadScene");
 #endif
