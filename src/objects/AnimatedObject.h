@@ -13,7 +13,7 @@
 
 class AnimatedObject: public PhysicalObject {
 public:
-	AnimatedObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, int id, Ogre::String meshName, Ogre::Vector3 volume, std::string description = "Objet animé");
+	AnimatedObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, ObjectType type, Ogre::String meshName, Ogre::Vector3 volume, std::string description = "Objet animé");
 	virtual ~AnimatedObject();
 	Ogre::Real getPropulsion();
 
