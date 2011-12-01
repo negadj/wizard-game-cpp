@@ -121,7 +121,7 @@ void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) 
 
     Ogre::Vector3 faceVector;
 	Block* target = NULL;
-	if (getObjectManager()->blockReached(mCamera->getDerivedPosition(), mCamera->getDerivedDirection(), 3, target, &faceVector)) {
+	if (getObjectManager()->blockReached(mCameraFPNode->_getDerivedPosition(), mCamera->getDerivedDirection(), 3, target, &faceVector)) {
 
 	    if (id == 0 or id == 2) {
             target->setIntegrity(0); //On casse le bloc

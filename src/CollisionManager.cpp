@@ -149,6 +149,10 @@ LOG("enter Collision::handleCollision");
 					moveComposant.push_back(Ogre::Vector3(deplacement.x,0,0));
 					moveComposant.push_back(Ogre::Vector3(0,deplacement.y,0));
 					moveComposant.push_back(Ogre::Vector3(0,0,deplacement.z));
+					moveComposant.push_back(Ogre::Vector3(deplacement.x,0,deplacement.z));
+					moveComposant.push_back(Ogre::Vector3(0,deplacement.y,deplacement.z));
+					moveComposant.push_back(Ogre::Vector3(0,deplacement.y,deplacement.z));
+					moveComposant.push_back(Ogre::Vector3(deplacement.x,deplacement.y,deplacement.z));
 					planned_move = deplacement;
 					for(std::vector<Ogre::Vector3>::iterator it = moveComposant.begin() ; it < moveComposant.end() ; ++it)
 					{
