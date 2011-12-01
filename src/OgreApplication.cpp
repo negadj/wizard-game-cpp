@@ -27,22 +27,15 @@ OgreApplication::~OgreApplication() {
 #ifdef DEBUG_MODE
 LOG("enter OgreApplication destructor");
 #endif
+    if (mObjectMgr != NULL)
+        delete mObjectMgr;
 	WindowEventUtilities::removeWindowEventListener(mWindow, this);
 	windowClosed(mWindow);
 #ifdef DEBUG_MODE
 LOG("window closed");
 #endif
-	delete mObjectMgr;
-#ifdef DEBUG_MODE
-LOG("object manager deleted");
-#endif
 	delete mRoot;
-#ifdef DEBUG_MODE
-LOG("ogre root deleted");
-#endif
-#ifdef DEBUG_MODE
-LOG("exit OgreApplication destructor");
-#endif
+// NE PLUS LOGGER A PARTIR DE MAINTENANT !
 }
 
 bool OgreApplication::start() {
@@ -94,8 +87,9 @@ LOG("enter OgreApplication::exitGame");
 	mRequestEndGame = false; //normalement déjà à false, mais autant s'en assurer.
 	mDebugOverlay->hide();
 	mCamera->setAutoTracking(false); //Supprime une référence sur un noeud qui va disparaître
-	mPlayer = NULL; // Par précaution
 	delete mObjectMgr; //Nettoie la scène.
+	mPlayer = NULL; // Par précaution
+    mObjectMgr = NULL; // Par précaution
 
 	mMenuMgr.showMainMenu();
 #ifdef DEBUG_MODE

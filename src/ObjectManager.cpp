@@ -6,7 +6,6 @@
  */
 
 #include "ObjectManager.h"
-//#include <algorithm>
 
 unsigned long ObjectManager::_countObject = 0;
 
@@ -130,8 +129,10 @@ LOG("object deleted");
 LOG("nbr d'objets : " + Ogre::StringConverter::toString(mObjects.size()) + ", actifs : " + Ogre::StringConverter::toString(mActiveObjects.size()));
 #endif
 
+    // On fait "poper" des monstres régulièrement
+
 	PhysicalObject* obj = NULL;
-	Ogre::Real monsterTime = deltaTime;
+	Ogre::Real monsterTime = deltaTime; // Copie nécessaire pour ne pas modifier deltaTime
 	if(mMonsterClock.ticked(monsterTime))
 	{
 		createMonster(Vector3(rand()%20,20,rand()%20));
