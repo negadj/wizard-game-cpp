@@ -85,8 +85,8 @@ LOG("call ObjectManager::blockReached");
 	// en regardant régulièrement le long de la direction visée.
 	// TODO: trouver un meilleur algo
 	Ogre::Vector3 currentPos;
-	int i = from.x, j = from.y, k = from.z;
-	int faceI = 0, faceJ = 0, faceK =0;
+	int i = int (from.x), j = int (from.y), k = int (from.z);
+	int faceI = 0, faceJ = 0, faceK = 0;
 	for (int step = 0; step < int(reachRadius*10); step++) {
 		currentPos = from + (double(step) / 10) * normal;
 		if (i != int(currentPos.x + 0.5) || j != int(currentPos.y + 0.5) || k != int(currentPos.z + 0.5)) {
