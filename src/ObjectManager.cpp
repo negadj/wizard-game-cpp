@@ -290,9 +290,9 @@ void ObjectManager::removeObject(PhysicalObject* object) {
 	if (object->getObjectType() == TYPE_BLOCK) {
 		mTerrain.removeBlock(object->getNode()->getPosition());
 	}
-#ifdef DEBUG_MODE
-LOG("block removed from terrain");
-#endif
+	else {
+		object->getNode()->getParentSceneNode()->removeAndDestroyChild(object->getName());
+	}
 	mObjects.erase(object->getName());
 	if (mActiveObjects.find(object) != mActiveObjects.end())
 		mActiveObjects.erase(mActiveObjects.find(object));
