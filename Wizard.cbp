@@ -51,19 +51,19 @@
 			<Add option="-fident" />
 			<Add option="-DWIN32" />
 			<Add option="-D_WINDOWS" />
-			<Add directory="C:\Prog\OgreSDK\include" />
-			<Add directory="C:\Prog\OgreSDK\include\OIS" />
-			<Add directory="C:\Prog\OgreSDK\include\CEGUI" />
-			<Add directory="C:\Prog\OgreSDK\samples\include" />
+			<Add directory="C:\OgreSDK\include" />
+			<Add directory="C:\OgreSDK\include\OIS" />
+			<Add directory="C:\OgreSDK\include\CEGUI" />
+			<Add directory="C:\OgreSDK\samples\include" />
 		</Compiler>
 		<Linker>
 			<Add option="-Wl,--enable-runtime-pseudo-reloc" />
 			<Add option="-Wl,--enable-auto-image-base" />
 			<Add option="-Wl,--add-stdcall-alias" />
 			<Add option="-mthreads" />
-			<Add directory="C:\Prog\OgreSDK\lib" />
-			<Add directory="C:\Prog\OgreSDK\bin\debug" />
-			<Add directory="C:\Prog\OgreSDK\bin\release" />
+			<Add directory="C:\OgreSDK\lib" />
+			<Add directory="C:\OgreSDK\bin\debug" />
+			<Add directory="C:\OgreSDK\bin\release" />
 		</Linker>
 		<Unit filename="src\Clock.cpp" />
 		<Unit filename="src\Clock.h" />

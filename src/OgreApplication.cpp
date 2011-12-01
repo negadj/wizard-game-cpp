@@ -116,7 +116,7 @@ LOG("enter OgreApplication::createScene");
 	light->setDirection(Vector3(10, -40, -20));
 	light->setCastShadows(true);
 
-	//Ajout de plein de cubes
+	// Chargement de la scène physique
 	mObjectMgr->loadScene();
 #ifdef DEBUG_MODE
 LOG("exit OgreApplication::createScene");
@@ -207,6 +207,9 @@ LOG("exit OgreApplication::frameRenderingQueued");
     return mContinue;
 }
 
+/*
+ * Initialise les entrees/sorties. Ne pas trop chercher...
+ */
 void OgreApplication::startOIS() {
 	LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
 	OIS::ParamList pl;
