@@ -166,7 +166,7 @@ void Player::setupCamera() {
 	mCameraGoal = mCameraRootNode->createChildSceneNode(Vector3::NEGATIVE_UNIT_Z*10);
 	mCamera->setAutoTracking(true,mCameraGoal);
 	mCamera->setNearClipDistance(0.1);
-	mCamera->setFarClipDistance(50);
+	mCamera->setFarClipDistance(0); // Pour voir à l'infini.
 	// On attache la caméra en FPS par défaut
 	mCameraFPNode->attachObject(mCamera);
 }
