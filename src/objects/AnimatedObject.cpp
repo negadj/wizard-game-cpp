@@ -48,6 +48,8 @@ void AnimatedObject::doPostCollisionUpdate(Ogre::Real deltaTime)
 		}
 
 	}
+	if(getNode()->getPosition().y < -10)
+		setIntegrity(0);
 }
 
 Ogre::Real AnimatedObject::getPropulsion()

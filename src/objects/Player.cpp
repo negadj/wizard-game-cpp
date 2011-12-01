@@ -110,10 +110,10 @@ void Player::injectMouseMove(const OIS::MouseEvent& evt) {
 	getNode()->yaw(-0.2*Degree(evt.state.X.rel));
 	Radian pitch = mCameraRootNode->getOrientation().getPitch();
 	Radian deltaPitch = -0.2*Degree(evt.state.Y.rel);
-	if(pitch + deltaPitch > Degree(60))
-		deltaPitch =  Degree(60) - pitch;
-	else if (pitch + deltaPitch < Degree(-60))
-		deltaPitch = Degree(-60) - pitch;
+	if(pitch + deltaPitch > Degree(80))
+		deltaPitch =  Degree(80) - pitch;
+	else if (pitch + deltaPitch < Degree(-80))
+		deltaPitch = Degree(-80) - pitch;
 	mCameraRootNode->pitch(deltaPitch);
 }
 

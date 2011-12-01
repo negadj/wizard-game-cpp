@@ -18,7 +18,7 @@ ObjectManager::ObjectManager(Ogre::SceneManager* scnMgr) :
 	mObjectsToDelete(std::queue<Ogre::String>()),
 	mTerrain(this, scnMgr->createStaticGeometry("terrain")),
 	mPhysicalClock(Clock(0.02)),
-	mMonsterClock(Clock(15)),
+	mMonsterClock(Clock(5)),
 	mMapManager(10)
 {}
 
@@ -134,7 +134,7 @@ LOG("nbr d'objets : " + Ogre::StringConverter::toString(mObjects.size()) + ", ac
 	Ogre::Real monsterTime = deltaTime;
 	if(mMonsterClock.ticked(monsterTime))
 	{
-		createMonster(Vector3(rand()%18 + 1,1.5,rand()%18 + 1));
+		createMonster(Vector3(rand()%20,20,rand()%20));
 	}
 	while(mPhysicalClock.ticked(deltaTime)){
 #ifdef DEBUG_MODE
