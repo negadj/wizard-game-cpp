@@ -95,6 +95,8 @@
 		<Unit filename="src\Triplet.cpp" />
 		<Unit filename="src\Triplet.h" />
 		<Unit filename="src\main.cpp" />
+		<Unit filename="src\objects\AnimatedObject.cpp" />
+		<Unit filename="src\objects\AnimatedObject.h" />
 		<Unit filename="src\objects\Block.cpp" />
 		<Unit filename="src\objects\Block.h" />
 		<Unit filename="src\objects\Monster.cpp" />

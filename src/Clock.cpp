@@ -29,7 +29,7 @@ bool Clock::ticked(Ogre::Real &deltaTime)
 	 * (comme au chargement de la scène), si deltaTime dépasse 1s,
 	 * les calculs physiques sont annulés
 	 */
-	if (deltaTime > 1) {
+	if (deltaTime > 50 * mStep) {
 #ifdef DEBUG_MODE
 LOG("TICK SKIPPED !");
 #endif

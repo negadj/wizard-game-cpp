@@ -68,7 +68,17 @@ Ogre::Vector3 round(const Ogre::Vector3 vector)
 	return Ogre::Vector3(round(vector.x),round(vector.y),round(vector.z));
 }
 
+Ogre::Vector3 round(const Ogre::Vector3 vector,int precision)
+{
+	return Ogre::Vector3(round(vector.x * pow(10, precision))/pow(10, precision),round(vector.y * pow(10, precision))/pow(10, precision),round(vector.z * pow(10, precision))/pow(10, precision));
+}
+
 Ogre::Vector3 floor(const Ogre::Vector3 vector)
 {
 	return Ogre::Vector3(floor(vector.x),floor(vector.y),floor(vector.z));
+}
+
+Ogre::Vector3 floor(const Ogre::Vector3 vector,int precision)
+{
+	return Ogre::Vector3(floor(vector.x * pow(10, precision))/pow(10, precision),floor(vector.y * pow(10, precision))/pow(10, precision),floor(vector.z * pow(10, precision))/pow(10, precision));
 }

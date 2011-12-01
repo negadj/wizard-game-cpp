@@ -18,6 +18,7 @@ ObjectManager::ObjectManager(Ogre::SceneManager* scnMgr) :
 	mObjectsToDelete(std::queue<Ogre::String>()),
 	mTerrain(this, scnMgr->createStaticGeometry("terrain")),
 	mPhysicalClock(Clock(0.02)),
+	mMonsterClock(Clock(15)),
 	mMapManager(10)
 {}
 
@@ -76,7 +77,7 @@ LOG("call ObjectManager::objectReached");
 	return false;
 }
 
-bool ObjectManager::blockReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, Block* &target) {
+bool ObjectManager::blockReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, Block* &target, Ogre::Vector3* faceVector) {
 #ifdef DEBUG_MODE
 LOG("call ObjectManager::blockReached");
 #endif
@@ -86,14 +87,20 @@ LOG("call ObjectManager::blockReached");
 	// TODO: trouver un meilleur algo
 	Ogre::Vector3 currentPos;
 	int i = from.x, j = from.y, k = from.z;
+	int faceI = 0, faceJ = 0, faceK =0;
 	for (int step = 0; step < int(reachRadius*10); step++) {
 		currentPos = from + (double(step) / 10) * normal;
 		if (i != int(currentPos.x + 0.5) || j != int(currentPos.y + 0.5) || k != int(currentPos.z + 0.5)) {
+		    faceI=i-int(currentPos.x + 0.5); //returne -1 0 ou 1
+		    faceJ=j-int(currentPos.y + 0.5); // afin de savoir quelle face a changé.
+		    faceK=k-int(currentPos.z + 0.5);
 			i = int(currentPos.x + 0.5);
 			j = int(currentPos.y + 0.5);
 			k = int(currentPos.z + 0.5);
 			if (!mTerrain.isFree(Triplet(i,j,k))) {
 				target = mTerrain.getBlock(Triplet(i,j,k));
+				if (faceVector)
+                 {*faceVector=Ogre::Vector3(faceI,faceJ,faceK);}
 				return true;
 			}
 		}
@@ -124,6 +131,11 @@ LOG("nbr d'objets : " + Ogre::StringConverter::toString(mObjects.size()) + ", ac
 #endif
 
 	PhysicalObject* obj = NULL;
+	Ogre::Real monsterTime = deltaTime;
+	if(mMonsterClock.ticked(monsterTime))
+	{
+		mActiveObjects.push_back(createMonster(Vector3(rand()%18 + 1,1.5,rand()%18 + 1)));
+	}
 	while(mPhysicalClock.ticked(deltaTime)){
 #ifdef DEBUG_MODE
 LOG("tick");
@@ -135,9 +147,10 @@ LOG("tick");
 			// On lance d'abord les update personalisés de chaque objet
 		// (pour les animations, modifications de vitesse, etc...).
 
-			obj->update(mPhysicalClock.getStep());
+			obj->preCollisionUpdate(mPhysicalClock.getStep());
 		// Calcul des nouvelles positions des objets.
 			mCollisionMgr.moveWithCollisions(obj, mPhysicalClock.getStep());
+			obj->postCollisionUpdate(mPhysicalClock.getStep());
 		}
 	}
 	for(std::set<PhysicalObject*>::iterator it = mActiveObjects.begin(); it != mActiveObjects.end();++it)
@@ -194,6 +207,18 @@ LOG("exit ObjectManager::createPlayer");
 
 Monster* ObjectManager::createMonster(const Ogre::Vector3 position)
 {
+	Ogre::Vector3 realPosition = position;
+	std::vector<Vector3> correction = std::vector<Vector3>();
+	correction.push_back(Ogre::Vector3::UNIT_X);
+	correction.push_back(Ogre::Vector3::UNIT_Z);
+	correction.push_back(Ogre::Vector3::NEGATIVE_UNIT_X);
+	correction.push_back(Ogre::Vector3::NEGATIVE_UNIT_Z);
+	std::vector<Vector3>::iterator it = correction.begin();
+	while(!mTerrain.isFree(round(realPosition)))
+	{
+		realPosition = position + *it;
+		++it;
+	}
 	Monster* m = new Monster(this, mSceneMgr->getRootSceneNode(), getUniqueName());
 	registerObject(m, true);
 	m->getNode()->setPosition(position);
@@ -201,13 +226,14 @@ Monster* ObjectManager::createMonster(const Ogre::Vector3 position)
 	return m;
 }
 
-Block* ObjectManager::createBlock(const Triplet& position) {
+Block* ObjectManager::createBlock(const Triplet& position, bool add) {
 	if (!isBlockFree(position))
 		return NULL;
 	Block* b = new Block(this, mSceneMgr->getRootSceneNode(), getUniqueName());
 	registerObject(b);
-	b->getNode()->setPosition((Ogre::Vector3)position);
-	mTerrain.addBlock(*b);
+	b->getNode()->setPosition(position);
+	if(add)
+		mTerrain.addBlock(*b);
 
 	return b;
 }
@@ -217,9 +243,13 @@ void ObjectManager::loadScene() {
 LOG("enter ObjectManager::loadScene");
 #endif
 	std::vector<Ogre::Vector3> chunk = mMapManager.loadChunk(Vector3::ZERO);
+	std::vector<Block*> blocks= std::vector<Block*>();
 	for(std::vector<Vector3>::iterator it = chunk.begin(); it != chunk.end(); ++it)
-		createBlock(*it);
-	createMonster(Vector3(3,1.5,5));
+	{
+		blocks.push_back(createBlock(*it, false));
+	}
+	mTerrain.addBlocks(blocks);
+	mActiveObjects.push_back(createMonster(Vector3(rand()%18 + 1,1.5,rand()%18 + 1)));
 #ifdef DEBUG_MODE
 LOG("exit ObjectManager::loadScene");
 #endif

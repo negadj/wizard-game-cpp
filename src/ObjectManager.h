@@ -41,12 +41,14 @@ private:
 	 * Permet d'optimiser les calculs en se concentrant sur les objets qui évoluent.
 	 */
 	std::set<PhysicalObject*> mActiveObjects;
+
 	/*
 	 * Voir requestRemoval() pour le rôle de cette liste
 	 */
 	std::queue<Ogre::String> mObjectsToDelete;
 	Terrain mTerrain;
 	Clock mPhysicalClock;
+	Clock mMonsterClock;
 	MapManager mMapManager;
 
 	/*
@@ -85,9 +87,11 @@ public:
 	 */
 	Player* createPlayer(Ogre::Camera* camera);
 	/*
-	 * Ajoute un Block
+	 * Ajoute un Block.
+	 * Par défaut il est considéré comme appartenant au terrain,
+	 * mais on peut spécifier le contraire avec le second paramètre.
 	 */
-	Block* createBlock(const Triplet& position = Triplet::ZERO);
+	Block* createBlock(const Triplet& position = Triplet::ZERO, bool addToTerrain = true);
 
 	/*
 	 * Ajoute un monstre
@@ -111,7 +115,7 @@ public:
 	 * reachRadius : portée maximale
 	 * target : pointeur pour stocker le bloc atteint le cas échéant
 	 */
-	bool blockReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, Block* &target);
+	bool blockReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, Block* &target, Ogre::Vector3* faceVector=NULL);
 		/*
 	 * Charge la scène où le joueur évolue.
 	 * TODO: clarifier son rôle vis-à-vis de OgreApplication::createScene()

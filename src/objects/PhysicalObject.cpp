@@ -31,7 +31,31 @@ PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* or
 
 PhysicalObject::~PhysicalObject() {}
 
-void PhysicalObject::update(Ogre::Real deltaTime) {}
+void PhysicalObject::doPreCollisionUpdate(Ogre::Real deltaTime)
+{
+	/* Ajout des frottements */
+	addForce(-getSpeed()*getObjectManager()->getStrench(this));
+	/* Ajout de la gravité */
+	addForce(getObjectManager()->getGravity(this));
+}
+
+void PhysicalObject::doPostCollisionUpdate(Ogre::Real deltaTime)
+{
+
+}
+
+void PhysicalObject::preCollisionUpdate(Ogre::Real deltaTime)
+{
+	this->doPreCollisionUpdate(deltaTime);
+	/* Integration et mise à jour de la vitesse */
+	addSpeed(deltaTime * mAcceleration);
+}
+
+void PhysicalObject::postCollisionUpdate(Ogre::Real deltaTime)
+{
+	this->doPostCollisionUpdate(deltaTime);
+	mAcceleration = Ogre::Vector3::ZERO;
+}
 
 Ogre::Vector3 PhysicalObject::getAcceleration() const
 {
@@ -145,70 +169,6 @@ const Ogre::Vector3  PhysicalObject::getVolume() const
 
 void PhysicalObject::destroy() {}
 
-std::vector<Ogre::Vector3> PhysicalObject::getContactSurface(const Ogre::Vector3 normal) const
-{
-	std::vector<Ogre::Vector3> result;
-	Vector3 position = getNode()->getPosition();
-	if(normal == Vector3::UNIT_X || normal == Vector3::NEGATIVE_UNIT_X)
-	{
-		int i, jmax, kmax;
-		if(normal == Vector3::UNIT_X)
-			i = mVolume.x - 1;
-		else
-			i = 0;
-		if(round(position.y) == position.y)
-			jmax = mVolume.y;
-		else
-			jmax = mVolume.y + 1;
-		if(round(position.z) == position.z)
-			kmax = mVolume.z;
-		else
-			kmax = mVolume.z + 1;
-		for(int j = 0; j < jmax; ++j)
-			for(int k = 0; k < kmax; k++)
-				result.push_back(Vector3(i,j,k));
-	}
-	else if(normal == Vector3::UNIT_Y|| normal == Vector3::NEGATIVE_UNIT_Y)
-	{
-		int imax, j, kmax;
-		if(normal == Vector3::UNIT_Y)
-			j = mVolume.y - 1;
-		else
-			j = 0;
-		if(round(position.x) == position.x)
-			imax = mVolume.x;
-		else
-			imax = mVolume.x + 1;
-		if(round(position.z) == position.z)
-			kmax = mVolume.z;
-		else
-			kmax = mVolume.z + 1;
-		for(int i = 0; i < imax; ++i)
-			for(int k = 0; k < kmax; k++)
-				result.push_back(Vector3(i,j,k));
-	}
-	else if(normal == Vector3::UNIT_Z|| normal == Vector3::NEGATIVE_UNIT_Z)
-	{
-		int imax, jmax, k;
-		if(normal == Vector3::UNIT_Z)
-			k = mVolume.z - 1;
-		else
-			k = 0;
-		if(round(position.x) == position.x)
-			imax = mVolume.x;
-		else
-			imax = mVolume.x + 1;
-		if(round(position.y) == position.y)
-			jmax = mVolume.z;
-		else
-			jmax = mVolume.z + 1;
-		for(int i = 0; i < imax; ++i)
-			for(int j = 0; j < jmax; j++)
-				result.push_back(Vector3(i,j,k));
-	}
-	return result;
-}
-
 Ogre::Vector3 PhysicalObject::getCollisionCorrection() const
 {
 	return mCollisionCorrection;
@@ -241,4 +201,9 @@ void PhysicalObject::fireDestruction() const {
 	for (std::set<PhysicalObjectListener*>::const_iterator it = mListeners.begin(); it != mListeners.end(); ++it) {
 		(*it)->objectDestroyed(this);
 	}
+}
+
+void PhysicalObject::addForce(Ogre::Vector3 force)
+{
+	mAcceleration += force;
 }
