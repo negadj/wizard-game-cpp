@@ -25,9 +25,8 @@ LOG("call Clock destructor");
 
 bool Clock::ticked(Ogre::Real &deltaTime)
 {
-	/* Pour éviter les problèmes dûs à un énorme coup de lag
-	 * (comme au chargement de la scène), si deltaTime dépasse 1s,
-	 * les calculs physiques sont annulés
+	/* Pour éviter les problèmes dûs à un énorme coup de freeze,
+	 * si deltaTime dépasse 1s, les calculs physiques sont annulés
 	 */
 	if (deltaTime > 50 * mStep) {
 #ifdef DEBUG_MODE
