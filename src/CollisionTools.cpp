@@ -253,7 +253,7 @@ bool CollisionTools::raycast(const Ogre::Ray &ray, Ogre::Vector3 &result,Ogre::M
     // we need to test every triangle of every object.
     //Ogre::Ogre::Real closest_distance = -1.0f;
 	closest_distance = -1.0f;
-    Ogre::Vector3 closest_result;
+    Ogre::Vector3 closest_result = Ogre::Vector3::ZERO; // Ajoute pour le projet, pas dans le fichier initial.
     Ogre::RaySceneQueryResult &query_result = mRaySceneQuery->getLastResults();
     for (size_t qr_idx = 0; qr_idx < query_result.size(); qr_idx++)
     {
