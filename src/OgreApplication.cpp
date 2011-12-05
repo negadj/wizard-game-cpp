@@ -349,9 +349,9 @@ LOG("enter OgreApplication::updateDebugInfo");
 
 
 	// Mise à jour de la position
-	Real x = mPlayer->getNode()->getPosition().x,
-			y = mPlayer->getNode()->getPosition().y,
-			z = mPlayer->getNode()->getPosition().z;
+	Real x = mPlayer->getPosition().x,
+			y = mPlayer->getPosition().y,
+			z = mPlayer->getPosition().z;
 	debugPanel->getChild("Wizard/DebugPanel/Xposition")->setCaption(
 			"X : " + StringConverter::toString(x));
 	debugPanel->getChild("Wizard/DebugPanel/Yposition")->setCaption(

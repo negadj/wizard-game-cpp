@@ -64,7 +64,8 @@ protected:
 	virtual void doPreCollisionUpdate(Ogre::Real deltaTime);
 	virtual void doPostCollisionUpdate(Ogre::Real deltaTime);
 	void setEntity(Ogre::Entity *entity);
-	void setObjectType(ObjectType type);
+	Ogre::SceneNode* getNode() const;
+    void setObjectType(ObjectType type);
 	/*
 	 * Actions à mener lorsque l'objet est détruit
 	 * (i.e. lorsque son intégrité vaut 0, pas lorsque le destructeur est appelé)
@@ -84,11 +85,14 @@ public:
     ObjectType getObjectType() const;
     int getIntegrity() const;
     std::string getName() const;
-    Ogre::SceneNode* getNode() const;
     Ogre::Vector3 getSpeed() const;
     void setAcceleration(Ogre::Vector3 acceleration);
     void setIntegrity(int mIntegrity);
-
+    const Ogre::Vector3& getPosition() const;
+    virtual const Ogre::Vector3 getFacingDirection() const;
+    const Ogre::Quaternion& getOrientation() const;
+    void setPosition(const Ogre::Vector3& pos);
+    void setOrientation(const Ogre::Quaternion& orientation);
     void setSpeed(Ogre::Vector3 speed);
     void addSpeed(Ogre::Vector3 speed);
     void addForce(Ogre::Vector3 force);

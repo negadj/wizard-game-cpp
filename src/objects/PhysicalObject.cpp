@@ -169,6 +169,26 @@ const Ogre::Vector3  PhysicalObject::getVolume() const
 
 void PhysicalObject::destroy() {}
 
+const Ogre::Vector3& PhysicalObject::getPosition() const {
+	return mNode->_getDerivedPosition();//convertLocalToWorldPosition(mNode->getPosition());
+}
+
+const Ogre::Vector3 PhysicalObject::getFacingDirection() const {
+	return getOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z;
+}
+
+const Ogre::Quaternion& PhysicalObject::getOrientation() const {
+	return mNode->_getDerivedOrientation();//convertLocalToWorldOrientation(mNode->getOrientation());
+}
+
+void PhysicalObject::setPosition(const Ogre::Vector3& pos) {
+	mNode->_setDerivedPosition(pos);
+}
+
+void PhysicalObject::setOrientation(const Ogre::Quaternion& orientation) {
+	mNode->_setDerivedOrientation(orientation);
+}
+
 Ogre::Vector3 PhysicalObject::getCollisionCorrection() const
 {
 	return mCollisionCorrection;

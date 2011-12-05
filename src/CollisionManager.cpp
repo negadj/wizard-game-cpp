@@ -107,7 +107,7 @@ LOG("enter Collision::moveWitCollisions");
     if(obj->getSpeed() != Ogre::Vector3::ZERO && deltaTime != 0){
     	Ogre::Vector3 distance = obj->getSpeed() * deltaTime;
     	Ogre::Vector3 newDistance = handleCollision(obj,distance);
-        obj->getNode()->translate(newDistance); //TODO: TS_WORLD ?
+        obj->setPosition(obj->getPosition() + newDistance);
         /*
          * UNe fois les collisons gérées, on met à jour la vitesse et on renseigne la correction
          */
@@ -138,7 +138,7 @@ LOG("enter Collision::handleCollision");
 				/* Si le point se re trouve à l'oppose du deplacement, pas la peine de s'en occcuper */
 				if( deplacement.x * i <=0 && deplacement.y * j <= 0 && deplacement.z * k <= 0)
 					continue;
-				Ogre::Vector3 point = obj->getNode()->getPosition() + Ogre::Vector3(i*volume.x,j*volume.y,k*volume.z);
+				Ogre::Vector3 point = obj->getPosition() + Ogre::Vector3(i*volume.x,j*volume.y,k*volume.z);
 				Ogre::Vector3 planned_move = deplacement;
 				do
 				{
@@ -160,7 +160,7 @@ LOG("enter Collision::handleCollision");
 						{
 							Ogre::String name = mObjMgr->getBlock(Triplet(round(point + *it)))->getName();
 							PhysicalObject* obstacle = mObjMgr->getObject(name);;
-							intersect(point,deplacement,obstacle->getNode()->getPosition(),obstacle->getVolume());
+							intersect(point,deplacement,obstacle->getPosition(),obstacle->getVolume());
 						}
 					}
 					/*

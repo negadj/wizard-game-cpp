@@ -10,10 +10,11 @@
 
 #include <Ogre.h>
 #include "Triplet.h"
-#include "objects/Block.h"
+//#include "objects/Block.h"
 
+//forward-declaration
 class ObjectManager;
-
+class Block;
 /*
  * Gère le terrain d'une scène. En particulier, ajoute et retire de manière
  * transparente les blocks à une staticgeometry (économise des calculs au GPU).

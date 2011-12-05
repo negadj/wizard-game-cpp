@@ -7,6 +7,7 @@
 
 #include "Terrain.h"
 #include "ObjectManager.h"
+#include "objects/Block.h"
 
 Terrain::Terrain(ObjectManager* objMgr, Ogre::StaticGeometry* staticGeometry) :
 	mObjMgr(objMgr),
@@ -28,7 +29,7 @@ LOG("call Terrain destructor");
 }
 
 bool Terrain::addBlock(Block& b) {
-	Ogre::Vector3 pos = b.getNode()->getPosition();
+	Ogre::Vector3 pos = b.getPosition();
 	if (isFree(pos)) {
 		// On retire d'abord le cube du graphe de scène
 		b.getNode()->getParentSceneNode()->removeChild(b.getNode());
@@ -49,7 +50,7 @@ bool Terrain::addBlocks(const std::vector<Block*> &blocs) {
 	mStaticGeometry->destroy();
 	for (std::vector<Block*>::const_iterator it = blocs.begin(); it != blocs.end(); ++it) {
 		b = *it;
-		pos = b->getNode()->getPosition();
+		pos = b->getPosition();
 		if (isFree(pos)) {
 			// On retire d'abord le cube du graphe de scène
 			b->getNode()->getParentSceneNode()->removeChild(b->getNode());
@@ -105,7 +106,7 @@ LOG("enter Terrain::removeBlock");
 	 * Inutile d'utiliser addBlock() sur eux.
 	 */
 	for (std::map<Triplet,Ogre::String>::iterator it = mMap.begin(); it != mMap.end(); ++it) {
-		mStaticGeometry->addSceneNode(mObjMgr->getObject(it->second)->getNode());
+		mStaticGeometry->addSceneNode(static_cast<Block*>(mObjMgr->getObject(it->second))->getNode());
 	}
 	mStaticGeometry->build();
 #ifdef DEBUG_MODE

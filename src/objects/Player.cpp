@@ -128,7 +128,7 @@ void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) 
 		}
         else if (id == OIS::MB_Right)
         {
-        	getObjectManager()->createBlock(target->getNode()->getPosition()+faceVector);
+        	getObjectManager()->createBlock(target->getPosition()+faceVector);
         }
 	}
 }
