@@ -26,7 +26,7 @@ LOG("call MapManager destructor");
 std::vector<Ogre::Vector3> MapManager::loadChunk(Ogre::Vector3 chunkPosition)
 {
 	std::vector<Ogre::Vector3>  result = std::vector<Ogre::Vector3> ();
-/*	std::string filename = "map/x" + Ogre::StringConverter::toString(int(chunkPosition.x)) +
+	std::string filename = "map/x" + Ogre::StringConverter::toString(int(chunkPosition.x)) +
 							"y" + Ogre::StringConverter::toString(int(chunkPosition.y)) +
 							"z" + Ogre::StringConverter::toString(int(chunkPosition.z));
 	std::ifstream chunk(filename.c_str());
@@ -53,10 +53,6 @@ std::vector<Ogre::Vector3> MapManager::loadChunk(Ogre::Vector3 chunkPosition)
 			i++;
 		}
 	}
-	chunk.close();*/
-	for (int i=-50; i<50; i++)
-		for (int j = -1; j < 1; j++)
-			for (int k=-50; k<50; k++)
-				result.push_back(Ogre::Vector3(i,j,k));
+	chunk.close();
 	return result;
 }
