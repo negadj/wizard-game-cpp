@@ -198,6 +198,9 @@ void PhysicalObject::removeListener(PhysicalObjectListener* listener) {
 }
 
 void PhysicalObject::fireDestruction() const {
+#ifdef DEBUG_MODE
+LOG("firing Destruction");
+#endif
 	for (std::set<PhysicalObjectListener*>::const_iterator it = mListeners.begin(); it != mListeners.end(); ++it) {
 		(*it)->objectDestroyed(this);
 	}

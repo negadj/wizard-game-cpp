@@ -123,10 +123,10 @@ void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) 
 	Block* target = NULL;
 	if (getObjectManager()->blockReached(mCameraFPNode->_getDerivedPosition(), mCamera->getDerivedDirection(), 3, target, &faceVector)) {
 
-	    if (id == 0 or id == 2) {
+	    if (id == OIS::MB_Left) {
             target->setIntegrity(0); //On casse le bloc
 		}
-        else if (id == 1)
+        else if (id == OIS::MB_Right)
         {
         	getObjectManager()->createBlock(target->getNode()->getPosition()+faceVector);
         }

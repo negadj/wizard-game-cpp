@@ -30,7 +30,6 @@ void AnimatedObject::doPostCollisionUpdate(Ogre::Real deltaTime)
 	PhysicalObject::doPostCollisionUpdate(deltaTime);
 	for(std::vector<Ogre::String>::iterator it = mAnimations.begin() ; it != mAnimations.end() ; ++it)
 	{
-		std::cout << getSpeed() << std::endl;
 		if(round(getSpeed(),1) != Ogre::Vector3::ZERO)
 		{
 			getEntity()->getAnimationState(*it)->setEnabled(true);
@@ -48,8 +47,6 @@ void AnimatedObject::doPostCollisionUpdate(Ogre::Real deltaTime)
 		}
 
 	}
-	if(getNode()->getPosition().y < -10)
-		setIntegrity(0);
 }
 
 Ogre::Real AnimatedObject::getPropulsion()

@@ -93,6 +93,9 @@ Ogre::String Terrain::getBlockName(const Ogre::Vector3& pos) {
 }
 
 void Terrain::removeBlock(const Triplet& pos) {
+#ifdef DEBUG_MODE
+LOG("enter Terrain::removeBlock");
+#endif
 	if (isFree(pos))
 		return;
 	mMap.erase(pos);
@@ -105,4 +108,7 @@ void Terrain::removeBlock(const Triplet& pos) {
 		mStaticGeometry->addSceneNode(mObjMgr->getObject(it->second)->getNode());
 	}
 	mStaticGeometry->build();
+#ifdef DEBUG_MODE
+LOG("exit Terrain::removeBlock");
+#endif
 }

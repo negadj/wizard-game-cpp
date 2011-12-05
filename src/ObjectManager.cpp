@@ -110,13 +110,13 @@ LOG("call ObjectManager::blockReached");
 void ObjectManager::updateObjects(Ogre::Real deltaTime) {
 #ifdef DEBUG_MODE
 LOG("enter ObjectManager::updateObjects");
-LOG("nbr d'objets : " + Ogre::StringConverter::toString(mObjects.size()) + ", actifs : " + Ogre::StringConverter::toString(mActiveObjects.size()));
+LOG("nbr d'objets : " + Ogre::StringConverter::toString(mObjects.size()) + ", actifs : " + Ogre::StringConverter::toString(mActiveObjects.size()) + ", a detruire : " + Ogre::StringConverter::toString(mObjectsToDelete.size()));
 #endif
 
 	// On supprime les objets qui doivent disparaîtres.
 	while (!mObjectsToDelete.empty()) {
 #ifdef DEBUG_MODE
-LOG("ObjectsToDelete non vide");
+LOG("ObjectsToDelete non vide, front = object n° " + mObjectsToDelete.front());
 #endif
 		removeObject(mObjects[mObjectsToDelete.front()]);
 #ifdef DEBUG_MODE
@@ -152,6 +152,8 @@ LOG("tick");
 		// Calcul des nouvelles positions des objets.
 			mCollisionMgr.moveWithCollisions(obj, mPhysicalClock.getStep());
 			obj->postCollisionUpdate(mPhysicalClock.getStep());
+			if(obj->getNode()->getPosition().y < -10)
+				obj->setIntegrity(0);
 		}
 	}
 	for(std::set<PhysicalObject*>::iterator it = mActiveObjects.begin(); it != mActiveObjects.end();++it)
@@ -287,6 +289,12 @@ void ObjectManager::requestRemoval(Ogre::String name) {
 }
 
 void ObjectManager::removeObject(PhysicalObject* object) {
+#ifdef DEBUG_MODE
+LOG("enter ObjectManager::removeObject");
+#endif
+#ifdef DEBUG_MODE
+LOG("object n° : " + object->getName());
+#endif
 	if (object->getObjectType() == TYPE_BLOCK) {
 		mTerrain.removeBlock(object->getNode()->getPosition());
 	}
@@ -297,4 +305,7 @@ void ObjectManager::removeObject(PhysicalObject* object) {
 	if (mActiveObjects.find(object) != mActiveObjects.end())
 		mActiveObjects.erase(mActiveObjects.find(object));
 	delete object;
+#ifdef DEBUG_MODE
+LOG("exit ObjectManager::removeObject");
+#endif
 }
