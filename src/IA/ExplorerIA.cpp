@@ -16,7 +16,7 @@ ExplorerIA::~ExplorerIA() {}
 
 Ogre::Vector3 ExplorerIA::findDirection()
 {
-	if(mMonster->getCollisionCorrection().dotProduct(mMonster->getNode()->_getDerivedOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z) >= 0)
+	if(mMonster->getCollisionCorrection().dotProduct(mMonster->getFacingDirection()) >= 0)
 		return Ogre::Vector3::NEGATIVE_UNIT_Z;
 	else
 	{
