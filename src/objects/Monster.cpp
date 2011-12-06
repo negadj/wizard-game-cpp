@@ -19,6 +19,7 @@ Monster::Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre
 }
 
 Monster::~Monster() {
+	getNode()->removeAndDestroyChild(mBodyNode->getName());
 	delete mIA;
 }
 
@@ -26,7 +27,7 @@ void Monster::setupBody(Ogre::SceneNode* originNode) {
 	// Entités pour le corps
 
 	// Création du corps du personnage
-	mBodyNode = getNode()->createChildSceneNode(Ogre::Vector3::NEGATIVE_UNIT_Y * 0.9);
+	mBodyNode = getNode()->createChildSceneNode(getName()+"_body", Ogre::Vector3::NEGATIVE_UNIT_Y * 0.9);
 	mBodyNode->scale(Ogre::Vector3::UNIT_SCALE * 0.02);
 	mBodyNode->yaw(Ogre::Degree(90));
 	mBodyNode->setInitialState();
