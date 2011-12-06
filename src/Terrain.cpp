@@ -99,6 +99,10 @@ LOG("enter Terrain::removeBlock");
 #endif
 	if (isFree(pos))
 		return;
+
+	//On raccroche le block
+	getBlock(pos)->getNode()->getCreator()->getRootSceneNode()->addChild(getBlock(pos)->getNode());
+
 	mMap.erase(pos);
 	mStaticGeometry->reset();
 	/**

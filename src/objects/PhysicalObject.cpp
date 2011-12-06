@@ -29,7 +29,18 @@ PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* or
 	mNode->attachObject(mEntity);
 }
 
-PhysicalObject::~PhysicalObject() {}
+PhysicalObject::~PhysicalObject() {
+#ifdef DEBUG_MODE
+LOG("enter PhysicalObject destructor");
+#endif
+	// destruction des objets créés dans le SceneManager
+	//if (mNode->isInSceneGraph())
+	mNode->getParentSceneNode()->removeAndDestroyChild(mName);
+	mNode->getCreator()->destroyEntity(mEntity);
+#ifdef DEBUG_MODE
+LOG("exit PhysicalObject destructor");
+#endif
+}
 
 void PhysicalObject::doPreCollisionUpdate(Ogre::Real deltaTime)
 {

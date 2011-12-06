@@ -298,9 +298,9 @@ LOG("object n° : " + object->getName());
 	if (object->getObjectType() == TYPE_BLOCK) {
 		mTerrain.removeBlock(object->getNode()->getPosition());
 	}
-	else {
-		object->getNode()->getParentSceneNode()->removeAndDestroyChild(object->getName());
-	}
+//	else {
+//		object->getNode()->getParentSceneNode()->removeAndDestroyChild(object->getName());
+//	}
 	mObjects.erase(object->getName());
 	if (mActiveObjects.find(object) != mActiveObjects.end())
 		mActiveObjects.erase(mActiveObjects.find(object));

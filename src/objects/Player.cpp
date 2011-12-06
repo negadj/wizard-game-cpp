@@ -40,7 +40,11 @@ Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 	registerAnimation("RunTop");
 }
 
-Player::~Player() {}
+Player::~Player() {
+	getNode()->removeAndDestroyChild(mBodyNode->getName());
+	getNode()->getCreator()->destroyEntity(mSword1);
+	getNode()->getCreator()->destroyEntity(mSword2);
+}
 
 void Player::doPreCollisionUpdate(Real deltaTime) {
 #ifdef DEBUG_MODE
@@ -141,7 +145,7 @@ void Player::setupBody(SceneManager* sceneMgr) {
 	getEntity()->attachObjectToBone("Sheath.R", mSword2);
 
 	// Création du corps du personnage
-	mBodyNode = getNode()->createChildSceneNode(Vector3::UNIT_Y * 0.05);
+	mBodyNode = getNode()->createChildSceneNode(getName()+"_body", Vector3::UNIT_Y * 0.05);
 	mBodyNode->scale(Vector3::UNIT_SCALE * 0.2);
 	mBodyNode->yaw(Degree(180));
 	mBodyNode->setInitialState();
@@ -166,7 +170,7 @@ void Player::setupCamera() {
 	mCameraGoal = mCameraRootNode->createChildSceneNode(Vector3::NEGATIVE_UNIT_Z*10);
 	mCamera->setAutoTracking(true,mCameraGoal);
 	mCamera->setNearClipDistance(0.1);
-	mCamera->setFarClipDistance(0); // Pour voir à l'infini.
+	mCamera->setFarClipDistance(50);
 	// On attache la caméra en FPS par défaut
 	mCameraFPNode->attachObject(mCamera);
 }
