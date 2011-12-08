@@ -26,11 +26,8 @@ ObjectManager::~ObjectManager()
 #ifdef DEBUG_MODE
 LOG("enter ObjectManager destructor");
 #endif
-	// On détruit tout les objets référencés
-		mSceneMgr->clearScene();
-#ifdef DEBUG_MODE
-LOG("scene cleared");
-#endif
+
+	// On détruit tous les objets
 	for(std::map<std::string,PhysicalObject*>::iterator it = mObjects.begin();
 			it != mObjects.end(); ++it) {
 		delete (it->second);
@@ -38,6 +35,13 @@ LOG("scene cleared");
 #ifdef DEBUG_MODE
 LOG("objects deleted");
 #endif
+
+	// On nettoie la scène
+	mSceneMgr->clearScene();
+#ifdef DEBUG_MODE
+LOG("scene cleared");
+#endif
+
 	mActiveObjects.clear();
 	mObjects.clear();
 #ifdef DEBUG_MODE
@@ -191,7 +195,7 @@ void ObjectManager::registerObject(PhysicalObject* object, bool active) {
 	mObjects[object->getName()] = object;
 	if (active)
 		mActiveObjects.insert(object);
-	object->addListener(this);
+//	object->addListener(this);
 }
 
 Player* ObjectManager::createPlayer(Ogre::Camera* camera) {
@@ -280,11 +284,11 @@ bool ObjectManager::isBlockFree(const Triplet& pos) const {
 }
 
 void ObjectManager::objectDestroyed(const PhysicalObject* object) {
-	if (object->mRemoveOnDestroy)
-		requestRemoval(object->getName());
+//	if (object->mRemoveOnDestroy)
+//		requestRemoval(object->getName());
 }
 
-void ObjectManager::requestRemoval(Ogre::String name) {
+void ObjectManager::requestDestruction(Ogre::String name) {
 	mObjectsToDelete.push(name);
 }
 

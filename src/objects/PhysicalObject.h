@@ -50,7 +50,6 @@ private:
 	std::set<PhysicalObjectListener*> mListeners;
 
 	void setupVolume(Ogre::Vector3 centreMin,Ogre::Vector3 CentreMax);
-	void fireDestruction() const;
 
 protected:
 	/*
@@ -67,18 +66,25 @@ protected:
 	Ogre::SceneNode* getNode() const;
     void setObjectType(ObjectType type);
 	/*
-	 * Actions à mener lorsque l'objet est détruit
+	 * Actions à mener lorsque l'intégrité d'un objet est modifiée.
+	 */
+    virtual void onIntegrityChange(int oldIntegrity);
+    /*
+	 * Actions à mener lorsque l'objet est détruit, "tué"
 	 * (i.e. lorsque son intégrité vaut 0, pas lorsque le destructeur est appelé)
 	 */
-	virtual void destroy();
-	/*
-	 * Par défaut, l'ObjectManager appelle le destructeur de l'objet lorsque celui-ci
-	 * "meurt" (et qu'il envoie son fireDestruction).
-	 * On peut concevoir que pour certains objets, "mourir" ne signifie pas être retiré de la scène,
-	 * ou tout simplement qu'ils sont "indestructibles".
-	 * Dans ce cas, il faut mettre ce booléen à "false"
-	 */
-	bool mRemoveOnDestroy;
+	virtual void die();
+	void requestDestruction();
+	void fireDeath() const;
+
+//	/*
+//	 * Par défaut, l'ObjectManager appelle le destructeur de l'objet lorsque celui-ci
+//	 * "meurt" (et qu'il envoie son fireDestruction).
+//	 * On peut concevoir que pour certains objets, "mourir" ne signifie pas être retiré de la scène,
+//	 * ou tout simplement qu'ils sont "indestructibles".
+//	 * Dans ce cas, il faut mettre ce booléen à "false"
+//	 */
+//	bool mRemoveOnDestroy;
 
 public:
 	Ogre::Vector3 getAcceleration() const;

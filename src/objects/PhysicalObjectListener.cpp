@@ -11,5 +11,5 @@ PhysicalObjectListener::PhysicalObjectListener() {}
 
 PhysicalObjectListener::~PhysicalObjectListener() {}
 
-void PhysicalObjectListener::objectDestroyed(const PhysicalObject* object) {}
+void PhysicalObjectListener::objectDied(const PhysicalObject* object) {}
 

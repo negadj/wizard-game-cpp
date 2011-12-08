@@ -100,7 +100,7 @@ bool CollisionManager::raycast(const Ogre::Vector3 &point, const Ogre::Vector3 &
 void CollisionManager::moveWithCollisions(PhysicalObject* &obj, const Ogre::Real deltaTime)
 {
 #ifdef DEBUG_MODE
-LOG("enter Collision::moveWitCollisions");
+LOG("enter Collision::moveWithCollisions");
 #endif
     // Calcul des nouvelles positions des objets.
     // On gère les éventuelles collisions
@@ -115,7 +115,7 @@ LOG("enter Collision::moveWitCollisions");
         obj->setCollisionCorrection(newDistance - distance);
     }
 #ifdef DEBUG_MODE
-LOG("exit Collision::moveWitCollisions");
+LOG("exit Collision::moveWithCollisions");
 #endif
 }
 
