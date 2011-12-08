@@ -20,7 +20,7 @@ class PhysicalObjectListener {
 public:
 	PhysicalObjectListener();
 
-	virtual void objectDestroyed(const PhysicalObject* object);
+	virtual void objectDied(const PhysicalObject* object);
 	virtual ~PhysicalObjectListener();
 };
 

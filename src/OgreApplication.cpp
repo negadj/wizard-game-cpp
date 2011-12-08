@@ -363,7 +363,7 @@ LOG("exit OgreApplication::updateDebugInfo");
 #endif
 }
 
-void OgreApplication::objectDestroyed(const PhysicalObject* object) {
+void OgreApplication::objectDied(const PhysicalObject* object) {
 	/* Si cette fonction a été appelée, c'est que le joueur a été tué,
 	 * donc GAME OVER.
 	 */

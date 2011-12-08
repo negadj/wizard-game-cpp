@@ -22,8 +22,8 @@ PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* or
 	mIntegrity(100),
 	mVolume(volume),
 	mCollisionCorrection(Ogre::Vector3::ZERO),
-	mListeners(std::set<PhysicalObjectListener*>()),
-	mRemoveOnDestroy(true)
+	mListeners(std::set<PhysicalObjectListener*>())
+	//mRemoveOnDestroy(true)
 {
 	mEntity = mNode->getCreator()->createEntity(mName, meshName);
 	mNode->attachObject(mEntity);
@@ -34,8 +34,12 @@ PhysicalObject::~PhysicalObject() {
 LOG("enter PhysicalObject destructor");
 #endif
 	// destruction des objets créés dans le SceneManager
-	//if (mNode->isInSceneGraph())
+	if (!mNode->isInSceneGraph()) //On raccroche au scene graphe pour assurer la bonne destruction du noeud
+		mNode->getCreator()->getRootSceneNode()->addChild(mNode);
 	mNode->getParentSceneNode()->removeAndDestroyChild(mName);
+#ifdef DEBUG_MODE
+LOG("node deleted");
+#endif
 	mNode->getCreator()->destroyEntity(mEntity);
 #ifdef DEBUG_MODE
 LOG("exit PhysicalObject destructor");
@@ -109,13 +113,16 @@ void PhysicalObject::setAcceleration(Ogre::Vector3 acceleration)
 
 void PhysicalObject::setIntegrity(int integrity)
 {
-	if (integrity <= 0) {
-		this->mIntegrity = 0;
-		destroy();
-		fireDestruction();
-	}
-	else
-		this->mIntegrity = integrity;
+	if (integrity == mIntegrity)
+		return;
+	int oldIntegrity = mIntegrity;
+	mIntegrity = std::min(100,std::max(0,integrity)); //borne integrity entre 0 et 100
+	onIntegrityChange(oldIntegrity);
+}
+
+void PhysicalObject::onIntegrityChange(int oldIntegrity) {
+	if (oldIntegrity > 0 and mIntegrity == 0) // En cas de mort
+			die();
 }
 
 float PhysicalObject::getDensity() const
@@ -178,7 +185,14 @@ const Ogre::Vector3  PhysicalObject::getVolume() const
 	return mVolume;
 }
 
-void PhysicalObject::destroy() {}
+void PhysicalObject::requestDestruction() {
+	mObjectManager->requestDestruction(getName());
+}
+
+void PhysicalObject::die() {
+	fireDeath();
+	requestDestruction();
+}
 
 const Ogre::Vector3& PhysicalObject::getPosition() const {
 	return mNode->_getDerivedPosition();//convertLocalToWorldPosition(mNode->getPosition());
@@ -228,12 +242,12 @@ void PhysicalObject::removeListener(PhysicalObjectListener* listener) {
 	mListeners.erase(listener);
 }
 
-void PhysicalObject::fireDestruction() const {
+void PhysicalObject::fireDeath() const {
 #ifdef DEBUG_MODE
-LOG("firing Destruction");
+LOG("firing Death");
 #endif
 	for (std::set<PhysicalObjectListener*>::const_iterator it = mListeners.begin(); it != mListeners.end(); ++it) {
-		(*it)->objectDestroyed(this);
+		(*it)->objectDied(this);
 	}
 }
 

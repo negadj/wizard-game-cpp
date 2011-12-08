@@ -28,6 +28,7 @@
  * C'est via cette classe que tous les objets doivent être créés.
  */
 class ObjectManager : public PhysicalObjectListener {
+friend void PhysicalObject::requestDestruction();
 private:
 	static unsigned long _countObject; // Sert à attribuer un numéro unique à chaque objet.
 	Ogre::SceneManager* mSceneMgr;
@@ -55,15 +56,13 @@ private:
 	 * Renvoie un nom unique pour définir un objet
 	 */
 	Ogre::String getUniqueName();
-
 	/*
 	 * Enregistre le nom d'un objet à retirer de la scène et détruire.
 	 * On ne le détruit pas immédiatement car il peut ne pas avoir terminé
 	 * tout ses traitements au moment où l'on reçoit l'information
 	 * (en particulier prévenir tout ses listeners).
 	 */
-	void requestRemoval(Ogre::String name);
-
+	void requestDestruction(Ogre::String name);
 	/*
 	 * Retire un objet de la scène.
 	 */

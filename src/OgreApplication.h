@@ -59,7 +59,7 @@ private:
 	/* Méthodes héritées de l'interface PhysicalObjectListener.
 	 * Nécessaire pour déterminer la fin de la partie.
 	 */
-	void objectDestroyed(const PhysicalObject* object);
+	virtual void objectDied(const PhysicalObject* object);
 
 	Root* mRoot;
 	RenderWindow* mWindow;
