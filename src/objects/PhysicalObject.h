@@ -92,6 +92,12 @@ public:
     int getIntegrity() const;
     std::string getName() const;
     Ogre::Vector3 getSpeed() const;
+    /*
+     * Indique si l'objet est "actif", i.e. si l'ObjectManager doit le gérer
+     * dans sa boucle principale ou non.
+     */
+    void setActive(bool active);
+    bool isActive();
     void setAcceleration(Ogre::Vector3 acceleration);
     void setIntegrity(int mIntegrity);
     const Ogre::Vector3& getPosition() const;

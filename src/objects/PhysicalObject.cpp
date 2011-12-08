@@ -46,6 +46,14 @@ LOG("exit PhysicalObject destructor");
 #endif
 }
 
+bool PhysicalObject::isActive() {
+	return mObjectManager->isActive(this);
+}
+
+void PhysicalObject::setActive(bool active) {
+	mObjectManager->setActive(this, active);
+}
+
 void PhysicalObject::doPreCollisionUpdate(Ogre::Real deltaTime)
 {
 	/* Ajout des frottements */
