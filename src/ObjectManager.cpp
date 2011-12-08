@@ -49,6 +49,20 @@ LOG("exit ObjectManager destructor");
 #endif
 }
 
+void ObjectManager::setActive(PhysicalObject* const obj, bool active) {
+	//Pas de checks nécessaires, c'est un set.
+	if (active) {
+		mActiveObjects.insert(obj);
+	}
+	else {
+		mActiveObjects.erase(obj);
+	}
+}
+
+bool ObjectManager::isActive(PhysicalObject* const obj) const {
+	return (mActiveObjects.find(obj) != mActiveObjects.end());
+}
+
 PhysicalObject* ObjectManager::getObject(const Ogre::String& name) {
 #ifdef DEBUG_MODE
 LOG("call ObjectManager::getObject");
@@ -191,10 +205,10 @@ Ogre::String ObjectManager::getUniqueName() {
 	return Ogre::StringConverter::toString(++_countObject);
 }
 
-void ObjectManager::registerObject(PhysicalObject* object, bool active) {
+void ObjectManager::registerObject(PhysicalObject* object) {
 	mObjects[object->getName()] = object;
-	if (active)
-		mActiveObjects.insert(object);
+//	if (active)
+//		mActiveObjects.insert(object);
 //	object->addListener(this);
 }
 
@@ -204,7 +218,7 @@ LOG("enter ObjectManager::createPlayer");
 #endif
 
 	Player* p = new Player(this, getUniqueName(), camera);
-	registerObject(p, true);
+	registerObject(p);
 
 #ifdef DEBUG_MODE
 LOG("exit ObjectManager::createPlayer");
@@ -227,7 +241,7 @@ Monster* ObjectManager::createMonster(const Ogre::Vector3 position)
 		++it;
 	}
 	Monster* m = new Monster(this, mSceneMgr->getRootSceneNode(), getUniqueName());
-	registerObject(m, true);
+	registerObject(m);
 	m->getNode()->setPosition(position);
 
 	return m;

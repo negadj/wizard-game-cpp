@@ -29,6 +29,7 @@
  */
 class ObjectManager : public PhysicalObjectListener {
 friend void PhysicalObject::requestDestruction();
+//friend void PhysicalObject::setActive(bool);
 private:
 	static unsigned long _countObject; // Sert à attribuer un numéro unique à chaque objet.
 	Ogre::SceneManager* mSceneMgr;
@@ -72,7 +73,7 @@ private:
 	 * Méthode à utiliser lors de la création d'un PhysicalObject.
 	 * Automatise l'enregistrement dans les différentes structures.
 	 */
-	void registerObject(PhysicalObject* object, bool active = false);
+	void registerObject(PhysicalObject* object);
 
 public:
 	ObjectManager(Ogre::SceneManager* scnMgr);
@@ -115,7 +116,13 @@ public:
 	 * target : pointeur pour stocker le bloc atteint le cas échéant
 	 */
 	bool blockReached(const Ogre::Vector3 &from, const Ogre::Vector3 &normal, Ogre::Real reachRadius, Block* &target, Ogre::Vector3* faceVector=NULL);
-    /*
+	/*
+	 * Indique si l'objet est "actif", i.e. si il doit être pris en compte
+	 * dans la boucle de calculs physiques ou non.
+	 */
+	void setActive(PhysicalObject* const obj, bool active);
+	bool isActive(PhysicalObject* const obj) const;
+	/*
 	 * Charge la scène où le joueur évolue.
 	 */
 	void loadScene();

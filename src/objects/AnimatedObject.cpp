@@ -12,7 +12,7 @@ AnimatedObject::AnimatedObject(ObjectManager* objectManager, Ogre::SceneNode* no
 	PhysicalObject(objectManager, node, name, type, meshName, volume, description),
 	mPropulsion(40)
 {
-
+	setActive(true);
 }
 
 AnimatedObject::~AnimatedObject()
