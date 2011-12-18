@@ -27,9 +27,7 @@ public:
 	virtual void doPostCollisionUpdate(Ogre::Real deltaTime);
 
 private:
-	Ogre::SceneNode* mBodyNode;
 	IA* mIA;
-	void setupBody(Ogre::SceneNode* originNode);
 };
 
 #endif /* MONSTER_H_ */

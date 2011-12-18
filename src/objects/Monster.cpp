@@ -10,37 +10,15 @@
 
 
 Monster::Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name):
-	AnimatedObject(objectManager, originNode, name, TYPE_HOSTILE, "robot.mesh", Ogre::Vector3(0.45,0.9,0.45),"Monster"),
-	mBodyNode(0),
+	AnimatedObject(objectManager, originNode, name, TYPE_HOSTILE, "robot.mesh", Ogre::Vector3(0.45,0.9,0.45), -0.9, 0.02, Ogre::Degree(90), "Monster"),
 	mIA(IA::getIA(this))
 {
 	registerAnimation("Walk");
-	setupBody(originNode);
 }
 
 Monster::~Monster() {
 	//getNode()->removeAndDestroyChild(mBodyNode->getName());
 	delete mIA;
-}
-
-void Monster::setupBody(Ogre::SceneNode* originNode) {
-	// Entités pour le corps
-
-	// Création du corps du personnage
-	mBodyNode = getNode()->createChildSceneNode(getName()+"_body", Ogre::Vector3::NEGATIVE_UNIT_Y * 0.9);
-	mBodyNode->scale(Ogre::Vector3::UNIT_SCALE * 0.02);
-	mBodyNode->yaw(Ogre::Degree(90));
-	mBodyNode->setInitialState();
-
-	getEntity()->getAnimationState("Walk")->setEnabled(true);
-	/* Le constructeur de PhysicalObject attache mEntity à mNode,
-	   ce n'est pas ce que l'on souhaite ici */
-#ifdef _WINDOWS
-    getEntity()->getParentSceneNode()->detachObject(getEntity());
-#else
-	getEntity()->detachFromParent();
-#endif
-	mBodyNode->attachObject(getEntity());
 }
 
 void Monster::doPreCollisionUpdate(Ogre::Real deltaTime) {
@@ -74,5 +52,9 @@ LOG("exit Monster::doPreCollisionUpdate");
 
 void Monster::doPostCollisionUpdate(Ogre::Real deltaTime)
 {
+	if (getSpeed().isZeroLength())
+		enableAnimation("Walk");
+	else
+		disableAnimation("Walk");
 	AnimatedObject::doPostCollisionUpdate(deltaTime);
 }

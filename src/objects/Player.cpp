@@ -19,9 +19,8 @@
 #define MOVE_BACKWARD OIS::KC_S
 
 Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
-	AnimatedObject(objectManager, cam->getSceneManager()->getRootSceneNode(), name, TYPE_FRIENDLY, "Sinbad.mesh", Ogre::Vector3(0.45,0.9,0.45),"Joueur"),
+	AnimatedObject(objectManager, cam->getSceneManager()->getRootSceneNode(), name, TYPE_FRIENDLY, "Sinbad.mesh", Ogre::Vector3(0.45,0.9,0.45), -0.05, 0.2, Degree(180), "Joueur"),
 	mCamera(cam),
-	mBodyNode(0),
 	mCameraRootNode(0),
 	mCameraGoal(0),
 	mCameraFPNode(0),
@@ -33,9 +32,11 @@ Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 {
 	getNode()->translate(1,1.5,1);
 	getNode()->setInitialState();
-	setupBody(cam->getSceneManager());
+	mSword1 = cam->getSceneManager()->createEntity("SinbadSword1", "Sword.mesh");
+	mSword2 = cam->getSceneManager()->createEntity("SinbadSword2", "Sword.mesh");
+	getEntity()->attachObjectToBone("Sheath.L", mSword1);
+	getEntity()->attachObjectToBone("Sheath.R", mSword2);
 	setupCamera();
-	getNode()->yaw(Degree(180));
 	registerAnimation("RunBase");
 	registerAnimation("RunTop");
 }
@@ -67,6 +68,14 @@ LOG("exit Player::doPreCollisionUpdate");
 
 void Player::doPostCollisionUpdate(Ogre::Real deltaTime)
 {
+	if (getSpeed().isZeroLength()) {
+		disableAnimation("RunTop");
+		disableAnimation("RunBase");
+	}
+	else {
+		enableAnimation("RunTop");
+		enableAnimation("RunBase");
+	}
 	AnimatedObject::doPostCollisionUpdate(deltaTime);
 }
 
@@ -135,31 +144,6 @@ void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) 
         	getObjectManager()->createBlock(target->getPosition()+faceVector);
         }
 	}
-}
-
-void Player::setupBody(SceneManager* sceneMgr) {
-	// Entités pour le corps
-	mSword1 = sceneMgr->createEntity("SinbadSword1", "Sword.mesh");
-	mSword2 = sceneMgr->createEntity("SinbadSword2", "Sword.mesh");
-	getEntity()->attachObjectToBone("Sheath.L", mSword1);
-	getEntity()->attachObjectToBone("Sheath.R", mSword2);
-
-	// Création du corps du personnage
-	mBodyNode = getNode()->createChildSceneNode(getName()+"_body", Vector3::UNIT_Y * 0.05);
-	mBodyNode->scale(Vector3::UNIT_SCALE * 0.2);
-	mBodyNode->yaw(Degree(180));
-	mBodyNode->setInitialState();
-	getEntity()->getAnimationState("RunBase")->setEnabled(true);
-
-	/* Le constructeur de PhysicalObject attache mEntity à mNode,
-	   ce n'est pas ce que l'on souhaite ici */
-#ifdef _WINDOWS
-    getEntity()->getParentSceneNode()->detachObject(getEntity());
-#else
-    getEntity()->detachFromParent();
-#endif
-
-	mBodyNode->attachObject(getEntity());
 }
 
 void Player::setupCamera() {
