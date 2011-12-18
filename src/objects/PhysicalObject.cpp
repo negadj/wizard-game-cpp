@@ -34,14 +34,21 @@ PhysicalObject::~PhysicalObject() {
 LOG("enter PhysicalObject destructor");
 #endif
 	// destruction des objets créés dans le SceneManager
-	if (!mNode->isInSceneGraph()) //On raccroche au scene graphe pour assurer la bonne destruction du noeud
+	if (!mNode->isInSceneGraph()) { //On raccroche au scene graphe pour assurer la bonne destruction du noeud
 		mNode->getCreator()->getRootSceneNode()->addChild(mNode);
-	mNode->getParentSceneNode()->removeAndDestroyChild(mName);
 #ifdef DEBUG_MODE
-LOG("node deleted");
+LOG("node attached to SceneGraph");
+#endif
+	}
+	else
+#ifdef DEBUG_MODE
+LOG("node already attached to SceneGraph");
 #endif
 	mNode->getCreator()->destroyEntity(mEntity);
+	mNode->removeAndDestroyAllChildren();
+	mNode->getCreator()->destroySceneNode(mNode);
 #ifdef DEBUG_MODE
+LOG("node deleted");
 LOG("exit PhysicalObject destructor");
 #endif
 }
@@ -256,6 +263,15 @@ LOG("firing Death");
 #endif
 	for (std::set<PhysicalObjectListener*>::const_iterator it = mListeners.begin(); it != mListeners.end(); ++it) {
 		(*it)->objectDied(this);
+	}
+}
+
+void PhysicalObject::fireApparenceChanged() const {
+#ifdef DEBUG_MODE
+LOG("firing Apparence Changed");
+#endif
+	for (std::set<PhysicalObjectListener*>::const_iterator it = mListeners.begin(); it != mListeners.end(); ++it) {
+		(*it)->objectApparenceChanged(this);
 	}
 }
 

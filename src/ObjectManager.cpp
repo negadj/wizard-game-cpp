@@ -50,7 +50,7 @@ LOG("exit ObjectManager destructor");
 }
 
 void ObjectManager::setActive(PhysicalObject* const obj, bool active) {
-	//Pas de checks nécessaires, c'est un set.
+	//Pas de checks d'existence/doublons nécessaires, c'est un set.
 	if (active) {
 		mActiveObjects.insert(obj);
 	}
@@ -64,9 +64,9 @@ bool ObjectManager::isActive(PhysicalObject* const obj) const {
 }
 
 PhysicalObject* ObjectManager::getObject(const Ogre::String& name) {
-#ifdef DEBUG_MODE
-LOG("call ObjectManager::getObject");
-#endif
+//#ifdef DEBUG_MODE
+//LOG("call ObjectManager::getObject");
+//#endif
 	if (mObjects.find(name) == mObjects.end())
 		return NULL;
 	return mObjects[name];
@@ -164,8 +164,6 @@ LOG("tick");
 			obj = *it;
 
 			// On lance d'abord les update personalisés de chaque objet
-		// (pour les animations, modifications de vitesse, etc...).
-
 			obj->preCollisionUpdate(mPhysicalClock.getStep());
 		// Calcul des nouvelles positions des objets.
 			mCollisionMgr.moveWithCollisions(obj, mPhysicalClock.getStep());
@@ -316,9 +314,6 @@ LOG("object n° : " + object->getName());
 	if (object->getObjectType() == TYPE_BLOCK) {
 		mTerrain.removeBlock(object->getNode()->getPosition());
 	}
-//	else {
-//		object->getNode()->getParentSceneNode()->removeAndDestroyChild(object->getName());
-//	}
 	mObjects.erase(object->getName());
 	if (mActiveObjects.find(object) != mActiveObjects.end())
 		mActiveObjects.erase(mActiveObjects.find(object));

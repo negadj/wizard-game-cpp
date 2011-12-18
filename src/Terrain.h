@@ -10,7 +10,7 @@
 
 #include <Ogre.h>
 #include "Triplet.h"
-//#include "objects/Block.h"
+#include "objects/PhysicalObjectListener.h"
 
 //forward-declaration
 class ObjectManager;
@@ -19,13 +19,16 @@ class Block;
  * Gère le terrain d'une scène. En particulier, ajoute et retire de manière
  * transparente les blocks à une staticgeometry (économise des calculs au GPU).
  */
-class Terrain {
+class Terrain : public PhysicalObjectListener {
 private:
 	ObjectManager* mObjMgr;
 	std::map<Triplet,Ogre::String> mMap;
 	Ogre::StaticGeometry* mStaticGeometry;
 
 public:
+	void attachBlock(Block& b, bool update = true);
+	void detachBlock(Block& b, bool update = true);
+
 	Terrain(ObjectManager* objMgr, Ogre::StaticGeometry* staticGeometry);
 	virtual ~Terrain();
 	/**
@@ -50,6 +53,9 @@ public:
 	bool isFree(const Triplet& pos) const;
 	bool isFree(const Ogre::Vector3& pos) const;
 	void removeBlock(const Triplet& pos);
+	void updateTerrain();
+
+	virtual void objectApparenceChanged(const PhysicalObject* object);
 };
 
 #endif /* TERRAIN_H_ */

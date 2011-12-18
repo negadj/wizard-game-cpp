@@ -6,6 +6,7 @@
  */
 
 #include "Block.h"
+#include "../ObjectManager.h"
 
 Block::Block(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name) :
 	PhysicalObject(objectManager, originNode, name, TYPE_BLOCK, "cube.mesh",Ogre::Vector3(0.5,0.5,0.5), "Bloc")
@@ -16,3 +17,17 @@ Block::Block(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::St
 }
 
 Block::~Block() {}
+
+void Block::onIntegrityChange(int oldIntegrity) {
+	if (getIntegrity() > 90) {
+		getEntity()->setMaterialName("Wizard/Dirt");
+		fireApparenceChanged();
+	}
+	else if (getIntegrity() > 0 && getIntegrity() <= 90) {
+		getEntity()->setMaterialName("Wizard/BrokenDirt");
+		fireApparenceChanged();
+	}
+	else
+		die();
+}
+

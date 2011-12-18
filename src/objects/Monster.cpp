@@ -19,7 +19,7 @@ Monster::Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre
 }
 
 Monster::~Monster() {
-	getNode()->removeAndDestroyChild(mBodyNode->getName());
+	//getNode()->removeAndDestroyChild(mBodyNode->getName());
 	delete mIA;
 }
 
