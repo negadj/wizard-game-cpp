@@ -28,16 +28,43 @@ LOG("call Terrain destructor");
 #endif
 }
 
+void Terrain::attachBlock(Block& b, bool update) {
+	// On le retire des objets à rendre
+	if (b.getNode()->isInSceneGraph()) {
+		b.getNode()->getParentSceneNode()->removeChild(b.getNode());
+
+		if (update)
+			mStaticGeometry->destroy();
+		// On le rajoute à la geometry
+		mStaticGeometry->addSceneNode(b.getNode());
+		if (update)
+			mStaticGeometry->build();
+		// On s'enregistre pour surveiller ses changements d'apparance
+		b.addListener(this);
+	}
+}
+
+void Terrain::detachBlock(Block& b, bool update) {
+	if (!b.getNode()->isInSceneGraph()) {
+		//On raccroche le block
+		b.getNode()->getCreator()->getRootSceneNode()->addChild(b.getNode());
+
+		if (update)
+			/* On reconstruit la geometry
+			 * (impossible de ne retirer qu'un seul bloc, comme pour attachBlock)
+			 */
+			updateTerrain();
+
+		// Plus la peine d'écouter les changement d'apparence
+		b.removeListener(this);
+	}
+}
+
 bool Terrain::addBlock(Block& b) {
 	Ogre::Vector3 pos = b.getPosition();
 	if (isFree(pos)) {
-		// On retire d'abord le cube du graphe de scène
-		b.getNode()->getParentSceneNode()->removeChild(b.getNode());
-		// On rajoute le cube et on reconstruit la StaticGeometry
 		mMap[Triplet(pos)] = b.getName();
-		mStaticGeometry->destroy();
-		mStaticGeometry->addSceneNode(b.getNode());
-		mStaticGeometry->build();
+		attachBlock(b);
 		return true;
 	}
 	else return false;
@@ -52,11 +79,10 @@ bool Terrain::addBlocks(const std::vector<Block*> &blocs) {
 		b = *it;
 		pos = b->getPosition();
 		if (isFree(pos)) {
-			// On retire d'abord le cube du graphe de scène
-			b->getNode()->getParentSceneNode()->removeChild(b->getNode());
-			// On rajoute le cube et on reconstruit la StaticGeometry
+			// On reconstruit la StaticGeometry
 			mMap[Triplet(pos)] = b->getName();
-			mStaticGeometry->addSceneNode(b->getNode());
+			// On retire d'abord le cube du graphe de scène
+			attachBlock(*b, false);
 		}
 		else
 			res = false;
@@ -93,6 +119,17 @@ Ogre::String Terrain::getBlockName(const Ogre::Vector3& pos) {
 	return getBlockName(Triplet(pos));
 }
 
+void Terrain::updateTerrain() {
+	mStaticGeometry->reset();
+	Block* toAdd;
+	for (std::map<Triplet,Ogre::String>::iterator it = mMap.begin(); it != mMap.end(); ++it) {
+		toAdd = static_cast<Block*>(mObjMgr->getObject(it->second));
+		if (!toAdd->getNode()->isInSceneGraph())
+			mStaticGeometry->addSceneNode(toAdd->getNode());
+	}
+	mStaticGeometry->build();
+}
+
 void Terrain::removeBlock(const Triplet& pos) {
 #ifdef DEBUG_MODE
 LOG("enter Terrain::removeBlock");
@@ -100,20 +137,15 @@ LOG("enter Terrain::removeBlock");
 	if (isFree(pos))
 		return;
 
-	//On raccroche le block
-	getBlock(pos)->getNode()->getCreator()->getRootSceneNode()->addChild(getBlock(pos)->getNode());
-
+	detachBlock(*getBlock(pos));
 	mMap.erase(pos);
-	mStaticGeometry->reset();
-	/**
-	 * On rajoute tout les blocs encore intégrés.
-	 * Inutile d'utiliser addBlock() sur eux.
-	 */
-	for (std::map<Triplet,Ogre::String>::iterator it = mMap.begin(); it != mMap.end(); ++it) {
-		mStaticGeometry->addSceneNode(static_cast<Block*>(mObjMgr->getObject(it->second))->getNode());
-	}
-	mStaticGeometry->build();
+
 #ifdef DEBUG_MODE
 LOG("exit Terrain::removeBlock");
 #endif
+}
+
+void Terrain::objectApparenceChanged(const PhysicalObject* object) {
+	updateTerrain();
+	//detachBlock(static_cast<Block*>(object));
 }

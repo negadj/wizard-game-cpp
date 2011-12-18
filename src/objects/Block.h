@@ -16,14 +16,15 @@
  */
 class Block: public PhysicalObject {
 	friend class ObjectManager;
-	friend bool Terrain::addBlock(Block&); // Pour pouvoir les détacher de la scène pour la static geometry
-	friend bool Terrain::addBlocks(const std::vector<Block*>&);
-	friend void Terrain::removeBlock(const Triplet&);
+	friend void Terrain::attachBlock(Block&, bool); // Pour pouvoir les détacher de la scène pour la static geometry
+	friend void Terrain::detachBlock(Block&, bool);
+	friend void Terrain::updateTerrain();
 protected:
 	Block(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name);
-
-protected:
 	virtual ~Block();
+	virtual void onIntegrityChange(int oldIntegrity);
+	//void attach();
+	//void detach();
 };
 
 #endif /* BLOCK_H_ */

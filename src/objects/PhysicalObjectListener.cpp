@@ -13,3 +13,4 @@ PhysicalObjectListener::~PhysicalObjectListener() {}
 
 void PhysicalObjectListener::objectDied(const PhysicalObject* object) {}
 
+void PhysicalObjectListener::objectApparenceChanged(const PhysicalObject* object) {}

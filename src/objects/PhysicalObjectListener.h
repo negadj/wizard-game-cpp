@@ -19,9 +19,10 @@ class PhysicalObject;
 class PhysicalObjectListener {
 public:
 	PhysicalObjectListener();
+	virtual ~PhysicalObjectListener();
 
 	virtual void objectDied(const PhysicalObject* object);
-	virtual ~PhysicalObjectListener();
+	virtual void objectApparenceChanged(const PhysicalObject* object);
 };
 
 #endif /* PHYSICALOBJECTLISTENER_H_ */

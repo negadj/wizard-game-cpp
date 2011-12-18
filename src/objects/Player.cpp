@@ -41,7 +41,7 @@ Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 }
 
 Player::~Player() {
-	getNode()->removeAndDestroyChild(mBodyNode->getName());
+	//getNode()->removeAndDestroyChild(mBodyNode->getName());
 	getNode()->getCreator()->destroyEntity(mSword1);
 	getNode()->getCreator()->destroyEntity(mSword2);
 }
@@ -128,7 +128,7 @@ void Player::injectMouseDown(const OIS::MouseEvent& evt, OIS::MouseButtonID id) 
 	if (getObjectManager()->blockReached(mCameraFPNode->_getDerivedPosition(), mCamera->getDerivedDirection(), 3, target, &faceVector)) {
 
 	    if (id == OIS::MB_Left) {
-            target->setIntegrity(0); //On casse le bloc
+            target->setIntegrity(target->getIntegrity()-60); //On abîme le bloc
 		}
         else if (id == OIS::MB_Right)
         {

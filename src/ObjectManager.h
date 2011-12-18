@@ -29,7 +29,8 @@
  */
 class ObjectManager : public PhysicalObjectListener {
 friend void PhysicalObject::requestDestruction();
-//friend void PhysicalObject::setActive(bool);
+friend void Block::onIntegrityChange(int);
+
 private:
 	static unsigned long _countObject; // Sert à attribuer un numéro unique à chaque objet.
 	Ogre::SceneManager* mSceneMgr;

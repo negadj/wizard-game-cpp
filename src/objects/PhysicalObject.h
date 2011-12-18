@@ -62,9 +62,9 @@ protected:
 	/* Met à jour tout ce qui concerne l'objet hormis les déplacements (qui sont gérés par l'ObjectManager)*/
 	virtual void doPreCollisionUpdate(Ogre::Real deltaTime);
 	virtual void doPostCollisionUpdate(Ogre::Real deltaTime);
-	void setEntity(Ogre::Entity *entity);
-	Ogre::SceneNode* getNode() const;
-    void setObjectType(ObjectType type);
+	virtual void setEntity(Ogre::Entity *entity);
+	virtual Ogre::SceneNode* getNode() const;
+    virtual void setObjectType(ObjectType type);
 	/*
 	 * Actions à mener lorsque l'intégrité d'un objet est modifiée.
 	 */
@@ -76,6 +76,7 @@ protected:
 	virtual void die();
 	void requestDestruction();
 	void fireDeath() const;
+	void fireApparenceChanged() const;
 
 //	/*
 //	 * Par défaut, l'ObjectManager appelle le destructeur de l'objet lorsque celui-ci
