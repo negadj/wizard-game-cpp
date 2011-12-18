@@ -39,7 +39,6 @@ protected:
 
 private:
 	Camera* mCamera;
-	SceneNode* mBodyNode;
 	SceneNode* mCameraRootNode;
 	SceneNode* mCameraGoal;
 	SceneNode* mCameraFPNode;
@@ -49,7 +48,6 @@ private:
 	Vector3 mDirection; // direction du joueur donnée par les touches du clavier
 	MOC::CollisionTools mCollisionTools;
 
-	void setupBody(SceneManager* sceneMgr);
 	void setupCamera();
 };
 

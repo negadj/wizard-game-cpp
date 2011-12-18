@@ -168,7 +168,7 @@ LOG("tick");
 		// Calcul des nouvelles positions des objets.
 			mCollisionMgr.moveWithCollisions(obj, mPhysicalClock.getStep());
 			obj->postCollisionUpdate(mPhysicalClock.getStep());
-			if(obj->getNode()->getPosition().y < -10)
+			if(obj->getNode()->getPosition().y < -10) //TODO: penser a virer ça quand on en aura plus besoin.
 				obj->setIntegrity(0);
 		}
 	}

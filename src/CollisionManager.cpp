@@ -109,7 +109,7 @@ LOG("enter Collision::moveWithCollisions");
     	Ogre::Vector3 newDistance = handleCollision(obj,distance);
         obj->setPosition(obj->getPosition() + newDistance);
         /*
-         * UNe fois les collisons gérées, on met à jour la vitesse et on renseigne la correction
+         * Une fois les collisons gérées, on met à jour la vitesse et on renseigne la correction
          */
         obj->setSpeed(newDistance/deltaTime);
         obj->setCollisionCorrection(newDistance - distance);
