@@ -18,8 +18,9 @@ class ObjectManager;
 typedef enum ObjectType {
 	TYPE_FRIENDLY,
 	TYPE_HOSTILE,
+	TYPE_ANIMATED,
 	TYPE_BLOCK,
-	TYPE_OTHER
+	TYPE_OBJECT
 } ObjectType;
 
 
@@ -30,12 +31,12 @@ class PhysicalObject {
 	friend class ObjectManager;
 private:
 	ObjectManager* mObjectManager;
-	ObjectType mType;
 	/*
 	 * mName fait office d'id unique pour chaque objet.
 	 * Mieux vaut laisser sa gestion à l'objectManager
 	 */
 	const Ogre::String mName;
+	std::set<ObjectType> mTypes;
 	const Ogre::String mOriginalMeshName;
 	Ogre::String mDescription;
 	/* contient les informations de position, dimensions, rotation... */
@@ -56,16 +57,16 @@ protected:
 	/*
 	 * Attention : name doit être unique. Mieux vaut laisser l'ObjectManager s'en charger seul.
 	 */
-	PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, ObjectType id, Ogre::String meshName, Ogre::Vector3 volume, PhysicalMaterial material, std::string description = "Objet");
+	PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, Ogre::String meshName, Ogre::Vector3 volume, PhysicalMaterial material, std::string description = "Objet");
 	virtual ~PhysicalObject();
 	void preCollisionUpdate(Ogre::Real deltaTime);
 	void postCollisionUpdate(Ogre::Real deltaTime);
 	/* Met à jour tout ce qui concerne l'objet hormis les déplacements (qui sont gérés par l'ObjectManager)*/
 	virtual void doPreCollisionUpdate(Ogre::Real deltaTime);
 	virtual void doPostCollisionUpdate(Ogre::Real deltaTime);
-	virtual void setEntity(Ogre::Entity *entity);
+	void setEntity(Ogre::Entity *entity);
+	void registerType(ObjectType type);
 	virtual Ogre::SceneNode* getNode() const;
-    virtual void setObjectType(ObjectType type);
 	/*
 	 * Actions à mener lorsque l'intégrité d'un objet est modifiée.
 	 */
@@ -90,7 +91,7 @@ protected:
 
 public:
 	Ogre::Vector3 getAcceleration() const;
-    ObjectType getObjectType() const;
+    bool isType(ObjectType type) const;
     int getIntegrity() const;
     std::string getName() const;
     Ogre::Vector3 getSpeed() const;
