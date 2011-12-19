@@ -10,10 +10,13 @@
 
 #include <Ogre.h>
 #include <fstream>
+#include "Triplet.h"
+#include "objects/PhysicalMaterial.h"
 
 /*
- * Gére l'import d'une map
+ * Gère l'import d'une map
  */
+
 class MapManager {
 
 private:
@@ -21,7 +24,7 @@ private:
 public:
 	MapManager(int chunkSize);
 	virtual ~MapManager();
-	std::vector<Ogre::Vector3>  loadChunk(Ogre::Vector3 chunkPosition);
+	std::vector<std::pair<Triplet,PhysicalMaterial> > loadChunk(Triplet chunkPosition);
 };
 
 #endif /* MAPMANAGER_H_ */

@@ -10,6 +10,7 @@
 
 #include "Ogre.h"
 #include "PhysicalObjectListener.h"
+#include "PhysicalMaterial.h"
 
 // forward declaration
 class ObjectManager;
@@ -28,7 +29,6 @@ typedef enum ObjectType {
 class PhysicalObject {
 	friend class ObjectManager;
 private:
-	//TODO: Matériaux ?
 	ObjectManager* mObjectManager;
 	ObjectType mType;
 	/*
@@ -36,14 +36,15 @@ private:
 	 * Mieux vaut laisser sa gestion à l'objectManager
 	 */
 	const Ogre::String mName;
+	const Ogre::String mOriginalMeshName;
 	Ogre::String mDescription;
 	/* contient les informations de position, dimensions, rotation... */
 	Ogre::SceneNode* mNode;
 	Ogre::Entity* mEntity;
 	Ogre::Vector3 mAcceleration;
 	Ogre::Vector3 mSpeed;
-	int mSolidity;
-	float mDensity;
+	PhysicalMaterial mOriginalMaterial;
+	PhysicalMaterial mMaterial;
 	int mIntegrity; //~= points de vie pour un objet
 	Ogre::Vector3 mVolume;
 	Ogre::Vector3 mCollisionCorrection;
@@ -55,7 +56,7 @@ protected:
 	/*
 	 * Attention : name doit être unique. Mieux vaut laisser l'ObjectManager s'en charger seul.
 	 */
-	PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, ObjectType id, Ogre::String meshName, Ogre::Vector3 volume, std::string description = "Objet");
+	PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, ObjectType id, Ogre::String meshName, Ogre::Vector3 volume, PhysicalMaterial material, std::string description = "Objet");
 	virtual ~PhysicalObject();
 	void preCollisionUpdate(Ogre::Real deltaTime);
 	void postCollisionUpdate(Ogre::Real deltaTime);
@@ -114,6 +115,7 @@ public:
     int getSolidity() const;
     void setDensity(float density);
     void setSolidity(int solidity);
+    float getWeight();
     Ogre::Entity *getEntity() const;
     Ogre::String getDescription() const;
     void setDescription(Ogre::String description);
@@ -123,6 +125,10 @@ public:
     Ogre::Vector3 getCollisionCorrection() const;
     void setCollisionCorrection(Ogre::Vector3 correction);
     bool isOnGround() const;
+    Ogre::String getMaterialName() const;
+    void setMaterial(const PhysicalMaterial& material);
+    void setOriginalMaterial();
+    void resetMaterial();
 
     void addListener(PhysicalObjectListener* listener);
     void removeListener(PhysicalObjectListener* listener);

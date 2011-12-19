@@ -245,10 +245,10 @@ Monster* ObjectManager::createMonster(const Ogre::Vector3 position)
 	return m;
 }
 
-Block* ObjectManager::createBlock(const Triplet& position, bool add) {
+Block* ObjectManager::createBlock(const Triplet& position, PhysicalMaterial material, bool add) {
 	if (!isBlockFree(position))
 		return NULL;
-	Block* b = new Block(this, mSceneMgr->getRootSceneNode(), getUniqueName());
+	Block* b = new Block(this, mSceneMgr->getRootSceneNode(), getUniqueName(), material);
 	registerObject(b);
 	b->getNode()->setPosition(position);
 	if(add)
@@ -261,11 +261,11 @@ void ObjectManager::loadScene() {
 #ifdef DEBUG_MODE
 LOG("enter ObjectManager::loadScene");
 #endif
-	std::vector<Ogre::Vector3> chunk = mMapManager.loadChunk(Vector3::ZERO);
+	std::vector<std::pair<Triplet, PhysicalMaterial> > chunk = mMapManager.loadChunk(Vector3::ZERO);
 	std::vector<Block*> blocks= std::vector<Block*>();
-	for(std::vector<Vector3>::iterator it = chunk.begin(); it != chunk.end(); ++it)
+	for(std::vector<std::pair<Triplet, PhysicalMaterial> >::iterator it = chunk.begin(); it != chunk.end(); ++it)
 	{
-		blocks.push_back(createBlock(*it, false));
+		blocks.push_back(createBlock(it->first, it->second, false));
 	}
 	mTerrain.addBlocks(blocks);
 	createMonster(Vector3(rand()%18 + 1,1.5,rand()%18 + 1));
