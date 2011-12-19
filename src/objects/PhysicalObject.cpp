@@ -8,10 +8,10 @@
 #include "PhysicalObject.h"
 #include "../ObjectManager.h"
 
-PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name, ObjectType id, Ogre::String meshName,Ogre::Vector3 volume, PhysicalMaterial material, Ogre::String description) :
+PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name, Ogre::String meshName,Ogre::Vector3 volume, PhysicalMaterial material, Ogre::String description) :
 	mObjectManager(objectManager),
-	mType(id),
 	mName(name),
+	mTypes(std::set<ObjectType>()),
 	mOriginalMeshName(meshName),
 	mDescription(description),
 	mNode(originNode->createChildSceneNode(name)),
@@ -24,8 +24,8 @@ PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* or
 	mVolume(volume),
 	mCollisionCorrection(Ogre::Vector3::ZERO),
 	mListeners(std::set<PhysicalObjectListener*>())
-	//mRemoveOnDestroy(true)
 {
+	mTypes.insert(TYPE_OBJECT);
 	mEntity = mNode->getCreator()->createEntity(mName, meshName);
 	mNode->attachObject(mEntity);
 	setMaterial(material);
@@ -94,13 +94,13 @@ Ogre::Vector3 PhysicalObject::getAcceleration() const
     return mAcceleration;
 }
 
-ObjectType PhysicalObject::getObjectType() const
+bool PhysicalObject::isType(ObjectType type) const
 {
-    return mType;
+    return (mTypes.find(type) != mTypes.end());
 }
 
-void PhysicalObject::setObjectType(ObjectType type) {
-	mType = type;
+void PhysicalObject::registerType(ObjectType type) {
+	mTypes.insert(type);
 }
 
 int PhysicalObject::getIntegrity() const

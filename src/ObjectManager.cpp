@@ -175,7 +175,7 @@ LOG("tick");
 	for(std::set<PhysicalObject*>::iterator it = mActiveObjects.begin(); it != mActiveObjects.end();++it)
 	{
 		obj = *it;
-		if(obj->getObjectType() == TYPE_FRIENDLY)
+		if(obj->isType(TYPE_FRIENDLY))
 		{
 			PhysicalObject* obj2 = NULL;
 			for(std::set<PhysicalObject*>::iterator it2 = mActiveObjects.begin(); it2 != mActiveObjects.end();++it2)
@@ -311,7 +311,7 @@ LOG("enter ObjectManager::removeObject");
 #ifdef DEBUG_MODE
 LOG("object n° : " + object->getName());
 #endif
-	if (object->getObjectType() == TYPE_BLOCK) {
+	if (object->isType(TYPE_BLOCK)) {
 		mTerrain.removeBlock(object->getNode()->getPosition());
 	}
 	mObjects.erase(object->getName());

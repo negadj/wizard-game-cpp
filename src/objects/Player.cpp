@@ -19,7 +19,7 @@
 #define MOVE_BACKWARD OIS::KC_S
 
 Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
-	AnimatedObject(objectManager, cam->getSceneManager()->getRootSceneNode(), name, TYPE_FRIENDLY, "Sinbad.mesh", Ogre::Vector3(0.45,0.9,0.45), -0.05, 0.2, Degree(180), "Joueur"),
+	AnimatedObject(objectManager, cam->getSceneManager()->getRootSceneNode(), name, "Sinbad.mesh", Ogre::Vector3(0.45,0.9,0.45), -0.05, 0.2, Degree(180), "Joueur"),
 	mCamera(cam),
 	mCameraRootNode(0),
 	mCameraGoal(0),
@@ -30,6 +30,7 @@ Player::Player(ObjectManager* objectManager, Ogre::String name, Camera* cam) :
 	mDirection(Ogre::Vector3::ZERO),
 	mCollisionTools(cam->getSceneManager())
 {
+	registerType(TYPE_FRIENDLY);
 	getNode()->translate(1,1.5,1);
 	getNode()->setInitialState();
 	mSword1 = cam->getSceneManager()->createEntity("SinbadSword1", "Sword.mesh");
@@ -155,6 +156,7 @@ void Player::setupCamera() {
 	mCamera->setAutoTracking(true,mCameraGoal);
 	mCamera->setNearClipDistance(0.1);
 	mCamera->setFarClipDistance(50);
+	mCamera->setFOVy(Degree(75));
 	// On attache la caméra en FPS par défaut
 	mCameraFPNode->attachObject(mCamera);
 }

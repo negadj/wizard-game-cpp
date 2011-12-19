@@ -9,9 +9,9 @@
 #include "../ObjectManager.h"
 
 Block::Block(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name, PhysicalMaterial material) :
-	PhysicalObject(objectManager, originNode, name, TYPE_BLOCK, "cube.mesh",Ogre::Vector3(0.5,0.5,0.5), material, "Bloc")
+	PhysicalObject(objectManager, originNode, name, "cube.mesh",Ogre::Vector3(0.5,0.5,0.5), material, "Bloc")
 {
-//	getEntity()->setMaterialName("Wizard/Dirt");
+	registerType(TYPE_BLOCK);
 	getNode()->scale(0.01*Ogre::Vector3::UNIT_SCALE);
 	getNode()->setInitialState();
 }

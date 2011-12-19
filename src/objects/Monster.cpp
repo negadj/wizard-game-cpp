@@ -10,9 +10,10 @@
 
 
 Monster::Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name):
-	AnimatedObject(objectManager, originNode, name, TYPE_HOSTILE, "robot.mesh", Ogre::Vector3(0.45,0.9,0.45), -0.9, 0.02, Ogre::Degree(90), "Monster"),
+	AnimatedObject(objectManager, originNode, name, "robot.mesh", Ogre::Vector3(0.45,0.9,0.45), -0.9, 0.02, Ogre::Degree(90), "Monster"),
 	mIA(IA::getIA(this))
 {
+	registerType(TYPE_HOSTILE);
 	registerAnimation("Walk");
 }
 
