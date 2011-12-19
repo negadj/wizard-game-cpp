@@ -17,7 +17,7 @@ material Wizard/Dirt
 	}
 }
 
-material Wizard/BrokenDirt
+material Wizard/DirtBroken
 {
 	receive_shadows on
 	technique
@@ -37,7 +37,21 @@ material Wizard/BrokenDirt
 }
 
 
-material Wizard/GrassFloor
+material Wizard/Grass
+{
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				texture grass_1024.jpg
+			}
+		}
+	}
+}
+
+material Wizard/GrassBroken
 {
 	technique
 	{

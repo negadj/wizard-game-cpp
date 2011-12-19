@@ -20,7 +20,7 @@ class Block: public PhysicalObject {
 	friend void Terrain::detachBlock(Block&, bool);
 	friend void Terrain::updateTerrain();
 protected:
-	Block(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name);
+	Block(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name, PhysicalMaterial material);
 	virtual ~Block();
 	virtual void onIntegrityChange(int oldIntegrity);
 	//void attach();

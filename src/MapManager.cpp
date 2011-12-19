@@ -23,9 +23,9 @@ LOG("call MapManager destructor");
 #endif
 }
 
-std::vector<Ogre::Vector3> MapManager::loadChunk(Ogre::Vector3 chunkPosition)
+std::vector<std::pair<Triplet,PhysicalMaterial> > MapManager::loadChunk(Triplet chunkPosition)
 {
-	std::vector<Ogre::Vector3>  result = std::vector<Ogre::Vector3> ();
+	std::vector<std::pair<Triplet,PhysicalMaterial> > result = std::vector<std::pair<Triplet,PhysicalMaterial> > ();
 	std::string filename = "map/x" + Ogre::StringConverter::toString(int(chunkPosition.x)) +
 							"y" + Ogre::StringConverter::toString(int(chunkPosition.y)) +
 							"z" + Ogre::StringConverter::toString(int(chunkPosition.z));
@@ -42,14 +42,14 @@ std::vector<Ogre::Vector3> MapManager::loadChunk(Ogre::Vector3 chunkPosition)
 		}
 		else if( c == ' ')
 		{
-			result.push_back(Ogre::Vector3(chunkPosition.x * mChunkSize + i,chunkPosition.y * mChunkSize , chunkPosition.z * mChunkSize +k));
+			result.push_back(std::pair<Triplet,PhysicalMaterial>(Ogre::Vector3(chunkPosition.x * mChunkSize + i,chunkPosition.y * mChunkSize , chunkPosition.z * mChunkSize +k), PhysicalMaterial::Grass));
 			i++;
 		}
-		else if( c == 'x')
+		else if( c == 'd')
 		{
-			result.push_back(Ogre::Vector3(chunkPosition.x * mChunkSize + i,chunkPosition.y * mChunkSize , chunkPosition.z * mChunkSize +k));
-			result.push_back(Ogre::Vector3(chunkPosition.x * mChunkSize + i,chunkPosition.y * mChunkSize + 1 , chunkPosition.z * mChunkSize +k));
-			result.push_back(Ogre::Vector3(chunkPosition.x * mChunkSize + i,chunkPosition.y * mChunkSize + 2, chunkPosition.z * mChunkSize +k));
+			result.push_back(std::pair<Triplet,PhysicalMaterial>(Ogre::Vector3(chunkPosition.x * mChunkSize + i,chunkPosition.y * mChunkSize , chunkPosition.z * mChunkSize +k), PhysicalMaterial::Grass));
+			result.push_back(std::pair<Triplet,PhysicalMaterial>(Ogre::Vector3(chunkPosition.x * mChunkSize + i,chunkPosition.y * mChunkSize + 1 , chunkPosition.z * mChunkSize +k), PhysicalMaterial::Dirt));
+			result.push_back(std::pair<Triplet,PhysicalMaterial>(Ogre::Vector3(chunkPosition.x * mChunkSize + i,chunkPosition.y * mChunkSize + 2, chunkPosition.z * mChunkSize +k), PhysicalMaterial::Dirt));
 			i++;
 		}
 	}

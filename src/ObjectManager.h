@@ -92,7 +92,7 @@ public:
 	 * Par défaut il est considéré comme appartenant au terrain,
 	 * mais on peut spécifier le contraire avec le second paramètre.
 	 */
-	Block* createBlock(const Triplet& position = Triplet::ZERO, bool addToTerrain = true);
+	Block* createBlock(const Triplet& position = Triplet::ZERO, PhysicalMaterial material = PhysicalMaterial::Grass, bool addToTerrain = true);
 
 	/*
 	 * Ajoute un monstre

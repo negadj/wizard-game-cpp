@@ -8,10 +8,10 @@
 #include "Block.h"
 #include "../ObjectManager.h"
 
-Block::Block(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name) :
-	PhysicalObject(objectManager, originNode, name, TYPE_BLOCK, "cube.mesh",Ogre::Vector3(0.5,0.5,0.5), "Bloc")
+Block::Block(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name, PhysicalMaterial material) :
+	PhysicalObject(objectManager, originNode, name, TYPE_BLOCK, "cube.mesh",Ogre::Vector3(0.5,0.5,0.5), material, "Bloc")
 {
-	getEntity()->setMaterialName("Wizard/Dirt");
+//	getEntity()->setMaterialName("Wizard/Dirt");
 	getNode()->scale(0.01*Ogre::Vector3::UNIT_SCALE);
 	getNode()->setInitialState();
 }
@@ -20,11 +20,11 @@ Block::~Block() {}
 
 void Block::onIntegrityChange(int oldIntegrity) {
 	if (getIntegrity() > 90) {
-		getEntity()->setMaterialName("Wizard/Dirt");
+		getEntity()->setMaterialName(getMaterialName());
 		fireApparenceChanged();
 	}
 	else if (getIntegrity() > 0 && getIntegrity() <= 90) {
-		getEntity()->setMaterialName("Wizard/BrokenDirt");
+		getEntity()->setMaterialName(getMaterialName()+"Broken");
 		fireApparenceChanged();
 	}
 	else

@@ -13,7 +13,7 @@
 
 class AnimatedObject: public PhysicalObject {
 public:
-	AnimatedObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, ObjectType type, Ogre::String meshName, Ogre::Vector3 volume, const Ogre::Real& meshHeight, const Ogre::Real& meshScale, const Ogre::Radian& meshOrientation, std::string description = "Objet animé");
+	AnimatedObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, ObjectType type, Ogre::String meshName, Ogre::Vector3 volume, const Ogre::Real& meshHeight, const Ogre::Real& meshScale, const Ogre::Radian& meshOrientation, std::string description = "Objet animé", PhysicalMaterial material = PhysicalMaterial::Flesh);
 	virtual ~AnimatedObject();
 	Ogre::Real getPropulsion();
 

@@ -8,17 +8,18 @@
 #include "PhysicalObject.h"
 #include "../ObjectManager.h"
 
-PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name, ObjectType id, Ogre::String meshName,Ogre::Vector3 volume, Ogre::String description) :
+PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name, ObjectType id, Ogre::String meshName,Ogre::Vector3 volume, PhysicalMaterial material, Ogre::String description) :
 	mObjectManager(objectManager),
 	mType(id),
 	mName(name),
+	mOriginalMeshName(meshName),
 	mDescription(description),
 	mNode(originNode->createChildSceneNode(name)),
 	mEntity(0),
 	mAcceleration(Ogre::Vector3::ZERO),
 	mSpeed(Ogre::Vector3::ZERO),
-	mSolidity(20),
-	mDensity(1),
+	mOriginalMaterial(material),
+	mMaterial(material),
 	mIntegrity(100),
 	mVolume(volume),
 	mCollisionCorrection(Ogre::Vector3::ZERO),
@@ -27,6 +28,7 @@ PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* or
 {
 	mEntity = mNode->getCreator()->createEntity(mName, meshName);
 	mNode->attachObject(mEntity);
+	setMaterial(material);
 }
 
 PhysicalObject::~PhysicalObject() {
@@ -140,19 +142,28 @@ void PhysicalObject::onIntegrityChange(int oldIntegrity) {
 			die();
 }
 
+float PhysicalObject::getWeight() {
+	return getDensity() * getVolume().length() * 1000;
+}
+
 float PhysicalObject::getDensity() const
 {
-    return mDensity;
+    return mMaterial.getDensity();
 }
 
 int PhysicalObject::getSolidity() const
 {
-    return mSolidity;
+    return mMaterial.getSolidity();
 }
 
 void PhysicalObject::setDensity(float density)
 {
-    this->mDensity = density;
+	mMaterial.setDensity(density);
+}
+
+void PhysicalObject::setSolidity(int solidity)
+{
+    mMaterial.setSolidity(solidity);
 }
 
 void PhysicalObject::setEntity(Ogre::Entity *entity)
@@ -180,9 +191,26 @@ Ogre::Entity *PhysicalObject::getEntity() const
     return mEntity;
 }
 
-void PhysicalObject::setSolidity(int solidity)
-{
-    this->mSolidity = solidity;
+Ogre::String PhysicalObject::getMaterialName() const {
+	return mMaterial.getName();
+}
+
+void PhysicalObject::setMaterial(const PhysicalMaterial& material) {
+	mMaterial = material;
+	if (material.isAffectingLook())
+		mEntity->setMaterialName(mMaterial.getName());
+	else { // On rétablit l'apparence normale du mesh
+		mNode->getCreator()->destroyEntity(mEntity);
+		mEntity = mNode->getCreator()->createEntity(mName, mOriginalMeshName);
+	}
+}
+
+void PhysicalObject::setOriginalMaterial() {
+	mOriginalMaterial = mMaterial;
+}
+
+void PhysicalObject::resetMaterial() {
+	setMaterial(mOriginalMaterial);
 }
 
 void PhysicalObject::setSpeed(Ogre::Vector3 speed)
