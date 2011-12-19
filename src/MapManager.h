@@ -21,6 +21,10 @@ class MapManager {
 
 private:
 	int mChunkSize;
+
+	std::vector<std::pair<Triplet,PhysicalMaterial> > loadChunkFromFile(Triplet chunkPosition, std::string filename);
+	std::vector<std::pair<Triplet,PhysicalMaterial> > generateChunk(Triplet chunkPosition);
+
 public:
 	MapManager(int chunkSize);
 	virtual ~MapManager();
