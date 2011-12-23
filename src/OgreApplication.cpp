@@ -17,6 +17,7 @@ OgreApplication::OgreApplication() :
 	mMenuMgr(this),
 	mDebugOverlay(NULL),
 	mPlayer(NULL),
+	mConfig("config/wizard.cfg"),
 	mContinue(true),
 	mStarted(false),
 	mLocked(true),

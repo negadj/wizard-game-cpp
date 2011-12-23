@@ -9,6 +9,7 @@ Author: Gecko
 #include "ObjectManager.h"
 #include "MenuManager.h"
 #include "objects/PhysicalObjectListener.h"
+#include "Config.h"
 
 using namespace Ogre;
 
@@ -76,6 +77,8 @@ private:
 	Overlay* mDebugOverlay;
 
 	Player* mPlayer;
+
+	Config mConfig;
 	bool mContinue; // le programme tourne tant que mContinue est vrai
 	bool mStarted; // indique si une partie est en cours
 	bool mLocked; // indique si les commandes du joueur sont bloquées (pour les menus par ex.)
