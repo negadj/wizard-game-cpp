@@ -4,6 +4,15 @@ Author: Gecko
 #include "OgreApplication.h"
 #include "objects/Player.h"
 
+const Ogre::String OgreApplication::MoveForward = "MoveForward";
+const Ogre::String OgreApplication::MoveBackward = "MoveBackward";
+const Ogre::String OgreApplication::MoveLeft = "MoveLeft";
+const Ogre::String OgreApplication::MoveRight = "MoveRight";
+const Ogre::String OgreApplication::Jump = "Jump";
+const Ogre::String OgreApplication::Action1 = "Action1";
+const Ogre::String OgreApplication::Action2 = "Action2";
+const Ogre::String OgreApplication::Menu = "Menu";
+
 OgreApplication::OgreApplication() :
 	mRoot(NULL),
 	mWindow(NULL),
@@ -28,6 +37,7 @@ OgreApplication::~OgreApplication() {
 #ifdef DEBUG_MODE
 LOG("enter OgreApplication destructor");
 #endif
+	mConfig.saveConfiguration();
     if (mObjectMgr != NULL)
         delete mObjectMgr;
 	WindowEventUtilities::removeWindowEventListener(mWindow, this);
@@ -37,6 +47,10 @@ LOG("window closed");
 #endif
 	delete mRoot;
 // NE PLUS LOGGER A PARTIR DE MAINTENANT !
+}
+
+Config& OgreApplication::getConfig() {
+	return mConfig;
 }
 
 bool OgreApplication::start() {
@@ -55,6 +69,7 @@ bool OgreApplication::start() {
 	mDebugOverlay = OverlayManager::getSingleton().getByName("Wizard/DebugOverlay");
 	createCamera();
 	createViewPort();
+	loadDefaultConfig();
 	mMenuMgr.setup();
 	createFrameListener();
 	mMenuMgr.showMainMenu();
@@ -64,6 +79,38 @@ bool OgreApplication::start() {
 LOG("stop rendering");
 #endif
 	return true;
+}
+
+void OgreApplication::loadDefaultConfig() {
+	if (!mConfig.isKeyDefined(MoveForward))
+#ifdef _WINDOWS
+		mConfig.setValue(MoveForward,OIS::KC_W);
+#else
+		mConfig.setValue(MoveForward,OIS::KC_Z);
+#endif
+	if (!mConfig.isKeyDefined(MoveLeft))
+#ifdef _WINDOWS
+		mConfig.setValue(MoveLeft,OIS::KC_A);
+#else
+		mConfig.setValue(MoveLeft,OIS::KC_Q);
+#endif
+	if (!mConfig.isKeyDefined(MoveBackward))
+		mConfig.setValue(MoveBackward, OIS::KC_S);
+
+	if (!mConfig.isKeyDefined(MoveRight))
+		mConfig.setValue(MoveRight, OIS::KC_D);
+
+	if (!mConfig.isKeyDefined(Jump))
+		mConfig.setValue(Jump, OIS::KC_SPACE);
+
+	if (!mConfig.isKeyDefined(Action1))
+			mConfig.setValue(Action1, OIS::MB_Left);
+
+	if (!mConfig.isKeyDefined(Action2))
+				mConfig.setValue(Action2, OIS::MB_Right);
+
+	if (!mConfig.isKeyDefined(Menu))
+				mConfig.setValue(Menu, OIS::KC_ESCAPE);
 }
 
 void OgreApplication::startGame() {
@@ -296,21 +343,14 @@ LOG("enter OgreApplication::keyPressed");
 #ifdef DEBUG_MODE
 LOG("mStarted = true");
 #endif
-		switch (e.key) {
-		case OIS::KC_ESCAPE:
+		if (e.key == mConfig.getIntValue(Menu))
             mMenuMgr.togglePauseMenu();
-            break;
-		case OIS::KC_F8: //Toggle bounding boxes
+		else if (e.key == OIS::KC_F8)
 			mSceneMgr->showBoundingBoxes(!mSceneMgr->getShowBoundingBoxes());
-			break;
-		case OIS::KC_F3: //Toggle debug overlay
+		else if (e.key == OIS::KC_F3)
 			toggleDebugOverlay();
-			break;
-		default:
-			if (!mLocked)
+		else if (!mLocked)
 				mPlayer->injectKeyDown(e);
-			break;
-		}
 	}
 #ifdef DEBUG_MODE
 LOG("exit OgreApplication::keyPressed");

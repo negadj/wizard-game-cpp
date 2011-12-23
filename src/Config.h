@@ -14,19 +14,22 @@
 class Config {
 private:
 	const std::string mFilename;
-	std::map<std::string,std::string> mValues;
+	std::map<std::string,std::string> mStrValues;
+	std::map<std::string,int> mIntValues;
 
 	void parseConfigFile();
 
 public:
 	Config(std::string filename);
 	virtual ~Config();
-	std::string getValue(std::string key);
+	std::string getStringValue(std::string key);
+	int getIntValue(std::string key);
 	/*
 	 * Définit la valeur d'une clé, éventuellement nouvelle.
 	 * Attention, cette nouvelle clé/valeur n'est pas sauvegardée par défaut.
 	 */
 	void setValue(std::string key, std::string value);
+	void setValue(std::string key, int value);
 	bool isKeyDefined(std::string key);
 	void saveConfiguration();
 	/*
@@ -34,6 +37,7 @@ public:
 	 * Pour sauvegarder la configuration, utiliser saveConfiguration();
 	 */
 	std::string& operator[](std::string key);
+	//int& operator[](std::string key);
 };
 
 #endif /* CONFIG_H_ */
