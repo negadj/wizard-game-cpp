@@ -21,9 +21,23 @@ public:
 	OgreApplication();
 	virtual ~OgreApplication();
 	bool start();
+	Config& getConfig();
+
+	static const Ogre::String MoveForward;
+	static const Ogre::String MoveBackward;
+	static const Ogre::String MoveLeft;
+	static const Ogre::String MoveRight;
+	static const Ogre::String Jump;
+	static const Ogre::String Action1;
+	static const Ogre::String Action2;
+	static const Ogre::String Menu;
 
 private:
 	void loadResources();
+	/*
+	 * Associe des valeurs par défaut aux clés non répertoriées dans le fichier de conf.
+	 */
+	void loadDefaultConfig();
 	void createScene();
 	void createCamera();
 	void createViewPort();

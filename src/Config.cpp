@@ -9,31 +9,39 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
-
-void trim(std::string& str) {
-	str = str.substr(str.find_first_not_of(' '));
-	str = str.substr(0, str.find_last_not_of(' ')+1);
-}
+#include <Ogre.h>
 
 Config::Config(std::string filename) :
 	mFilename(filename),
-	mValues(std::map<std::string, std::string>())
+	mStrValues(std::map<std::string, std::string>()),
+	mIntValues(std::map<std::string, int>())
 {
 	parseConfigFile();
 }
 
 Config::~Config() {}
 
-std::string Config::getValue(std::string key) {
-	return mValues[key];
+std::string Config::getStringValue(std::string key) {
+	return mStrValues[key];
+}
+
+int Config::getIntValue(std::string key) {
+	return mIntValues[key];
 }
 
 void Config::setValue(std::string key, std::string value) {
-	mValues[key] = value;
+	mStrValues[key] = value;
+	if (Ogre::StringConverter::isNumber(value))
+		mIntValues[key] = Ogre::StringConverter::parseInt(value);
+}
+
+void Config::setValue(std::string key, int value) {
+	mIntValues[key] = value;
+	mStrValues[key] = Ogre::StringConverter::toString(value);
 }
 
 bool Config::isKeyDefined(std::string key) {
-	return (mValues.find(key) != mValues.end());
+	return (mStrValues.find(key) != mStrValues.end());
 }
 
 void Config::parseConfigFile() {
@@ -49,11 +57,13 @@ void Config::parseConfigFile() {
 				if (pos != std::string::npos && pos != 0 && pos != line.size()-1) { // Format a priori correct
 					key = line.substr(0,pos);
 					value = line.substr(pos+1);
-					trim(key); // On enlève les éventuels espaces;
-					trim(value);
+					Ogre::StringUtil::trim(key); // On enlève les éventuels espaces;
+					Ogre::StringUtil::trim(value);
 
 					// On stocke la nouvelle paire
-					mValues[key] = value;
+					mStrValues[key] = value;
+					if (Ogre::StringConverter::isNumber(value))
+						mIntValues[key] = Ogre::StringConverter::parseInt(value);
 				}
 			}
 		}
@@ -66,7 +76,7 @@ void Config::saveConfiguration() {
 	std::ofstream file(mFilename.c_str(), std::ios::out | std::ios::trunc); // fichier écrasé
 	        if(file) // fichier correctement ouvert
 	        {
-	        	for (std::map<std::string, std::string>::iterator it = mValues.begin(); it != mValues.end(); ++it) {
+	        	for (std::map<std::string, std::string>::iterator it = mStrValues.begin(); it != mStrValues.end(); ++it) {
 	        		file << it->first << "=" << it->second << std::endl;
 	        	}
 	        	file.close();
@@ -75,5 +85,9 @@ void Config::saveConfiguration() {
 }
 
 std::string& Config::operator[](std::string key) {
-	return mValues[key];
+	return mStrValues[key];
 }
+
+//int& Config::operator[](std::string key) {
+//	return mIntValues[key];
+//}
