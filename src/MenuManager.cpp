@@ -180,17 +180,17 @@ bool MenuManager::configureShadows(const CEGUI::EventArgs &e) {
 	CEGUI::Window* button = mSettingsSheet->getChild("Settings/Shadows");
 
 	switch (mApp->mSceneMgr->getShadowTechnique()) {
-	case SHADOWTYPE_NONE:
+	case Ogre::SHADOWTYPE_NONE:
 		button->setText("Ombres : Faibles");
-		mApp->mSceneMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE);
+		mApp->mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE);
 		break;
-	case SHADOWTYPE_TEXTURE_ADDITIVE:
+	case Ogre::SHADOWTYPE_TEXTURE_ADDITIVE:
 		button->setText((CEGUI::utf8*)"Ombres : Précises");
-		mApp->mSceneMgr->setShadowTechnique(SHADOWTYPE_STENCIL_ADDITIVE);
+		mApp->mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
 		break;
 	default:
 		button->setText("Ombres : Non");
-		mApp->mSceneMgr->setShadowTechnique(SHADOWTYPE_NONE);
+		mApp->mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
 		break;
 	}
 	return true;

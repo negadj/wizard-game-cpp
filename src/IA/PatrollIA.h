@@ -15,9 +15,9 @@
  */
 class PatrollIA: public IA {
 public:
-	PatrollIA(Monster* monster);
+	PatrollIA(AnimatedObject* character);
 	virtual ~PatrollIA();
-	Ogre::Vector3 findDirection();
+	virtual void takeADecision();
 };
 
 #endif /* PATROLLIA_H_ */

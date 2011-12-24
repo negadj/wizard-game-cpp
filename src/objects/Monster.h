@@ -18,16 +18,13 @@ class Monster;
 /*
  * Represente un monstre controle par une intelligence artificielle
  */
-class Monster: public AnimatedObject
-{
-public:
+class Monster: public AnimatedObject {
+	friend class ObjectManager;
+protected:
 	Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name);
 	virtual ~Monster();
 	virtual void doPreCollisionUpdate(Ogre::Real deltaTime);
 	virtual void doPostCollisionUpdate(Ogre::Real deltaTime);
-
-private:
-	IA* mIA;
 };
 
 #endif /* MONSTER_H_ */

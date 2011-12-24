@@ -12,25 +12,28 @@
 class IA;
 
 #include <Ogre.h>
-#include "../objects/Monster.h"
+#include "../objects/AnimatedObject.h"
 
 /*
  * IA générique, sans intelligence implémentée
  */
 class IA {
 protected:
-	Monster* mMonster;
+	AnimatedObject* mCharacter;
 public:
-	IA(Monster* monster);
-	virtual ~IA();
-	/*
-	 * Méthode virtuelle permettant de choisir le chemain
-	 */
-	virtual Ogre::Vector3 findDirection() =0;
 	/*
 	 * Permet de récupérer aléatoirement un type d'IA
 	 */
-	static IA* getIA(Monster* monster);
+	static IA* getRandomIA(AnimatedObject* character);
+
+	IA(AnimatedObject* character);
+	virtual ~IA();
+	/*
+	 * Choisir une action à effectuer
+	 */
+	virtual void takeADecision() =0;
+
+	AnimatedObject* getCharacter();
 };
 
 #endif /* IA_H_ */

@@ -7,22 +7,22 @@
 
 #include "RandomIA.h"
 
-RandomIA::RandomIA(Monster* monster):
-	IA(monster)
+RandomIA::RandomIA(AnimatedObject* character):
+	IA(character)
 {}
 
 RandomIA::~RandomIA() {}
 
-Ogre::Vector3 RandomIA::findDirection()
-{
+void RandomIA::takeADecision() {
 	int random = rand()%4;
 	if(random == 0)
-		return Ogre::Vector3::NEGATIVE_UNIT_Z;
+		mCharacter->faceLocalDirection(PhysicalObject::LocalDirectionForward);
 	else if(random == 1)
-		return Ogre::Vector3::UNIT_Z;
+		mCharacter->faceLocalDirection(PhysicalObject::LocalDirectionBackward);
 	else if(random == 2)
-		return Ogre::Vector3::NEGATIVE_UNIT_X;
+		mCharacter->faceLocalDirection(PhysicalObject::LocalDirectionLeft);
 	else
-		return Ogre::Vector3::UNIT_X;
+		mCharacter->faceLocalDirection(PhysicalObject::LocalDirectionRight);
 
+	mCharacter->setPropulsionLocalDirection(PhysicalObject::LocalDirectionForward);
 }

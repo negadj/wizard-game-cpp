@@ -16,8 +16,8 @@
 
 class ExplorerIA: public IA {
 public:
-	ExplorerIA(Monster* monster);
+	ExplorerIA(AnimatedObject* character);
 	virtual ~ExplorerIA();
-	Ogre::Vector3 findDirection();
+	virtual void takeADecision();
 };
 #endif /* EXPLORERIA_H_ */

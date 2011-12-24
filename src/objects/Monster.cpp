@@ -10,17 +10,13 @@
 
 
 Monster::Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name):
-	AnimatedObject(objectManager, originNode, name, "robot.mesh", Ogre::Vector3(0.45,0.9,0.45), -0.9, 0.02, Ogre::Degree(90), "Monster"),
-	mIA(IA::getIA(this))
+	AnimatedObject(objectManager, originNode, name, "robot.mesh", Ogre::Vector3(0.45,0.9,0.45), -0.9, 0.02, Ogre::Degree(90), "Monster")
 {
 	registerType(TYPE_HOSTILE);
 	registerAnimation("Walk");
 }
 
-Monster::~Monster() {
-	//getNode()->removeAndDestroyChild(mBodyNode->getName());
-	delete mIA;
-}
+Monster::~Monster() {}
 
 void Monster::doPreCollisionUpdate(Ogre::Real deltaTime) {
 #ifdef DEBUG_MODE
@@ -28,21 +24,7 @@ LOG("enter Monster::doPreCollisionUpdate");
 #endif
 	/* Change aléatoirement de stratégie */
 	if(rand()%100 == 0)
-	{
-		delete mIA;
-		mIA = IA::getIA(this);
-	}
-
-	Ogre::Vector3 relativeDirection = mIA->findDirection();
-
-	if(isOnGround() && relativeDirection != Ogre::Vector3::ZERO)
-	{
-		/* Reorientation du monstre */
-		getNode()->setDirection(relativeDirection,Ogre::Node::TS_LOCAL);
-
-		/* Ajout de la force motrice*/
-		addForce(getPropulsion() * (getNode()->getOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z));
-	}
+		setIA(IA::getRandomIA(this));
 
 	AnimatedObject::doPreCollisionUpdate(deltaTime);
 

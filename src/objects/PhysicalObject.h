@@ -90,6 +90,17 @@ protected:
 //	bool mRemoveOnDestroy;
 
 public:
+	/*
+	 * Quelques directions locales commodes
+	 * (pour ne plus avoir à se torturer avec l'orientation des repères)
+	 */
+	static const Ogre::Vector3 LocalDirectionForward;
+	static const Ogre::Vector3 LocalDirectionBackward;
+	static const Ogre::Vector3 LocalDirectionLeft;
+	static const Ogre::Vector3 LocalDirectionRight;
+	static const Ogre::Vector3 LocalDirectionUp;
+	static const Ogre::Vector3 LocalDirectionDown;
+
 	Ogre::Vector3 getAcceleration() const;
     bool isType(ObjectType type) const;
     int getIntegrity() const;
@@ -104,7 +115,9 @@ public:
     void setAcceleration(Ogre::Vector3 acceleration);
     void setIntegrity(int mIntegrity);
     const Ogre::Vector3& getPosition() const;
-    virtual const Ogre::Vector3 getFacingDirection() const;
+    const Ogre::Vector3 getFacingDirection() const;
+    void faceDirection(const Ogre::Vector3& direction);
+    void faceLocalDirection(const Ogre::Vector3& direction);
     const Ogre::Quaternion& getOrientation() const;
     void setPosition(const Ogre::Vector3& pos);
     void setOrientation(const Ogre::Quaternion& orientation);

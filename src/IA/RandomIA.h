@@ -16,9 +16,9 @@
 
 class RandomIA: public IA {
 public:
-	RandomIA(Monster* monster);
+	RandomIA(AnimatedObject* character);
 	virtual ~RandomIA();
-	Ogre::Vector3 findDirection();
+	virtual void takeADecision();
 };
 
 #endif /* SIMPLEIA_H_ */

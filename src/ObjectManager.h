@@ -12,7 +12,7 @@
 #include "CollisionManager.h"
 #include "objects/PhysicalObject.h"
 #include "objects/PhysicalObjectListener.h"
-#include "objects/Player.h"
+#include "objects/Wizard.h"
 #include "objects/Block.h"
 #include "Terrain.h"
 #include "Clock.h"
@@ -84,9 +84,9 @@ public:
 	 */
 	void updateObjects(Ogre::Real deltaTime);
 	/*
-	 * Ajoute un joueur
+	 * Ajoute un mage
 	 */
-	Player* createPlayer(Ogre::Camera* camera);
+	Wizard* createWizard(const Ogre::Vector3 position = Ogre::Vector3::ZERO);
 	/*
 	 * Ajoute un Block.
 	 * Par défaut il est considéré comme appartenant au terrain,
@@ -140,7 +140,7 @@ public:
 	 */
 	Block* getBlock(const Triplet& pos);
 
-	Vector3 getGravity(PhysicalObject* obj) const;
+	Ogre::Vector3 getGravity(PhysicalObject* obj) const;
 
 	double getStrench(PhysicalObject* obj) const;
 

@@ -14,14 +14,10 @@
 
 #include "GuardianIA.h"
 
-GuardianIA::GuardianIA(Monster* monster):
-	IA(monster)
+GuardianIA::GuardianIA(AnimatedObject* character):
+	IA(character)
 {}
 
 GuardianIA::~GuardianIA() {}
 
-Ogre::Vector3 GuardianIA::findDirection()
-{
-	return Ogre::Vector3::ZERO;
-
-}
+void GuardianIA::takeADecision() {}

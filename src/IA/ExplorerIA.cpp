@@ -8,26 +8,25 @@
 #include "ExplorerIA.h"
 #include "../ObjectManager.h"
 
-ExplorerIA::ExplorerIA(Monster* monster):
-	IA(monster)
+ExplorerIA::ExplorerIA(AnimatedObject* character):
+	IA(character)
 {}
 
 ExplorerIA::~ExplorerIA() {}
 
-Ogre::Vector3 ExplorerIA::findDirection()
-{
-	if(mMonster->getCollisionCorrection().dotProduct(mMonster->getFacingDirection()) >= 0)
-		return Ogre::Vector3::NEGATIVE_UNIT_Z;
+void ExplorerIA::takeADecision() {
+	if(mCharacter->getCollisionCorrection().dotProduct(mCharacter->getFacingDirection()) >= 0)
+		mCharacter->faceLocalDirection(PhysicalObject::LocalDirectionForward);
 	else
 	{
 		int i = rand()%3;
 		if( i == 0)
-			return Ogre::Vector3::UNIT_Z;
+			mCharacter->faceLocalDirection(PhysicalObject::LocalDirectionBackward);
 		else if(i == 1)
-			return Ogre::Vector3::UNIT_X;
+			mCharacter->faceLocalDirection(PhysicalObject::LocalDirectionLeft);
 		else
-			return Ogre::Vector3::NEGATIVE_UNIT_X;
+			mCharacter->faceLocalDirection(PhysicalObject::LocalDirectionRight);
 
 	}
-
+	mCharacter->setPropulsionLocalDirection(PhysicalObject::LocalDirectionForward);
 }
