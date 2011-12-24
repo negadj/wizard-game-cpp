@@ -48,7 +48,9 @@ AnimatedObject::~AnimatedObject()
 IA* AnimatedObject::getIA() const {
 	return mIA;
 }
-void AnimatedObject::setIA(IA* ia) {
+void AnimatedObject::setIA(IA* ia, bool removeOldIA) {
+	if (removeOldIA)
+		delete mIA;
 	mIA = ia;
 }
 

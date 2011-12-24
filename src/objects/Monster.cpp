@@ -7,13 +7,14 @@
 
 #include "Monster.h"
 #include "../ObjectManager.h"
-
+#include "../IA/ExplorerIA.h"
 
 Monster::Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name):
 	AnimatedObject(objectManager, originNode, name, "robot.mesh", Ogre::Vector3(0.45,0.9,0.45), -0.9, 0.02, Ogre::Degree(90), "Monster")
 {
 	registerType(TYPE_HOSTILE);
 	registerAnimation("Walk");
+	setIA(new ExplorerIA(this));
 }
 
 Monster::~Monster() {}
@@ -22,9 +23,9 @@ void Monster::doPreCollisionUpdate(Ogre::Real deltaTime) {
 #ifdef DEBUG_MODE
 LOG("enter Monster::doPreCollisionUpdate");
 #endif
-	/* Change aléatoirement de stratégie */
-	if(rand()%100 == 0)
-		setIA(IA::getRandomIA(this));
+//	/* Change aléatoirement de stratégie */
+//	if(rand()%100 == 0)
+//		setIA(IA::getRandomIA(this));
 
 	AnimatedObject::doPreCollisionUpdate(deltaTime);
 

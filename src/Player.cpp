@@ -13,6 +13,7 @@ Player::Player(OgreApplication* app, AnimatedObject* character, Ogre::Camera* ca
 	IA(character),
 	mApp(app),
 	mCharacter(character),
+	mOldIA(0),
 	mCamera(cam),
 	mCameraRootNode(0),
 	mCameraGoal(0),
@@ -20,12 +21,12 @@ Player::Player(OgreApplication* app, AnimatedObject* character, Ogre::Camera* ca
 	mCameraTPNode(0),
 	mDirection(Ogre::Vector3::ZERO)
 {
-	character->setIA(this);
 	setupCamera();
+	setupCharacter(character);
 }
 
-Player::~Player() {
-	//TODO: delete camera and nodes
+Player::~Player() { //Note : les noeuds sont détachés du scene graph, il faut que la scène soit nettoyée !
+	cleanCharacter();
 }
 
 void Player::injectKeyDown(const OIS::KeyEvent& evt) {
@@ -91,13 +92,13 @@ void Player::takeADecision() {
 
 void Player::setupCamera() {
 	// On créer les noeuds pour les cameras
-	mCameraRootNode = mCharacter->getNode()->createChildSceneNode(mCharacter->getName()+"_camera", Ogre::Vector3(0,0.3,-0.3));
+	mCameraRootNode = mCharacter->getNode()->getCreator()->createSceneNode();
 	mCameraFPNode = mCameraRootNode->createChildSceneNode();
-	mCameraTPNode = mCameraRootNode->createChildSceneNode(Ogre::Vector3::UNIT_Z*8);
-	mCameraGoal = mCameraRootNode->createChildSceneNode(Ogre::Vector3::NEGATIVE_UNIT_Z*10);
+	mCameraTPNode = mCameraRootNode->createChildSceneNode(PhysicalObject::LocalDirectionBackward * 8);
+	mCameraGoal = mCameraRootNode->createChildSceneNode(PhysicalObject::LocalDirectionForward * 10);
 	mCamera->setAutoTracking(true,mCameraGoal);
 	mCamera->setNearClipDistance(0.1);
-	mCamera->setFarClipDistance(50);
+	mCamera->setFarClipDistance(mApp->getConfig().getIntValue(OgreApplication::FarClipDistance));
 	mCamera->setFOVy(Ogre::Degree(70));
 	// On attache la caméra en FPS par défaut
 	mCameraFPNode->attachObject(mCamera);
@@ -113,6 +114,7 @@ void Player::toggleCameraMode() {
 #endif
 
 		mCameraTPNode->attachObject(mCamera);
+		mCharacter->getEntity()->setVisible(true);
 	}
 	else { // From Third Person to First Person
 #ifdef _WINDOWS
@@ -121,5 +123,46 @@ void Player::toggleCameraMode() {
         mCamera->detachFromParent();
 #endif
 		mCameraFPNode->attachObject(mCamera);
+		mCharacter->getEntity()->setVisible(false);
 	}
+}
+
+void Player::setCharacter(AnimatedObject* character) {
+	cleanCharacter();
+	setupCharacter(character);
+}
+
+void Player::objectDied(const PhysicalObject* object) {
+	mApp->requestEndGame();
+}
+
+void Player::setupCharacter(AnimatedObject* character) {
+#ifdef DEBUG_MODE
+LOG("enter Player::setupCharacter");
+#endif
+	mCharacter = character;
+	mOldIA = character->getIA();
+	mCharacter->setIA(this, false);
+	mCharacter->getNode()->addChild(mCameraRootNode);
+	// On place le noeud des cameras au niveau des yeux
+	mCameraRootNode->setPosition(0, mCharacter->getVolume().y * 0.95, 0);
+	mCharacter->addListener(this);
+	if (mCamera->getParentSceneNode() == mCameraFPNode)
+		mCharacter->getEntity()->setVisible(false);
+#ifdef DEBUG_MODE
+LOG("exit Player::setupCharacter");
+#endif
+}
+
+void Player::cleanCharacter() {
+#ifdef DEBUG_MODE
+LOG("enter Player::cleanCharacter");
+#endif
+	mCharacter->removeListener(this);
+	mCharacter->getNode()->removeChild(mCameraRootNode);
+	mCharacter->setIA(mOldIA, false);
+	mCharacter->getEntity()->setVisible(true);
+#ifdef DEBUG_MODE
+LOG("exit Player::cleanCharacter");
+#endif
 }
