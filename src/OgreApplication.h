@@ -13,7 +13,7 @@ Author: Gecko
 #include "Player.h"
 
 class OgreApplication : public Ogre::FrameListener, public Ogre::WindowEventListener,
-public OIS::MouseListener, public OIS::KeyListener, public PhysicalObjectListener {
+public OIS::MouseListener, public OIS::KeyListener {
 friend class MenuManager;
 
 public:
@@ -21,6 +21,7 @@ public:
 	virtual ~OgreApplication();
 	bool start();
 	Config& getConfig();
+	void requestEndGame();
 
 	static const Ogre::String MoveForward;
 	static const Ogre::String MoveBackward;
@@ -30,6 +31,7 @@ public:
 	static const Ogre::String Action1;
 	static const Ogre::String Action2;
 	static const Ogre::String Menu;
+	static const Ogre::String FarClipDistance;
 
 private:
 	void loadResources();
@@ -69,11 +71,6 @@ private:
 
 	void toggleDebugOverlay();
 	void updateDebugInfo(Ogre::Real deltaTime);
-
-	/* Méthodes héritées de l'interface PhysicalObjectListener.
-	 * Nécessaire pour déterminer la fin de la partie.
-	 */
-	virtual void objectDied(const PhysicalObject* object);
 
 	Ogre::Root* mRoot;
 	Ogre::RenderWindow* mWindow;

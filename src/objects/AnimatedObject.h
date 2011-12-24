@@ -28,7 +28,7 @@ public:
 	void setPropulsionLocalDirection(const Ogre::Vector3& direction);
 	Ogre::Vector3 getPropulsion();
 	IA* getIA() const;
-	void setIA(IA* ia);
+	void setIA(IA* ia, bool removeOldIA = true);
 
 protected:
 	void registerAnimation(Ogre::String AnimationName);

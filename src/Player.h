@@ -11,13 +11,14 @@
 #include <Ogre.h>
 #include <OIS.h>
 #include "IA/IA.h"
+#include "objects/PhysicalObjectListener.h"
 
 class OgreApplication;
 
 /*
  * Represente un joueur, pas son personnage
  */
-class Player : public IA {
+class Player : public IA, public PhysicalObjectListener {
 public:
 	Player(OgreApplication* app, AnimatedObject* character, Ogre::Camera* cam);
 	virtual ~Player();
@@ -30,10 +31,17 @@ public:
 	 */
 	void toggleCameraMode();
 	virtual void takeADecision();
+	void setCharacter(AnimatedObject* character);
+
+	/* Méthode héritée de l'interface PhysicalObjectListener.
+	 * Nécessaire pour déterminer la fin de la partie.
+	 */
+	virtual void objectDied(const PhysicalObject* object);
 
 private:
 	OgreApplication* mApp;
 	AnimatedObject* mCharacter;
+	IA* mOldIA; // Ancienne IA de l'objet contrôlé
 	Ogre::Camera* mCamera;
 	Ogre::SceneNode* mCameraRootNode;
 	Ogre::SceneNode* mCameraGoal;
@@ -46,6 +54,8 @@ private:
 	Ogre::Vector3 mDirection;
 
 	void setupCamera();
+	void setupCharacter(AnimatedObject* character);
+	void cleanCharacter();
 };
 
 #endif /* PLAYER_H_ */

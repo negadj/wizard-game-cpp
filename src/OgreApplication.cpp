@@ -11,6 +11,7 @@ const Ogre::String OgreApplication::Jump = "Jump";
 const Ogre::String OgreApplication::Action1 = "Action1";
 const Ogre::String OgreApplication::Action2 = "Action2";
 const Ogre::String OgreApplication::Menu = "Menu";
+const Ogre::String OgreApplication::FarClipDistance = "FarClipDistance";
 
 OgreApplication::OgreApplication() :
 	mRoot(NULL),
@@ -36,7 +37,7 @@ OgreApplication::~OgreApplication() {
 #ifdef DEBUG_MODE
 LOG("enter OgreApplication destructor");
 #endif
-	mConfig.saveConfiguration();
+//	mConfig.saveConfiguration();
     if (mObjectMgr != NULL)
         delete mObjectMgr;
     Ogre::WindowEventUtilities::removeWindowEventListener(mWindow, this);
@@ -81,6 +82,7 @@ LOG("stop rendering");
 }
 
 void OgreApplication::loadDefaultConfig() {
+	// Commandes
 	if (!mConfig.isKeyDefined(MoveForward))
 #ifdef _WINDOWS
 		mConfig.setValue(MoveForward,OIS::KC_W);
@@ -110,6 +112,10 @@ void OgreApplication::loadDefaultConfig() {
 
 	if (!mConfig.isKeyDefined(Menu))
 				mConfig.setValue(Menu, OIS::KC_ESCAPE);
+
+	// Paramètres Vidéos
+	if (!mConfig.isKeyDefined(FarClipDistance))
+				mConfig.setValue(FarClipDistance, 0);
 }
 
 void OgreApplication::startGame() {
@@ -119,7 +125,6 @@ LOG("enter OgreApplication::startGame");
 	mObjectMgr = new ObjectManager(mSceneMgr);
 	createScene();
 	mPlayer = new Player(this, mObjectMgr->createWizard(Ogre::Vector3(1,10,1)), mCamera);
-	mPlayer->getCharacter()->addListener(this); // Pour détecter la fin de partie.
 	mStarted = true;
 #ifdef DEBUG_MODE
 LOG("exit OgreApplication::startGame");
@@ -348,6 +353,9 @@ LOG("mStarted = true");
 			mSceneMgr->showBoundingBoxes(!mSceneMgr->getShowBoundingBoxes());
 		else if (e.key == OIS::KC_F3)
 			toggleDebugOverlay();
+		else if (e.key == OIS::KC_F11) {
+			mPlayer->setCharacter(mObjectMgr->createMonster(Ogre::Vector3(5,5,5)));
+		}
 		else if (!mLocked)
 				mPlayer->injectKeyDown(e);
 	}
@@ -403,9 +411,6 @@ LOG("exit OgreApplication::updateDebugInfo");
 #endif
 }
 
-void OgreApplication::objectDied(const PhysicalObject* object) {
-	/* Si cette fonction a été appelée, c'est que le joueur a été tué,
-	 * donc GAME OVER.
-	 */
+void OgreApplication::requestEndGame() {
 	mRequestEndGame = true;
 }
