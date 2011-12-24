@@ -10,29 +10,33 @@
 #include "GuardianIA.h"
 #include "PatrollIA.h"
 #include "ExplorerIA.h"
-IA::IA(Monster* monster):
-	mMonster(monster)
+IA::IA(AnimatedObject* character):
+	mCharacter(character)
 {}
 
 IA::~IA() {}
 
-IA* IA::getIA(Monster* monster)
+AnimatedObject* IA::getCharacter() {
+	return mCharacter;
+}
+
+IA* IA::getRandomIA(AnimatedObject* character)
 {
 	int i = rand() % 4;
 	if(i == 0)
 	{
-		return new GuardianIA(monster);
+		return new GuardianIA(character);
 	}
 	else if(i == 1)
 	{
-		return new RandomIA(monster);
+		return new RandomIA(character);
 	}
 	else if(i == 2)
 	{
-		return new PatrollIA(monster);
+		return new PatrollIA(character);
 	}
 	else
 	{
-		return new ExplorerIA(monster);
+		return new ExplorerIA(character);
 	}
 }

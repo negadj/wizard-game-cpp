@@ -11,11 +11,24 @@
 #include <Ogre.h>
 #include "PhysicalObject.h"
 
+class IA;
+
 class AnimatedObject: public PhysicalObject {
+	friend class Player; // TODO: trouver moins permissif
 public:
 	AnimatedObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, Ogre::String meshName, Ogre::Vector3 volume, const Ogre::Real& meshHeight, const Ogre::Real& meshScale, const Ogre::Radian& meshOrientation, std::string description = "Objet animé", PhysicalMaterial material = PhysicalMaterial::Flesh);
 	virtual ~AnimatedObject();
-	Ogre::Real getPropulsion();
+	Ogre::Real getVelocity();
+	void setVelocity(const Ogre::Real& velocity);
+	/*
+	 * Indique la direction dans laquelle on souhaite se déplacer (référentiel absolu).
+	 * Attention : le vecteur est stocké normalisé
+	 */
+	void setPropulsionDirection(const Ogre::Vector3& direction);
+	void setPropulsionLocalDirection(const Ogre::Vector3& direction);
+	Ogre::Vector3 getPropulsion();
+	IA* getIA() const;
+	void setIA(IA* ia);
 
 protected:
 	void registerAnimation(Ogre::String AnimationName);
@@ -26,8 +39,10 @@ protected:
 
 private:
 	Ogre::SceneNode* mBodyNode;
-	Ogre::Real mPropulsion;
+	Ogre::Real mVelocity;
 	std::vector<Ogre::String> mAnimations;
+	IA* mIA;
+	Ogre::Vector3 mPropulsionDir;
 
 	void setupBody(Ogre::SceneNode* node, Ogre::Vector3 volume, const Ogre::Real& meshHeight, const Ogre::Real& meshScale, const Ogre::Radian& meshOrientation);
 };

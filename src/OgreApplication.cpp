@@ -2,7 +2,6 @@
 Author: Gecko
 */
 #include "OgreApplication.h"
-#include "objects/Player.h"
 
 const Ogre::String OgreApplication::MoveForward = "MoveForward";
 const Ogre::String OgreApplication::MoveBackward = "MoveBackward";
@@ -40,7 +39,7 @@ LOG("enter OgreApplication destructor");
 	mConfig.saveConfiguration();
     if (mObjectMgr != NULL)
         delete mObjectMgr;
-	WindowEventUtilities::removeWindowEventListener(mWindow, this);
+    Ogre::WindowEventUtilities::removeWindowEventListener(mWindow, this);
 	windowClosed(mWindow);
 #ifdef DEBUG_MODE
 LOG("window closed");
@@ -54,7 +53,7 @@ Config& OgreApplication::getConfig() {
 }
 
 bool OgreApplication::start() {
-	mRoot = new Root("config/plugins.cfg", "config/ogre.cfg", "log/Wizard.log");
+	mRoot = new Ogre::Root("config/plugins.cfg", "config/ogre.cfg", "log/Wizard.log");
 
 	loadResources();
 
@@ -62,11 +61,11 @@ bool OgreApplication::start() {
 	    return false;
 
 	mWindow = mRoot->initialise(true, "Wizard");
-	TextureManager::getSingleton().setDefaultNumMipmaps(5);
-	ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+	Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
+	Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
 	mSceneMgr = mRoot->createSceneManager("DefaultSceneManager", "Wizard Scene Manager");
-	mDebugOverlay = OverlayManager::getSingleton().getByName("Wizard/DebugOverlay");
+	mDebugOverlay = Ogre::OverlayManager::getSingleton().getByName("Wizard/DebugOverlay");
 	createCamera();
 	createViewPort();
 	loadDefaultConfig();
@@ -119,8 +118,8 @@ LOG("enter OgreApplication::startGame");
 #endif
 	mObjectMgr = new ObjectManager(mSceneMgr);
 	createScene();
-	mPlayer = mObjectMgr->createPlayer(mCamera);
-	mPlayer->addListener(this); // Pour détecter la fin de partie.
+	mPlayer = new Player(this, mObjectMgr->createWizard(Ogre::Vector3(1,10,1)), mCamera);
+	mPlayer->getCharacter()->addListener(this); // Pour détecter la fin de partie.
 	mStarted = true;
 #ifdef DEBUG_MODE
 LOG("exit OgreApplication::startGame");
@@ -150,18 +149,18 @@ void OgreApplication::createScene() {
 LOG("enter OgreApplication::createScene");
 #endif
 	// Set ambient light
-	mSceneMgr->setAmbientLight(ColourValue(0.8, 0.8, 0.8));
+	mSceneMgr->setAmbientLight(Ogre::ColourValue(0.8, 0.8, 0.8));
 //	mSceneMgr->setFog(FOG_EXP2, ColourValue(0.8, 0.8, 0.9));
-	mViewPort->setBackgroundColour(ColourValue(0.6,0.6,1.0));
+	mViewPort->setBackgroundColour(Ogre::ColourValue(0.6,0.6,1.0));
 
 	mSceneMgr->setSkyDome(true, "Wizard/CloudySky", 2, 10);
 	// set shadow properties
-	mSceneMgr->setShadowTechnique(SHADOWTYPE_NONE);//TEXTURE_ADDITIVE);
+	mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_NONE);//TEXTURE_ADDITIVE);
 
 	// add a bright light above the scene
-	Light* light = mSceneMgr->createLight("sun");
-	light->setType(Light::LT_DIRECTIONAL);
-	light->setDirection(Vector3(10, -40, -20));
+	Ogre::Light* light = mSceneMgr->createLight("sun");
+	light->setType(Ogre::Light::LT_DIRECTIONAL);
+	light->setDirection(Ogre::Vector3(10, -40, -20));
 	light->setCastShadows(true);
 
 	// Chargement de la scène physique
@@ -175,20 +174,20 @@ void OgreApplication::loadResources() {
 #ifdef DEBUG_MODE
 LOG("enter OgreApplication::loadResources");
 #endif
-	ConfigFile configFile;
+Ogre::ConfigFile configFile;
 	configFile.load("config/resources.cfg");
-	ConfigFile::SectionIterator seci = configFile.getSectionIterator();
-	String secName, typeName, archName;
+	Ogre::ConfigFile::SectionIterator seci = configFile.getSectionIterator();
+	Ogre::String secName, typeName, archName;
 	while (seci.hasMoreElements())
 	{
 		secName = seci.peekNextKey();
-		ConfigFile::SettingsMultiMap *settings = seci.getNext();
-		ConfigFile::SettingsMultiMap::iterator i;
+		Ogre::ConfigFile::SettingsMultiMap *settings = seci.getNext();
+		Ogre::ConfigFile::SettingsMultiMap::iterator i;
 		for (i = settings->begin(); i != settings->end(); ++i)
 		{
 			typeName = i->first;
 			archName = i->second;
-			ResourceGroupManager::getSingleton().addResourceLocation(
+			Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
 					archName, typeName, secName);
 		}
 	}
@@ -204,8 +203,8 @@ void OgreApplication::createCamera() {
 
 void OgreApplication::createViewPort() {
     mViewPort = mWindow->addViewport(mCamera);
-    mViewPort->setBackgroundColour(ColourValue(0,0,0));
-    mCamera->setAspectRatio(Real(mViewPort->getActualWidth()) / Real(mViewPort->getActualHeight()));
+    mViewPort->setBackgroundColour(Ogre::ColourValue(0,0,0));
+    mCamera->setAspectRatio(Ogre::Real(mViewPort->getActualWidth()) / Ogre::Real(mViewPort->getActualHeight()));
 }
 
 void OgreApplication::createFrameListener() {
@@ -222,7 +221,7 @@ LOG("exit OgreApplication::createFrameListener");
 #ifdef _WINDOWS
 bool OgreApplication::frameStarted(const FrameEvent& evt) {
 #else
-bool OgreApplication::frameRenderingQueued(const FrameEvent& evt) {
+bool OgreApplication::frameRenderingQueued(const Ogre::FrameEvent& evt) {
 #endif
 #ifdef DEBUG_MODE
 LOG("enter OgreApplication::frameRenderingQueued");
@@ -259,7 +258,7 @@ LOG("exit OgreApplication::frameRenderingQueued");
  * Initialise les entrees/sorties. Ne pas trop chercher...
  */
 void OgreApplication::startOIS() {
-	LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
+	Ogre::LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
 	OIS::ParamList pl;
 	size_t windowHnd = 0;
 	std::ostringstream windowHndStr;
@@ -275,10 +274,10 @@ void OgreApplication::startOIS() {
 	mKeyboard->setEventCallback(this);
 
 	windowResized(mWindow);
-	WindowEventUtilities::addWindowEventListener(mWindow, this);
+	Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);
 }
 
-void OgreApplication::windowResized(RenderWindow* rw) {
+void OgreApplication::windowResized(Ogre::RenderWindow* rw) {
 	unsigned int width, height, depth;
 	int left, top;
 	rw->getMetrics(width, height, depth, left, top);
@@ -288,7 +287,7 @@ void OgreApplication::windowResized(RenderWindow* rw) {
 	ms.height = height;
 }
 
-void OgreApplication::windowClosed(RenderWindow* rw) {
+void OgreApplication::windowClosed(Ogre::RenderWindow* rw) {
 	if( rw == mWindow )
 	{
 		if( mInputManager )
@@ -378,27 +377,27 @@ void OgreApplication::toggleDebugOverlay() {
 		mDebugOverlay->show();
 }
 
-void OgreApplication::updateDebugInfo(Real deltaTime) {
+void OgreApplication::updateDebugInfo(Ogre::Real deltaTime) {
 #ifdef DEBUG_MODE
 LOG("enter OgreApplication::updateDebugInfo");
 #endif
-	OverlayContainer* debugPanel = mDebugOverlay->getChild("Wizard/DebugPanel");
+Ogre::OverlayContainer* debugPanel = mDebugOverlay->getChild("Wizard/DebugPanel");
 
 	// Mise à jour des FPS
 	debugPanel->getChild("Wizard/DebugPanel/Fps")->setCaption(
-			"FPS : " + StringConverter::toString(int((double)1.0/(double)deltaTime)));
+			"FPS : " + Ogre::StringConverter::toString(int((double)1.0/(double)deltaTime)));
 
 
 	// Mise à jour de la position
-	Real x = mPlayer->getPosition().x,
-			y = mPlayer->getPosition().y,
-			z = mPlayer->getPosition().z;
+	Ogre::Real x = mPlayer->getCharacter()->getPosition().x,
+			y = mPlayer->getCharacter()->getPosition().y,
+			z = mPlayer->getCharacter()->getPosition().z;
 	debugPanel->getChild("Wizard/DebugPanel/Xposition")->setCaption(
-			"X : " + StringConverter::toString(x));
+			"X : " + Ogre::StringConverter::toString(x));
 	debugPanel->getChild("Wizard/DebugPanel/Yposition")->setCaption(
-				"Y : " + StringConverter::toString(y));
+				"Y : " + Ogre::StringConverter::toString(y));
 	debugPanel->getChild("Wizard/DebugPanel/Zposition")->setCaption(
-				"Z : " + StringConverter::toString(z));
+				"Z : " + Ogre::StringConverter::toString(z));
 #ifdef DEBUG_MODE
 LOG("exit OgreApplication::updateDebugInfo");
 #endif

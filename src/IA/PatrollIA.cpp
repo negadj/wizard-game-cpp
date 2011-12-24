@@ -8,20 +8,20 @@
 #include "PatrollIA.h"
 #include "../ObjectManager.h"
 
-PatrollIA::PatrollIA(Monster* monster):
-	IA(monster)
+PatrollIA::PatrollIA(AnimatedObject* character):
+	IA(character)
 {}
 
 PatrollIA::~PatrollIA() {}
 
-Ogre::Vector3 PatrollIA::findDirection()
-{
+void PatrollIA::takeADecision() {
 	/*
-	 * Detection si la rectification de vitesse est oppose audeplacement. Auquel cas, il y a eu collision.
+	 * Detection si la rectification de vitesse est oppose au deplacement. Auquel cas, il y a eu collision.
 	 */
-	if(mMonster->getCollisionCorrection().dotProduct(mMonster->getFacingDirection()) >= 0)
-		return Ogre::Vector3::NEGATIVE_UNIT_Z;
+	if(mCharacter->getCollisionCorrection().dotProduct(mCharacter->getFacingDirection()) >= 0)
+		mCharacter->faceLocalDirection(PhysicalObject::LocalDirectionForward);
 	else
-		return Ogre::Vector3::UNIT_Z;
+		mCharacter->faceLocalDirection(PhysicalObject::LocalDirectionBackward);
 
+	mCharacter->setPropulsionLocalDirection(PhysicalObject::LocalDirectionForward);
 }

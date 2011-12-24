@@ -15,9 +15,9 @@
  */
 class GuardianIA: public IA {
 public:
-	GuardianIA(Monster* monster);
+	GuardianIA(AnimatedObject* character);
 	virtual ~GuardianIA();
-	Ogre::Vector3 findDirection();
+	virtual void takeADecision();
 };
 
 #endif /* GUARDIANIA_H_ */

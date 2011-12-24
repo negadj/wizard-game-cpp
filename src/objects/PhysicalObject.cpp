@@ -8,6 +8,13 @@
 #include "PhysicalObject.h"
 #include "../ObjectManager.h"
 
+const Ogre::Vector3 PhysicalObject::LocalDirectionForward = Ogre::Vector3::NEGATIVE_UNIT_Z;
+const Ogre::Vector3 PhysicalObject::LocalDirectionBackward = Ogre::Vector3::UNIT_Z;
+const Ogre::Vector3 PhysicalObject::LocalDirectionLeft = Ogre::Vector3::NEGATIVE_UNIT_X;
+const Ogre::Vector3 PhysicalObject::LocalDirectionRight = Ogre::Vector3::UNIT_X;
+const Ogre::Vector3 PhysicalObject::LocalDirectionUp = Ogre::Vector3::UNIT_Y;
+const Ogre::Vector3 PhysicalObject::LocalDirectionDown = Ogre::Vector3::NEGATIVE_UNIT_Y;
+
 PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name, Ogre::String meshName,Ogre::Vector3 volume, PhysicalMaterial material, Ogre::String description) :
 	mObjectManager(objectManager),
 	mName(name),
@@ -306,4 +313,12 @@ LOG("firing Apparence Changed");
 void PhysicalObject::addForce(Ogre::Vector3 force)
 {
 	mAcceleration += force;
+}
+
+void PhysicalObject::faceDirection(const Ogre::Vector3& direction) {
+	getNode()->setDirection(direction,Ogre::Node::TS_WORLD);
+}
+
+void PhysicalObject::faceLocalDirection(const Ogre::Vector3& direction) {
+	getNode()->setDirection(direction,Ogre::Node::TS_LOCAL);
 }

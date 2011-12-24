@@ -153,7 +153,7 @@ LOG("nbr d'objets : " + Ogre::StringConverter::toString(mObjects.size()) + ", ac
 	Ogre::Real monsterTime = deltaTime; // Copie nécessaire pour ne pas modifier deltaTime
 	if(mMonsterClock.ticked(monsterTime))
 	{
-		createMonster(Vector3(rand()%20,20,rand()%20));
+		createMonster(Ogre::Vector3(rand()%20,20,rand()%20));
 	}
 	while(mPhysicalClock.ticked(deltaTime)){
 #ifdef DEBUG_MODE
@@ -172,28 +172,28 @@ LOG("tick");
 				obj->setIntegrity(0);
 		}
 	}
-	for(std::set<PhysicalObject*>::iterator it = mActiveObjects.begin(); it != mActiveObjects.end();++it)
-	{
-		obj = *it;
-		if(obj->isType(TYPE_FRIENDLY))
-		{
-			PhysicalObject* obj2 = NULL;
-			for(std::set<PhysicalObject*>::iterator it2 = mActiveObjects.begin(); it2 != mActiveObjects.end();++it2)
-			{
-				obj2 = *it2;
-				if(obj != obj2)
-				{
-					if((obj2->getNode()->getPosition() - obj->getNode()->getPosition()).length() < 0.9)
-					{
-					#ifdef DEBUG_MODE
-						LOG("CONTACT !");
-					#endif
-						obj->setIntegrity(0);
-					}
-				}
-			}
-		}
-	}
+//	for(std::set<PhysicalObject*>::iterator it = mActiveObjects.begin(); it != mActiveObjects.end();++it)
+//	{
+//		obj = *it;
+//		if(obj->isType(TYPE_FRIENDLY))
+//		{
+//			PhysicalObject* obj2 = NULL;
+//			for(std::set<PhysicalObject*>::iterator it2 = mActiveObjects.begin(); it2 != mActiveObjects.end();++it2)
+//			{
+//				obj2 = *it2;
+//				if(obj != obj2)
+//				{
+//					if((obj2->getNode()->getPosition() - obj->getNode()->getPosition()).length() < 0.9)
+//					{
+//					#ifdef DEBUG_MODE
+//						LOG("CONTACT !");
+//					#endif
+//						obj->setIntegrity(0);
+//					}
+//				}
+//			}
+//		}
+//	}
 #ifdef DEBUG_MODE
 LOG("exit ObjectManager::updateObjects");
 #endif
@@ -210,29 +210,30 @@ void ObjectManager::registerObject(PhysicalObject* object) {
 //	object->addListener(this);
 }
 
-Player* ObjectManager::createPlayer(Ogre::Camera* camera) {
+Wizard* ObjectManager::createWizard(const Ogre::Vector3 position) {
 #ifdef DEBUG_MODE
 LOG("enter ObjectManager::createPlayer");
 #endif
 
-	Player* p = new Player(this, getUniqueName(), camera);
-	registerObject(p);
+	Wizard* w = new Wizard(this, mSceneMgr->getRootSceneNode(), getUniqueName());
+	registerObject(w);
+	w->getNode()->setPosition(position);
 
 #ifdef DEBUG_MODE
 LOG("exit ObjectManager::createPlayer");
 #endif
-	return p;
+	return w;
 }
 
 Monster* ObjectManager::createMonster(const Ogre::Vector3 position)
 {
 	Ogre::Vector3 realPosition = position;
-	std::vector<Vector3> correction = std::vector<Vector3>();
+	std::vector<Ogre::Vector3> correction = std::vector<Ogre::Vector3>();
 	correction.push_back(Ogre::Vector3::UNIT_X);
 	correction.push_back(Ogre::Vector3::UNIT_Z);
 	correction.push_back(Ogre::Vector3::NEGATIVE_UNIT_X);
 	correction.push_back(Ogre::Vector3::NEGATIVE_UNIT_Z);
-	std::vector<Vector3>::iterator it = correction.begin();
+	std::vector<Ogre::Vector3>::iterator it = correction.begin();
 	while(!mTerrain.isFree(round(realPosition)))
 	{
 		realPosition = position + *it;
@@ -261,22 +262,22 @@ void ObjectManager::loadScene() {
 #ifdef DEBUG_MODE
 LOG("enter ObjectManager::loadScene");
 #endif
-	std::vector<std::pair<Triplet, PhysicalMaterial> > chunk = mMapManager.loadChunk(Vector3::ZERO);
+	std::vector<std::pair<Triplet, PhysicalMaterial> > chunk = mMapManager.loadChunk(Ogre::Vector3::ZERO);
 	std::vector<Block*> blocks= std::vector<Block*>();
 	for(std::vector<std::pair<Triplet, PhysicalMaterial> >::iterator it = chunk.begin(); it != chunk.end(); ++it)
 	{
 		blocks.push_back(createBlock(it->first, it->second, false));
 	}
 	mTerrain.addBlocks(blocks);
-	createMonster(Vector3(rand()%18 + 1,1.5,rand()%18 + 1));
+	createMonster(Ogre::Vector3(rand()%18 + 1,1.5,rand()%18 + 1));
 #ifdef DEBUG_MODE
 LOG("exit ObjectManager::loadScene");
 #endif
 }
 
-Vector3 ObjectManager::getGravity(PhysicalObject* obj) const
+Ogre::Vector3 ObjectManager::getGravity(PhysicalObject* obj) const
 {
-	return Vector3::NEGATIVE_UNIT_Y * 9.8;
+	return Ogre::Vector3::NEGATIVE_UNIT_Y * 9.8;
 }
 
 double ObjectManager::getStrench(PhysicalObject* obj) const

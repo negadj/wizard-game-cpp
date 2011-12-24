@@ -7,12 +7,16 @@
 
 #include "AnimatedObject.h"
 #include "../Triplet.h"
+#include "../IA/IA.h"
+#include "../IA/GuardianIA.h"
 
 AnimatedObject::AnimatedObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, Ogre::String meshName, Ogre::Vector3 volume, const Ogre::Real& meshHeight, const Ogre::Real& meshScale, const Ogre::Radian& meshOrientation, std::string description, PhysicalMaterial material):
 	PhysicalObject(objectManager, node, name, meshName, volume, material, description),
 	mBodyNode(NULL),
-	mPropulsion(40),
-	mAnimations(std::vector<Ogre::String>())
+	mVelocity(40),
+	mAnimations(std::vector<Ogre::String>()),
+	mIA(new GuardianIA(this)),
+	mPropulsionDir(Ogre::Vector3::ZERO)
 {
 	registerType(TYPE_ANIMATED);
 	setActive(true);
@@ -38,8 +42,16 @@ void AnimatedObject::setupBody(Ogre::SceneNode* node, Ogre::Vector3 volume, cons
 
 AnimatedObject::~AnimatedObject()
 {
-
+	delete mIA;
 }
+
+IA* AnimatedObject::getIA() const {
+	return mIA;
+}
+void AnimatedObject::setIA(IA* ia) {
+	mIA = ia;
+}
+
 
 void AnimatedObject::enableAnimation(Ogre::String animationName) {
 	getEntity()->getAnimationState(animationName)->setEnabled(true);
@@ -51,6 +63,17 @@ void AnimatedObject::disableAnimation(Ogre::String animationName) {
 
 void AnimatedObject::doPreCollisionUpdate(Ogre::Real deltaTime)
 {
+	mIA->takeADecision();
+
+	if(mPropulsionDir != Ogre::Vector3::ZERO)
+	{
+		/* Ajout de la force motrice */
+		if(isOnGround())
+			addForce(getPropulsion());
+		else
+			addForce(getPropulsion()/15);
+	}
+
 	PhysicalObject::doPreCollisionUpdate(deltaTime);
 }
 
@@ -61,7 +84,6 @@ void AnimatedObject::doPostCollisionUpdate(Ogre::Real deltaTime)
 	{
 		if(round(getSpeed(),1) != Ogre::Vector3::ZERO)
 		{
-			//getEntity()->getAnimationState(*it)->setEnabled(true);
 			if (getSpeed().z > 0) { //TODO: formule probablement fausse, getSpeed donne un vecteur dans le référentiel global
 				getEntity()->getAnimationState(*it)->addTime(-deltaTime);
 			}
@@ -71,17 +93,32 @@ void AnimatedObject::doPostCollisionUpdate(Ogre::Real deltaTime)
 		}
 		else
 		{
-			//getEntity()->getAnimationState(*it)->setEnabled(false);
 			getEntity()->getAnimationState(*it)->setTimePosition(0); //RAZ de l'animation
 		}
 
 	}
 }
 
-Ogre::Real AnimatedObject::getPropulsion()
-{
-	return mPropulsion;
+Ogre::Real AnimatedObject::getVelocity() {
+	return mVelocity;
 }
+
+void AnimatedObject::setVelocity(const Ogre::Real& velocity) {
+	mVelocity = velocity;
+}
+
+void AnimatedObject::setPropulsionDirection(const Ogre::Vector3& direction) {
+	mPropulsionDir = direction.normalisedCopy(); // Note : un vecteur nul reste un vecteur nul
+}
+
+void AnimatedObject::setPropulsionLocalDirection(const Ogre::Vector3& direction) {
+	mPropulsionDir = (getOrientation() * direction).normalisedCopy(); // Note : un vecteur nul reste un vecteur nul
+}
+
+Ogre::Vector3 AnimatedObject::getPropulsion() {
+	return mPropulsionDir * mVelocity;
+}
+
 
 void AnimatedObject::registerAnimation(Ogre::String animation)
 {

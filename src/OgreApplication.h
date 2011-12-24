@@ -10,10 +10,9 @@ Author: Gecko
 #include "MenuManager.h"
 #include "objects/PhysicalObjectListener.h"
 #include "Config.h"
+#include "Player.h"
 
-using namespace Ogre;
-
-class OgreApplication : public FrameListener, public WindowEventListener,
+class OgreApplication : public Ogre::FrameListener, public Ogre::WindowEventListener,
 public OIS::MouseListener, public OIS::KeyListener, public PhysicalObjectListener {
 friend class MenuManager;
 
@@ -59,8 +58,8 @@ private:
 	bool frameRenderingQueued(const Ogre::FrameEvent& evt);
 #endif
 	void startOIS();
-	void windowResized(RenderWindow* rw);
-	void windowClosed(RenderWindow* rw);
+	void windowResized(Ogre::RenderWindow* rw);
+	void windowClosed(Ogre::RenderWindow* rw);
 
 	bool mouseMoved(const OIS::MouseEvent &e);
 	bool mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id);
@@ -69,18 +68,18 @@ private:
 	bool keyReleased(const OIS::KeyEvent &e);
 
 	void toggleDebugOverlay();
-	void updateDebugInfo(Real deltaTime);
+	void updateDebugInfo(Ogre::Real deltaTime);
 
 	/* Méthodes héritées de l'interface PhysicalObjectListener.
 	 * Nécessaire pour déterminer la fin de la partie.
 	 */
 	virtual void objectDied(const PhysicalObject* object);
 
-	Root* mRoot;
-	RenderWindow* mWindow;
-	SceneManager* mSceneMgr;
-	Camera* mCamera;
-	Viewport* mViewPort;
+	Ogre::Root* mRoot;
+	Ogre::RenderWindow* mWindow;
+	Ogre::SceneManager* mSceneMgr;
+	Ogre::Camera* mCamera;
+	Ogre::Viewport* mViewPort;
 
 	OIS::InputManager*  mInputManager;
 	OIS::Mouse*         mMouse;
@@ -88,7 +87,7 @@ private:
 
 	ObjectManager* mObjectMgr;
     MenuManager mMenuMgr;
-	Overlay* mDebugOverlay;
+    Ogre::Overlay* mDebugOverlay;
 
 	Player* mPlayer;
 
