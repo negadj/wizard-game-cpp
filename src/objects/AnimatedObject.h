@@ -16,7 +16,7 @@ class IA;
 class AnimatedObject: public PhysicalObject {
 	friend class Player; // TODO: trouver moins permissif
 public:
-	AnimatedObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, Ogre::String meshName, Ogre::Vector3 volume, const Ogre::Real& meshHeight, const Ogre::Real& meshScale, const Ogre::Radian& meshOrientation, std::string description = "Objet animé", PhysicalMaterial material = PhysicalMaterial::Flesh);
+	AnimatedObject(Ogre::SceneNode* node, Ogre::String meshName, Ogre::Vector3 volume, const Ogre::Real& meshHeight, const Ogre::Real& meshScale, const Ogre::Radian& meshOrientation, std::string description = "Objet animé", PhysicalMaterial material = PhysicalMaterial::Flesh);
 	virtual ~AnimatedObject();
 	Ogre::Real getVelocity();
 	void setVelocity(const Ogre::Real& velocity);

@@ -14,7 +14,7 @@ class Wizard : public AnimatedObject {
 	friend class ObjectManager;
 
 protected:
-	Wizard(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name);
+	Wizard(Ogre::SceneNode* originNode);
 	virtual void doPostCollisionUpdate(Ogre::Real deltaTime);
 	virtual void doPreCollisionUpdate(Ogre::Real deltaTime);
 	virtual ~Wizard();

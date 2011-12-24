@@ -10,8 +10,8 @@
 #include "../IA/IA.h"
 #include "../IA/GuardianIA.h"
 
-AnimatedObject::AnimatedObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, Ogre::String meshName, Ogre::Vector3 volume, const Ogre::Real& meshHeight, const Ogre::Real& meshScale, const Ogre::Radian& meshOrientation, std::string description, PhysicalMaterial material):
-	PhysicalObject(objectManager, node, name, meshName, volume, material, description),
+AnimatedObject::AnimatedObject(Ogre::SceneNode* node, Ogre::String meshName, Ogre::Vector3 volume, const Ogre::Real& meshHeight, const Ogre::Real& meshScale, const Ogre::Radian& meshOrientation, std::string description, PhysicalMaterial material):
+	PhysicalObject(node, meshName, volume, material, description),
 	mBodyNode(NULL),
 	mVelocity(40),
 	mAnimations(std::vector<Ogre::String>()),

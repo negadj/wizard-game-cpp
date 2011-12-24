@@ -9,8 +9,8 @@
 #include "../ObjectManager.h"
 #include "../IA/ExplorerIA.h"
 
-Monster::Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name):
-	AnimatedObject(objectManager, originNode, name, "robot.mesh", Ogre::Vector3(0.45,0.9,0.45), -0.9, 0.02, Ogre::Degree(90), "Monster")
+Monster::Monster(Ogre::SceneNode* originNode):
+	AnimatedObject(originNode, "robot.mesh", Ogre::Vector3(0.45,0.9,0.45), -0.9, 0.02, Ogre::Degree(90), "Monster")
 {
 	registerType(TYPE_HOSTILE);
 	registerAnimation("Walk");

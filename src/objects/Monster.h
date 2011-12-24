@@ -21,7 +21,7 @@ class Monster;
 class Monster: public AnimatedObject {
 	friend class ObjectManager;
 protected:
-	Monster(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name);
+	Monster(Ogre::SceneNode* originNode);
 	virtual ~Monster();
 	virtual void doPreCollisionUpdate(Ogre::Real deltaTime);
 	virtual void doPostCollisionUpdate(Ogre::Real deltaTime);
