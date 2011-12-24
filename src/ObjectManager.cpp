@@ -7,8 +7,6 @@
 
 #include "ObjectManager.h"
 
-unsigned long ObjectManager::_countObject = 0;
-
 ObjectManager::ObjectManager(Ogre::SceneManager* scnMgr) :
 	mSceneMgr(scnMgr),
 	mCollisionMgr(this, scnMgr),
@@ -19,7 +17,9 @@ ObjectManager::ObjectManager(Ogre::SceneManager* scnMgr) :
 	mPhysicalClock(Clock(0.02)),
 	mMonsterClock(Clock(5)),
 	mMapManager(10)
-{}
+{
+	PhysicalObject::_mObjectManager = this;
+}
 
 ObjectManager::~ObjectManager()
 {
@@ -199,15 +199,8 @@ LOG("exit ObjectManager::updateObjects");
 #endif
 }
 
-Ogre::String ObjectManager::getUniqueName() {
-	return Ogre::StringConverter::toString(++_countObject);
-}
-
 void ObjectManager::registerObject(PhysicalObject* object) {
 	mObjects[object->getName()] = object;
-//	if (active)
-//		mActiveObjects.insert(object);
-//	object->addListener(this);
 }
 
 Wizard* ObjectManager::createWizard(const Ogre::Vector3 position) {
@@ -215,7 +208,7 @@ Wizard* ObjectManager::createWizard(const Ogre::Vector3 position) {
 LOG("enter ObjectManager::createPlayer");
 #endif
 
-	Wizard* w = new Wizard(this, mSceneMgr->getRootSceneNode(), getUniqueName());
+	Wizard* w = new Wizard(mSceneMgr->getRootSceneNode());
 	registerObject(w);
 	w->getNode()->setPosition(position);
 
@@ -239,7 +232,7 @@ Monster* ObjectManager::createMonster(const Ogre::Vector3 position)
 		realPosition = position + *it;
 		++it;
 	}
-	Monster* m = new Monster(this, mSceneMgr->getRootSceneNode(), getUniqueName());
+	Monster* m = new Monster(mSceneMgr->getRootSceneNode());
 	registerObject(m);
 	m->getNode()->setPosition(position);
 
@@ -249,7 +242,7 @@ Monster* ObjectManager::createMonster(const Ogre::Vector3 position)
 Block* ObjectManager::createBlock(const Triplet& position, PhysicalMaterial material, bool add) {
 	if (!isBlockFree(position))
 		return NULL;
-	Block* b = new Block(this, mSceneMgr->getRootSceneNode(), getUniqueName(), material);
+	Block* b = new Block(mSceneMgr->getRootSceneNode(), material);
 	registerObject(b);
 	b->getNode()->setPosition(position);
 	if(add)

@@ -32,7 +32,6 @@ friend void PhysicalObject::requestDestruction();
 friend void Block::onIntegrityChange(int);
 
 private:
-	static unsigned long _countObject; // Sert à attribuer un numéro unique à chaque objet.
 	Ogre::SceneManager* mSceneMgr;
 	CollisionManager mCollisionMgr;
 	std::map<std::string,PhysicalObject*> mObjects; // Tous les objets créés.
@@ -54,10 +53,6 @@ private:
 	Clock mMonsterClock;
 	MapManager mMapManager;
 
-	/*
-	 * Renvoie un nom unique pour définir un objet
-	 */
-	Ogre::String getUniqueName();
 	/*
 	 * Enregistre le nom d'un objet à retirer de la scène et détruire.
 	 * On ne le détruit pas immédiatement car il peut ne pas avoir terminé

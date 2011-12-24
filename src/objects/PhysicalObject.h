@@ -30,10 +30,11 @@ typedef enum ObjectType {
 class PhysicalObject {
 	friend class ObjectManager;
 private:
-	ObjectManager* mObjectManager;
+	static unsigned long _countObject; // Sert à attribuer un numéro unique à chaque objet.
+	static ObjectManager* _mObjectManager;
+
 	/*
 	 * mName fait office d'id unique pour chaque objet.
-	 * Mieux vaut laisser sa gestion à l'objectManager
 	 */
 	const Ogre::String mName;
 	std::set<ObjectType> mTypes;
@@ -51,13 +52,14 @@ private:
 	Ogre::Vector3 mCollisionCorrection;
 	std::set<PhysicalObjectListener*> mListeners;
 
+	/*
+	 * Renvoie un nom unique pour définir un objet
+	 */
+	static Ogre::String _getUniqueName();
 	void setupVolume(Ogre::Vector3 centreMin,Ogre::Vector3 CentreMax);
 
 protected:
-	/*
-	 * Attention : name doit être unique. Mieux vaut laisser l'ObjectManager s'en charger seul.
-	 */
-	PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* node, Ogre::String name, Ogre::String meshName, Ogre::Vector3 volume, PhysicalMaterial material, std::string description = "Objet");
+	PhysicalObject(Ogre::SceneNode* node, Ogre::String meshName, Ogre::Vector3 volume, PhysicalMaterial material, std::string description = "Objet");
 	virtual ~PhysicalObject();
 	void preCollisionUpdate(Ogre::Real deltaTime);
 	void postCollisionUpdate(Ogre::Real deltaTime);
@@ -101,6 +103,8 @@ public:
 	static const Ogre::Vector3 LocalDirectionUp;
 	static const Ogre::Vector3 LocalDirectionDown;
 
+	static ObjectManager* getObjectManager();
+
 	Ogre::Vector3 getAcceleration() const;
     bool isType(ObjectType type) const;
     int getIntegrity() const;
@@ -133,7 +137,6 @@ public:
     Ogre::Entity *getEntity() const;
     Ogre::String getDescription() const;
     void setDescription(Ogre::String description);
-    ObjectManager* getObjectManager() const;
     const Ogre::Vector3 getVolume() const;
     std::vector<Ogre::Vector3> getContactSurface(const Ogre::Vector3 normal) const;
     Ogre::Vector3 getCollisionCorrection() const;

@@ -8,6 +8,9 @@
 #include "PhysicalObject.h"
 #include "../ObjectManager.h"
 
+unsigned long PhysicalObject::_countObject = 0;
+ObjectManager* PhysicalObject::_mObjectManager = NULL;
+
 const Ogre::Vector3 PhysicalObject::LocalDirectionForward = Ogre::Vector3::NEGATIVE_UNIT_Z;
 const Ogre::Vector3 PhysicalObject::LocalDirectionBackward = Ogre::Vector3::UNIT_Z;
 const Ogre::Vector3 PhysicalObject::LocalDirectionLeft = Ogre::Vector3::NEGATIVE_UNIT_X;
@@ -15,13 +18,22 @@ const Ogre::Vector3 PhysicalObject::LocalDirectionRight = Ogre::Vector3::UNIT_X;
 const Ogre::Vector3 PhysicalObject::LocalDirectionUp = Ogre::Vector3::UNIT_Y;
 const Ogre::Vector3 PhysicalObject::LocalDirectionDown = Ogre::Vector3::NEGATIVE_UNIT_Y;
 
-PhysicalObject::PhysicalObject(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name, Ogre::String meshName,Ogre::Vector3 volume, PhysicalMaterial material, Ogre::String description) :
-	mObjectManager(objectManager),
-	mName(name),
+
+Ogre::String PhysicalObject::_getUniqueName() {
+	return Ogre::StringConverter::toString(++_countObject);
+}
+
+ObjectManager* PhysicalObject::getObjectManager()
+{
+    return _mObjectManager;
+}
+
+PhysicalObject::PhysicalObject(Ogre::SceneNode* originNode, Ogre::String meshName,Ogre::Vector3 volume, PhysicalMaterial material, Ogre::String description) :
+	mName(_getUniqueName()),
 	mTypes(std::set<ObjectType>()),
 	mOriginalMeshName(meshName),
 	mDescription(description),
-	mNode(originNode->createChildSceneNode(name)),
+	mNode(originNode->createChildSceneNode(mName)),
 	mEntity(0),
 	mAcceleration(Ogre::Vector3::ZERO),
 	mSpeed(Ogre::Vector3::ZERO),
@@ -63,11 +75,11 @@ LOG("exit PhysicalObject destructor");
 }
 
 bool PhysicalObject::isActive() {
-	return mObjectManager->isActive(this);
+	return getObjectManager()->isActive(this);
 }
 
 void PhysicalObject::setActive(bool active) {
-	mObjectManager->setActive(this, active);
+	getObjectManager()->setActive(this, active);
 }
 
 void PhysicalObject::doPreCollisionUpdate(Ogre::Real deltaTime)
@@ -183,11 +195,6 @@ Ogre::String PhysicalObject::getDescription() const
     return mDescription;
 }
 
-ObjectManager* PhysicalObject::getObjectManager() const
-{
-    return mObjectManager;
-}
-
 void PhysicalObject::setDescription(Ogre::String description)
 {
     this->mDescription = description;
@@ -236,7 +243,7 @@ const Ogre::Vector3  PhysicalObject::getVolume() const
 }
 
 void PhysicalObject::requestDestruction() {
-	mObjectManager->requestDestruction(getName());
+	getObjectManager()->requestDestruction(getName());
 }
 
 void PhysicalObject::die() {
@@ -278,9 +285,9 @@ bool PhysicalObject::isOnGround() const
 {
 	Ogre::Vector3 position = getNode()->getPosition();
 
-	if(mObjectManager->isBlockFree(Triplet(round(position.x),floor(position.y - getVolume().y),round(position.z))))
+	if(getObjectManager()->isBlockFree(Triplet(round(position.x),floor(position.y - getVolume().y),round(position.z))))
 		return false;
-	PhysicalObject* obstacle = mObjectManager->getBlock(Triplet(round(position.x),floor(position.y - getVolume().y),round(position.z)));
+	PhysicalObject* obstacle = getObjectManager()->getBlock(Triplet(round(position.x),floor(position.y - getVolume().y),round(position.z)));
 	return ( 0.01 > position.y - getVolume().y - obstacle->getNode()->getPosition().y - obstacle->getVolume().y);
 }
 

@@ -7,8 +7,8 @@
 
 #include "Wizard.h"
 
-Wizard::Wizard(ObjectManager* objectManager, Ogre::SceneNode* originNode, Ogre::String name) :
-	AnimatedObject(objectManager, originNode, name, "Sinbad.mesh", Ogre::Vector3(0.45,0.9,0.45), -0.05, 0.2, Ogre::Degree(180), "Joueur"),
+Wizard::Wizard(Ogre::SceneNode* originNode) :
+	AnimatedObject(originNode, "Sinbad.mesh", Ogre::Vector3(0.45,0.9,0.45), -0.05, 0.2, Ogre::Degree(180), "Joueur"),
 	mSword1(0),
 	mSword2(0)
 {
