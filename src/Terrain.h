@@ -11,6 +11,7 @@
 #include <Ogre.h>
 #include "Triplet.h"
 #include "objects/PhysicalObjectListener.h"
+#include "MapManager.h"
 
 //forward-declaration
 class ObjectManager;
@@ -22,8 +23,14 @@ class Block;
 class Terrain : public PhysicalObjectListener {
 private:
 	ObjectManager* mObjMgr;
+	MapManager mMapManager;
 	std::map<Triplet,Ogre::String> mMap;
 	Ogre::StaticGeometry* mStaticGeometry;
+	std::set<Triplet> mChunks;
+
+	void refreshTerrain();
+	void loadChunk(const Triplet& chunk);
+	void unloadChunk(const Triplet& chunk);
 
 public:
 	void attachBlock(Block& b, bool update = true);
@@ -53,8 +60,10 @@ public:
 	bool isFree(const Triplet& pos) const;
 	bool isFree(const Ogre::Vector3& pos) const;
 	void removeBlock(const Triplet& pos);
-	void updateTerrain();
-
+	/*
+	 * Gère le chargement/déchargement des morceaux de terrain en fonction de la position des objets importants.
+	 */
+	void manage(const std::set<PhysicalObject*>& travelers);
 	virtual void objectApparenceChanged(const PhysicalObject* object);
 };
 

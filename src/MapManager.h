@@ -28,6 +28,7 @@ private:
 public:
 	MapManager(int chunkSize);
 	virtual ~MapManager();
+	int getChunkSize();
 	std::vector<std::pair<Triplet,PhysicalMaterial> > loadChunk(Triplet chunkPosition);
 };
 
