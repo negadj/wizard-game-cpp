@@ -15,8 +15,7 @@ ObjectManager::ObjectManager(Ogre::SceneManager* scnMgr) :
 	mObjectsToDelete(std::queue<Ogre::String>()),
 	mTerrain(this, scnMgr->createStaticGeometry("terrain")),
 	mPhysicalClock(Clock(0.02)),
-	mMonsterClock(Clock(5)),
-	mMapManager(10)
+	mMonsterClock(Clock(60))
 {
 	PhysicalObject::_mObjectManager = this;
 }
@@ -172,6 +171,7 @@ LOG("tick");
 				obj->setIntegrity(0);
 		}
 	}
+	mTerrain.manage(mActiveObjects);
 //	for(std::set<PhysicalObject*>::iterator it = mActiveObjects.begin(); it != mActiveObjects.end();++it)
 //	{
 //		obj = *it;
@@ -255,14 +255,15 @@ void ObjectManager::loadScene() {
 #ifdef DEBUG_MODE
 LOG("enter ObjectManager::loadScene");
 #endif
-	std::vector<std::pair<Triplet, PhysicalMaterial> > chunk = mMapManager.loadChunk(Ogre::Vector3::ZERO);
-	std::vector<Block*> blocks= std::vector<Block*>();
-	for(std::vector<std::pair<Triplet, PhysicalMaterial> >::iterator it = chunk.begin(); it != chunk.end(); ++it)
-	{
-		blocks.push_back(createBlock(it->first, it->second, false));
-	}
-	mTerrain.addBlocks(blocks);
-	createMonster(Ogre::Vector3(rand()%18 + 1,1.5,rand()%18 + 1));
+//	std::vector<std::pair<Triplet, PhysicalMaterial> > chunk = mMapManager.loadChunk(Ogre::Vector3::ZERO);
+//	std::vector<Block*> blocks= std::vector<Block*>();
+//	for(std::vector<std::pair<Triplet, PhysicalMaterial> >::iterator it = chunk.begin(); it != chunk.end(); ++it)
+//	{
+//		blocks.push_back(createBlock(it->first, it->second, false));
+//	}
+//	mTerrain.addBlocks(blocks);
+	//createMonster(Ogre::Vector3(rand()%18 + 1,1.5,rand()%18 + 1));
+	mTerrain.manage(mActiveObjects);
 #ifdef DEBUG_MODE
 LOG("exit ObjectManager::loadScene");
 #endif

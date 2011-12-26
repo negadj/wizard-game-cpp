@@ -16,7 +16,6 @@
 #include "objects/Block.h"
 #include "Terrain.h"
 #include "Clock.h"
-#include "MapManager.h"
 #include "objects/Monster.h"
 
 #ifdef DEBUG_MODE
@@ -28,8 +27,8 @@
  * C'est via cette classe que tous les objets doivent être créés.
  */
 class ObjectManager : public PhysicalObjectListener {
-friend void PhysicalObject::requestDestruction();
-friend void Block::onIntegrityChange(int);
+//friend void PhysicalObject::requestDestruction();
+//friend void Block::onIntegrityChange(int);
 
 private:
 	Ogre::SceneManager* mSceneMgr;
@@ -51,15 +50,7 @@ private:
 	Terrain mTerrain;
 	Clock mPhysicalClock;
 	Clock mMonsterClock;
-	MapManager mMapManager;
 
-	/*
-	 * Enregistre le nom d'un objet à retirer de la scène et détruire.
-	 * On ne le détruit pas immédiatement car il peut ne pas avoir terminé
-	 * tout ses traitements au moment où l'on reçoit l'information
-	 * (en particulier prévenir tout ses listeners).
-	 */
-	void requestDestruction(Ogre::String name);
 	/*
 	 * Retire un objet de la scène.
 	 */
@@ -140,6 +131,14 @@ public:
 	double getStrench(PhysicalObject* obj) const;
 
 	PhysicalObject* getObject(const Ogre::String& name);
+
+	/*
+	 * Enregistre le nom d'un objet à retirer de la scène et détruire.
+	 * On ne le détruit pas immédiatement car il peut ne pas avoir terminé
+	 * tout ses traitements au moment où l'on reçoit l'information
+	 * (en particulier prévenir tout ses listeners).
+	 */
+	void requestDestruction(Ogre::String name);
 
 	virtual void objectDestroyed(const PhysicalObject* object);
 };

@@ -23,6 +23,10 @@ LOG("call MapManager destructor");
 #endif
 }
 
+int MapManager::getChunkSize() {
+	return mChunkSize;
+}
+
 std::vector<std::pair<Triplet,PhysicalMaterial> > MapManager::loadChunk(Triplet chunkPosition)
 {
 	std::string filename = "map/x" + Ogre::StringConverter::toString(int(chunkPosition.x)) +
@@ -39,30 +43,16 @@ std::vector<std::pair<Triplet,PhysicalMaterial> > MapManager::loadChunk(Triplet 
 std::vector<std::pair<Triplet,PhysicalMaterial> > MapManager::generateChunk(Triplet chunkPosition)
 {
 	std::vector<std::pair<Triplet,PhysicalMaterial> > result = std::vector<std::pair<Triplet,PhysicalMaterial> > ();
-
-	int altitude = 0;
-//	PhysicalMaterial material;
+	Triplet coord;
 	for (int i=0; i<mChunkSize; i++) {
 		for (int j=0; j<mChunkSize; j++) {
-			if (rand()%2) {
-				// On change l'altitude
-				if (rand()%2)
-					altitude++;
-				else
-					altitude--;
-			}
-			for (int k=-10; k<altitude; k++) {
-				if (k >= 4) {
-					if (rand()%4)
-						result.push_back(std::pair<Triplet,PhysicalMaterial>(Triplet(chunkPosition.x * mChunkSize + i, chunkPosition.z * mChunkSize + k, chunkPosition.z * mChunkSize +j), PhysicalMaterial::Dirt));
+			for (int k=0; k<mChunkSize; k++) {
+				coord = Triplet(Ogre::Vector3(chunkPosition)*mChunkSize + Ogre::Vector3(i,j,k));
+				if (coord.y < 1) {
+					if (coord.y >= 0)
+						result.push_back(std::pair<Triplet,PhysicalMaterial>(coord, PhysicalMaterial::Grass));
 					else
-						result.push_back(std::pair<Triplet,PhysicalMaterial>(Triplet(chunkPosition.x * mChunkSize + i, chunkPosition.z * mChunkSize + k, chunkPosition.z * mChunkSize +j), PhysicalMaterial::Grass));
-				}
-				else if (k<0){
-					result.push_back(std::pair<Triplet,PhysicalMaterial>(Triplet(chunkPosition.x * mChunkSize + i, chunkPosition.z * mChunkSize + k, chunkPosition.z * mChunkSize +j), PhysicalMaterial::Dirt));
-				}
-				else {
-					result.push_back(std::pair<Triplet,PhysicalMaterial>(Triplet(chunkPosition.x * mChunkSize + i, chunkPosition.z * mChunkSize + k, chunkPosition.z * mChunkSize +j), PhysicalMaterial::Grass));
+						result.push_back(std::pair<Triplet,PhysicalMaterial>(coord, PhysicalMaterial::Dirt));
 				}
 			}
 		}

@@ -11,7 +11,9 @@
 
 Terrain::Terrain(ObjectManager* objMgr, Ogre::StaticGeometry* staticGeometry) :
 	mObjMgr(objMgr),
-	mStaticGeometry(staticGeometry)
+	mMapManager(10),
+	mStaticGeometry(staticGeometry),
+	mChunks(std::set<Triplet>())
 {
 	mStaticGeometry->setRegionDimensions(Ogre::Vector3::UNIT_SCALE*400);
 	mStaticGeometry->setOrigin(Ogre::Vector3(-200,0,-200));
@@ -53,7 +55,7 @@ void Terrain::detachBlock(Block& b, bool update) {
 			/* On reconstruit la geometry
 			 * (impossible de ne retirer qu'un seul bloc, comme pour attachBlock)
 			 */
-			updateTerrain();
+			refreshTerrain();
 
 		// Plus la peine d'écouter les changement d'apparence
 		b.removeListener(this);
@@ -119,7 +121,7 @@ Ogre::String Terrain::getBlockName(const Ogre::Vector3& pos) {
 	return getBlockName(Triplet(pos));
 }
 
-void Terrain::updateTerrain() {
+void Terrain::refreshTerrain() {
 	mStaticGeometry->reset();
 	Block* toAdd;
 	for (std::map<Triplet,Ogre::String>::iterator it = mMap.begin(); it != mMap.end(); ++it) {
@@ -145,7 +147,95 @@ LOG("exit Terrain::removeBlock");
 #endif
 }
 
+/*
+ * Note : la geometry est reconstruite dans manage().
+ */
+void Terrain::loadChunk(const Triplet& chunk) {
+#ifdef DEBUG_MODE
+LOG("load chunk " + Ogre::StringConverter::toString(Ogre::Vector3(chunk)));
+#endif
+	// On créé les blocs associés
+	std::vector<std::pair<Triplet,PhysicalMaterial> > blocks_description = mMapManager.loadChunk(chunk);
+	std::vector<Block*> blocks;
+	for (std::vector<std::pair<Triplet,PhysicalMaterial> >::iterator it = blocks_description.begin(); it != blocks_description.end(); ++it) {
+		blocks.push_back(mObjMgr->createBlock(it->first,it->second, false));
+	}
+
+	// Les blocs sont rajoutés au terrain
+	Block* b;
+	Ogre::Vector3 pos;
+	for (std::vector<Block*>::const_iterator it = blocks.begin(); it != blocks.end(); ++it) {
+		b = *it;
+		pos = b->getPosition();
+		mMap[Triplet(pos)] = b->getName();
+		attachBlock(*b, false);
+	}
+
+	// On indique que le chunk est chargé.
+	mChunks.insert(chunk);
+}
+
+/*
+ * Pour supprimer proprement les blocs de l'ObjectManager,
+ * on fait une requete de suppression pour chaque bloc.
+ * Pour ne pas perdre trop en performance, on les supprime d'abord
+ * du terrain dès cette méthode.
+ */
+void Terrain::unloadChunk(const Triplet& chunk) {
+#ifdef DEBUG_MODE
+LOG("unload chunk " + Ogre::StringConverter::toString(Ogre::Vector3(chunk)));
+#endif
+	// Les blocs sont retirés
+	Triplet pos;
+	int size = mMapManager.getChunkSize();
+	for (int i=0; i<size; i++) {
+		for (int j=0; j<size; j++) {
+			for (int k=0; k<size; k++) {
+				pos = Triplet(Ogre::Vector3(chunk) * size + Ogre::Vector3(i,j,k));
+				if (!isFree(pos)) { // On retire chaque bloc du terrain
+					mObjMgr->requestDestruction(getBlock(pos)->getName());
+					detachBlock(*getBlock(pos), false);
+					mMap.erase(pos);
+				}
+			}
+		}
+	}
+	// On note que le chunk a bien été déchargé
+	mChunks.erase(chunk);
+}
+
+void Terrain::manage(const std::set<PhysicalObject*>& travelers) {
+	Triplet chunkLocation;
+	std::set<Triplet> chunks = std::set<Triplet>();
+	bool modified = false;
+	for (std::set<PhysicalObject*>::iterator it = travelers.begin(); it != travelers.end(); ++it) {
+		// On rajoute les chunks à conserver/rajouter dans la liste
+		chunkLocation = Ogre::Vector3((*it)->getPosition()) / mMapManager.getChunkSize();
+		for (int i=-1; i<2; i++)
+			for (int j=-1; j<2; j++) {
+				//TODO k?
+				chunks.insert(Triplet(chunkLocation.x + i, chunkLocation.y, chunkLocation.z +j));
+
+			}
+	}
+	// On décharge les chunks inutiles
+	for (std::set<Triplet>::iterator it = mChunks.begin(); it != mChunks.end(); ++it)
+		if (chunks.find(*it) == chunks.end()) {
+			unloadChunk(*it);
+			modified = true;
+		}
+
+	// Les nouveaux chunks sont chargés
+	for (std::set<Triplet>::iterator it = chunks.begin(); it != chunks.end(); ++it)
+		if (mChunks.find(*it) == mChunks.end()) {
+					loadChunk(*it);
+					modified = true;
+		}
+
+	if (modified) // On reconstruit le terrain si nécessaire
+		refreshTerrain();
+}
+
 void Terrain::objectApparenceChanged(const PhysicalObject* object) {
-	updateTerrain();
-	//detachBlock(static_cast<Block*>(object));
+	refreshTerrain();
 }

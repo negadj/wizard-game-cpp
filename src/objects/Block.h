@@ -16,15 +16,11 @@
  */
 class Block: public PhysicalObject {
 	friend class ObjectManager;
-	friend void Terrain::attachBlock(Block&, bool); // Pour pouvoir les détacher de la scène pour la static geometry
-	friend void Terrain::detachBlock(Block&, bool);
-	friend void Terrain::updateTerrain();
+	friend class Terrain;
 protected:
 	Block(Ogre::SceneNode* originNode, PhysicalMaterial material);
 	virtual ~Block();
 	virtual void onIntegrityChange(int oldIntegrity);
-	//void attach();
-	//void detach();
 };
 
 #endif /* BLOCK_H_ */
