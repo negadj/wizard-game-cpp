@@ -28,6 +28,9 @@ Terrain::~Terrain() {
 #ifdef DEBUG_MODE
 LOG("call Terrain destructor");
 #endif
+//TODO: sauver les chunks a la destruction
+//	for (std::set<Triplet>::iterator it = mChunks.begin(); it != mChunks.end(); ++it)
+//		unloadChunk(*it);
 }
 
 void Terrain::attachBlock(Block& b, bool update) {
@@ -187,19 +190,25 @@ LOG("unload chunk " + Ogre::StringConverter::toString(Ogre::Vector3(chunk)));
 #endif
 	// Les blocs sont retirés
 	Triplet pos;
+	Block* b;
+	std::vector<Block*> blocksInChunk;
 	int size = mMapManager.getChunkSize();
 	for (int i=0; i<size; i++) {
 		for (int j=0; j<size; j++) {
 			for (int k=0; k<size; k++) {
 				pos = Triplet(Ogre::Vector3(chunk) * size + Ogre::Vector3(i,j,k));
 				if (!isFree(pos)) { // On retire chaque bloc du terrain
-					mObjMgr->requestDestruction(getBlock(pos)->getName());
-					detachBlock(*getBlock(pos), false);
+					b = getBlock(pos);
+					blocksInChunk.push_back(b);
+					mObjMgr->requestDestruction(b->getName());
+					detachBlock(*b, false);
 					mMap.erase(pos);
 				}
 			}
 		}
 	}
+	mMapManager.saveChunk(blocksInChunk);
+
 	// On note que le chunk a bien été déchargé
 	mChunks.erase(chunk);
 }

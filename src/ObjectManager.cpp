@@ -15,7 +15,7 @@ ObjectManager::ObjectManager(Ogre::SceneManager* scnMgr) :
 	mObjectsToDelete(std::queue<Ogre::String>()),
 	mTerrain(this, scnMgr->createStaticGeometry("terrain")),
 	mPhysicalClock(Clock(0.02)),
-	mMonsterClock(Clock(60))
+	mMonsterClock(Clock(3600))
 {
 	PhysicalObject::_mObjectManager = this;
 }

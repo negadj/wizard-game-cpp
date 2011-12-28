@@ -25,10 +25,12 @@ public:
     Ogre::String getName() const;
     int getSolidity() const;
     void setDensity(float mDensity);
-    void setName(Ogre::String mName);
     void setSolidity(int mSolidity);
     bool isAffectingLook() const;
     void setAffectLook(bool affectLook);
+
+protected:
+    void setName(Ogre::String mName);
 
 private:
     Ogre::String mName;
