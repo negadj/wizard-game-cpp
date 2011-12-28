@@ -6,6 +6,7 @@
  */
 
 #include "MapManager.h"
+#include "objects/Block.h"
 
 #ifdef DEBUG_MODE
 #define LOG(x) Ogre::LogManager::getSingleton().logMessage(x)
@@ -23,15 +24,19 @@ LOG("call MapManager destructor");
 #endif
 }
 
+std::string MapManager::getFilename(const Triplet& chunk) {
+	return "map/x" + Ogre::StringConverter::toString(int(chunk.x)) +
+							   "y" + Ogre::StringConverter::toString(int(chunk.y)) +
+							   "z" + Ogre::StringConverter::toString(int(chunk.z));
+}
+
 int MapManager::getChunkSize() {
 	return mChunkSize;
 }
 
 std::vector<std::pair<Triplet,PhysicalMaterial> > MapManager::loadChunk(Triplet chunkPosition)
 {
-	std::string filename = "map/x" + Ogre::StringConverter::toString(int(chunkPosition.x)) +
-						   "y" + Ogre::StringConverter::toString(int(chunkPosition.y)) +
-						   "z" + Ogre::StringConverter::toString(int(chunkPosition.z));
+	std::string filename = getFilename(chunkPosition);
 	std::ifstream chunk(filename.c_str());
 	if (chunk) { // Le fichier existe
 		chunk.close();
@@ -64,29 +69,50 @@ std::vector<std::pair<Triplet,PhysicalMaterial> > MapManager::loadChunkFromFile(
 	std::vector<std::pair<Triplet,PhysicalMaterial> > result = std::vector<std::pair<Triplet,PhysicalMaterial> > ();
 
 	std::ifstream chunk(filename.c_str());
-	int i = 0;
-	int k = 0;
-	char c = '\0';
-	while(chunk.get(c))
-	{
-		if(c == '\n')
-		{
-			i = 0;
-			++k;
-		}
-		else if( c == ' ')
-		{
-			result.push_back(std::pair<Triplet,PhysicalMaterial>(Triplet(chunkPosition.x * mChunkSize + i,chunkPosition.y * mChunkSize , chunkPosition.z * mChunkSize +k), PhysicalMaterial::Grass));
-			i++;
-		}
-		else if( c == 'd')
-		{
-			result.push_back(std::pair<Triplet,PhysicalMaterial>(Triplet(chunkPosition.x * mChunkSize + i,chunkPosition.y * mChunkSize , chunkPosition.z * mChunkSize +k), PhysicalMaterial::Grass));
-			result.push_back(std::pair<Triplet,PhysicalMaterial>(Triplet(chunkPosition.x * mChunkSize + i,chunkPosition.y * mChunkSize + 1 , chunkPosition.z * mChunkSize +k), PhysicalMaterial::Dirt));
-			result.push_back(std::pair<Triplet,PhysicalMaterial>(Triplet(chunkPosition.x * mChunkSize + i,chunkPosition.y * mChunkSize + 2, chunkPosition.z * mChunkSize +k), PhysicalMaterial::Dirt));
-			i++;
+	Ogre::String line = "";
+	Triplet coord;
+	char type;
+
+	// On parse le fichier
+	while (std::getline(chunk, line)) {
+		type = line.at(0);
+		coord = Triplet(Ogre::StringConverter::parseVector3(line.substr(1)));
+
+		switch(type) {
+		case 'd':
+			result.push_back(std::pair<Triplet,PhysicalMaterial>(coord, PhysicalMaterial::Dirt));
+			break;
+		case 'g':
+			result.push_back(std::pair<Triplet,PhysicalMaterial>(coord, PhysicalMaterial::Grass));
+			break;
+		default:
+			//TODO: gerer les erreurs
+			break;
 		}
 	}
+
 	chunk.close();
 	return result;
+}
+
+void MapManager::saveChunk(std::vector<Block*> blocks) {
+	if (blocks.size() == 0)
+		return;
+
+	Triplet chunkArea = blocks[0]->getPosition() / getChunkSize();
+	std::ofstream chunk(getFilename(chunkArea).c_str());
+	if (chunk) {
+		std::string material;
+		for (std::vector<Block*>::iterator it = blocks.begin(); it != blocks.end(); ++it) {
+			material = (*it)->getMaterialName();
+			if (material.find("Grass") != std::string::npos) {
+				material = 'g';
+			}
+			else
+				material = 'd';
+			chunk << material << Ogre::StringConverter::toString((*it)->getPosition()) << std::endl;
+		}
+		chunk.close();
+	}
+	//TODO: gestion des erreurs ?
 }

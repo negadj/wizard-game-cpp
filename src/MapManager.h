@@ -13,15 +13,17 @@
 #include "Triplet.h"
 #include "objects/PhysicalMaterial.h"
 
+class Block;
+
 /*
  * Gère l'import d'une map
  */
-
 class MapManager {
 
 private:
 	int mChunkSize;
 
+	std::string getFilename(const Triplet& chunk);
 	std::vector<std::pair<Triplet,PhysicalMaterial> > loadChunkFromFile(Triplet chunkPosition, std::string filename);
 	std::vector<std::pair<Triplet,PhysicalMaterial> > generateChunk(Triplet chunkPosition);
 
@@ -30,6 +32,7 @@ public:
 	virtual ~MapManager();
 	int getChunkSize();
 	std::vector<std::pair<Triplet,PhysicalMaterial> > loadChunk(Triplet chunkPosition);
+	void saveChunk(std::vector<Block*> blocks);
 };
 
 #endif /* MAPMANAGER_H_ */
